@@ -3,11 +3,6 @@
   "outputDirectory": "dist/public",
   "installCommand": "npm ci",
   "framework": null,
-  "functions": {
-    "*.js": {
-      "runtime": "nodejs20.x"
-    }
-  },
   "rewrites": [
     {
       "source": "/(.*)",
