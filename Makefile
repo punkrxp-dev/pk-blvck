@@ -101,13 +101,11 @@ check: ## Verifica tipos TypeScript
 	npm run check
 	@echo "$(GREEN)✅ Verificação de tipos concluída!$(NC)"
 
-lint: ## Executa linting (se configurado)
-	@echo "$(BLUE)🧹 Executando linting...$(NC)"
-	@if command -v eslint >/dev/null 2>&1; then \
-		npx eslint . --ext .ts,.tsx,.js,.jsx; \
-	else \
-		echo "$(YELLOW)ESLint não encontrado. Instale com: npm install -D eslint$(NC)"; \
-	fi
+lint: ## Executa linting e formatação
+	@echo "$(BLUE)🧹 Executando linting e formatação...$(NC)"
+	npx eslint . --ext .ts,.tsx --fix
+	npx prettier --write "**/*.{ts,tsx,json,css,md}" --ignore-path .gitignore
+	@echo "$(GREEN)✅ Linting e formatação concluídos!$(NC)"
 
 test: ## Executa testes (se configurados)
 	@echo "$(BLUE)🧪 Executando testes...$(NC)"

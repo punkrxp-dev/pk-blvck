@@ -1,10 +1,10 @@
-import { type User, type InsertUser, type LoginUser } from "@shared/schema";
-import { randomUUID } from "crypto";
-import bcrypt from "bcrypt";
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
-import { users } from "@shared/schema";
-import { eq } from "drizzle-orm";
+import { type User, type InsertUser, type LoginUser } from '@shared/schema';
+import { randomUUID } from 'crypto';
+import bcrypt from 'bcrypt';
+import { drizzle } from 'drizzle-orm/postgres-js';
+import postgres from 'postgres';
+import { users } from '@shared/schema';
+import { eq } from 'drizzle-orm';
 
 // Database connection
 const client = postgres(process.env.DATABASE_URL!);
@@ -29,8 +29,8 @@ export class PostgresStorage implements IStorage {
       const result = await db.select().from(users).where(eq(users.id, id)).limit(1);
       return result[0];
     } catch (error) {
-      console.error("Error fetching user by ID:", error);
-      throw new Error("Database error");
+      console.error('Error fetching user by ID:', error);
+      throw new Error('Database error');
     }
   }
 
@@ -39,8 +39,8 @@ export class PostgresStorage implements IStorage {
       const result = await db.select().from(users).where(eq(users.username, username)).limit(1);
       return result[0];
     } catch (error) {
-      console.error("Error fetching user by username:", error);
-      throw new Error("Database error");
+      console.error('Error fetching user by username:', error);
+      throw new Error('Database error');
     }
   }
 
@@ -49,22 +49,25 @@ export class PostgresStorage implements IStorage {
       // Hash the password before storing
       const hashedPassword = await bcrypt.hash(insertUser.password, this.saltRounds);
 
-      const result = await db.insert(users).values({
-        username: insertUser.username,
-        password: hashedPassword,
-      }).returning();
+      const result = await db
+        .insert(users)
+        .values({
+          username: insertUser.username,
+          password: hashedPassword,
+        })
+        .returning();
 
       if (!result[0]) {
-        throw new Error("Failed to create user");
+        throw new Error('Failed to create user');
       }
 
       return result[0];
     } catch (error) {
-      console.error("Error creating user:", error);
-      if (error instanceof Error && error.message.includes("duplicate key")) {
-        throw new Error("Username already exists");
+      console.error('Error creating user:', error);
+      if (error instanceof Error && error.message.includes('duplicate key')) {
+        throw new Error('Username already exists');
       }
-      throw new Error("Failed to create user");
+      throw new Error('Failed to create user');
     }
   }
 
@@ -78,7 +81,7 @@ export class PostgresStorage implements IStorage {
       const isValidPassword = await bcrypt.compare(credentials.password, user.password);
       return isValidPassword ? user : null;
     } catch (error) {
-      console.error("Error authenticating user:", error);
+      console.error('Error authenticating user:', error);
       return null;
     }
   }
@@ -86,17 +89,18 @@ export class PostgresStorage implements IStorage {
   async updateUserPassword(id: string, newPassword: string): Promise<boolean> {
     try {
       const hashedPassword = await bcrypt.hash(newPassword, this.saltRounds);
-      const result = await db.update(users)
+      const result = await db
+        .update(users)
         .set({
           password: hashedPassword,
-          updatedAt: new Date()
+          updatedAt: new Date(),
         })
         .where(eq(users.id, id))
         .returning();
 
       return result.length > 0;
     } catch (error) {
-      console.error("Error updating user password:", error);
+      console.error('Error updating user password:', error);
       return false;
     }
   }

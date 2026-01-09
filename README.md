@@ -16,6 +16,7 @@ Uma aplicação full-stack moderna com Express, React, TypeScript, PostgreSQL e 
 ## 🚀 Início Rápido
 
 ### 1. Setup Inicial
+
 ```bash
 # Clone o repositório (se aplicável)
 git clone <repository-url>
@@ -29,6 +30,7 @@ make setup-production
 ```
 
 ### 2. Configuração do Banco
+
 ```bash
 # Configure DATABASE_URL no arquivo .env
 cp .env.example .env
@@ -42,6 +44,7 @@ make studio
 ```
 
 ### 3. Executar Aplicação
+
 ```bash
 # Desenvolvimento completo (frontend + backend)
 make dev
@@ -62,6 +65,7 @@ make start
 Execute `make help` para ver todos os comandos ou use os abaixo:
 
 ### Desenvolvimento
+
 ```bash
 make dev          # Servidor completo em desenvolvimento
 make server       # Apenas backend
@@ -77,6 +81,7 @@ make dev-alt         # Servidor na porta 5001 (alternativa)
 ```
 
 ### Banco de Dados
+
 ```bash
 make db-push      # Aplicar schema no banco
 make db-studio    # Interface visual do banco
@@ -85,6 +90,7 @@ make restore      # Restaurar backup (BACKUP=path/to/file.sql)
 ```
 
 ### Qualidade & Segurança
+
 ```bash
 make check        # Verificar tipos TypeScript
 make audit        # Auditoria de segurança npm
@@ -92,6 +98,7 @@ make test         # Executar testes (se configurados)
 ```
 
 ### Utilitários
+
 ```bash
 make status       # Status do projeto
 make info         # Informações detalhadas
@@ -112,6 +119,7 @@ PUNK BLVCK
 ```
 
 ### Tecnologias
+
 - **Frontend**: React 19, TypeScript, Tailwind CSS, Vite
 - **Backend**: Express.js, TypeScript, PostgreSQL, Drizzle ORM
 - **Segurança**: bcrypt, Helmet, Passport.js, Rate Limiting
@@ -120,6 +128,7 @@ PUNK BLVCK
 ## 🔧 Configuração
 
 ### Variáveis de Ambiente (.env)
+
 ```bash
 NODE_ENV=development
 PORT=5000
@@ -129,6 +138,7 @@ FRONTEND_URL=http://localhost:5000
 ```
 
 ### Geração de .env.example
+
 ```bash
 make env-example
 ```
@@ -145,6 +155,7 @@ A aplicação implementa múltiplas camadas de segurança:
 - **Logs**: Logging estruturado para auditoria
 
 ### Verificação de Segurança
+
 ```bash
 make audit          # Auditoria npm
 make security-fix   # Correções automáticas
@@ -206,6 +217,7 @@ make emergency-stop
 ## 🐛 Troubleshooting
 
 ### Porta 5000 ocupada
+
 ```bash
 # Verificar qual processo está usando a porta
 make check-port
@@ -221,6 +233,7 @@ make dev-alt
 ```
 
 ### Problemas de banco de dados
+
 ```bash
 # Verificar conexão
 make db-studio
@@ -233,6 +246,7 @@ make db-setup
 ```
 
 ### Build falhando
+
 ```bash
 # Limpar cache
 make clean
@@ -245,6 +259,7 @@ make build
 ```
 
 ### Vulnerabilidades de segurança
+
 ```bash
 # Auditoria de segurança
 make security-audit
@@ -261,12 +276,14 @@ make security-force-fix
 ⚠️ **IMPORTANTE**: Esta estrutura é protegida por arquitetura NEØ. Consulte o responsável antes de qualquer modificação estrutural.
 
 ### Desenvolvimento
+
 1. Faça checkout de uma branch: `git checkout -b feature/nome`
 2. Execute verificações: `make deploy-check`
 3. Commit suas mudanças: `git commit -m "feat: descrição"`
 4. Push: `git push origin feature/nome`
 
 ### Padrões de Código
+
 - TypeScript strict mode habilitado
 - ESLint configurado (se disponível)
 - Testes unitários recomendados

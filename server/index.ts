@@ -1,16 +1,16 @@
-import express, { type Request, Response, NextFunction } from "express";
-import { registerRoutes } from "./routes";
-import { serveStatic } from "./static";
-import { createServer } from "http";
-import passport from "passport";
-import { Strategy as LocalStrategy } from "passport-local";
-import session from "express-session";
-import MemoryStore from "memorystore";
-import rateLimit from "express-rate-limit";
-import helmet from "helmet";
-import cors from "cors";
-import { storage } from "./storage";
-import { type User } from "@shared/schema";
+import express, { type Request, Response, NextFunction } from 'express';
+import { registerRoutes } from './routes';
+import { serveStatic } from './static';
+import { createServer } from 'http';
+import passport from 'passport';
+import { Strategy as LocalStrategy } from 'passport-local';
+import session from 'express-session';
+import MemoryStore from 'memorystore';
+import rateLimit from 'express-rate-limit';
+import helmet from 'helmet';
+import cors from 'cors';
+import { storage } from './storage';
+import { type User } from '@shared/schema';
 
 declare global {
   namespace Express {
@@ -27,36 +27,38 @@ declare global {
 const app = express();
 const httpServer = createServer(app);
 
-declare module "http" {
+declare module 'http' {
   interface IncomingMessage {
     rawBody: unknown;
   }
 }
 
 // Security middleware
-app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      scriptSrc: ["'self'"],
-      imgSrc: ["'self'", "data:", "https:"],
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+        scriptSrc: ["'self'"],
+        imgSrc: ["'self'", 'data:', 'https:'],
+      },
     },
-  },
-}));
+  })
+);
 
-app.use(cors({
-  origin: process.env.NODE_ENV === "production"
-    ? process.env.FRONTEND_URL || false
-    : true,
-  credentials: true,
-}));
+app.use(
+  cors({
+    origin: process.env.NODE_ENV === 'production' ? process.env.FRONTEND_URL || false : true,
+    credentials: true,
+  })
+);
 
 // Rate limiting
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // limit each IP to 100 requests per windowMs
-  message: "Too many requests from this IP, please try again later.",
+  message: 'Too many requests from this IP, please try again later.',
   standardHeaders: true,
   legacyHeaders: false,
 });
@@ -64,7 +66,7 @@ const limiter = rateLimit({
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 5, // limit each IP to 5 auth attempts per windowMs
-  message: "Too many authentication attempts, please try again later.",
+  message: 'Too many authentication attempts, please try again later.',
   standardHeaders: true,
   legacyHeaders: false,
 });
@@ -77,43 +79,47 @@ app.use(
     verify: (req, _res, buf) => {
       req.rawBody = buf;
     },
-    limit: "10mb",
-  }),
+    limit: '10mb',
+  })
 );
 
-app.use(express.urlencoded({ extended: false, limit: "10mb" }));
+app.use(express.urlencoded({ extended: false, limit: '10mb' }));
 
 // Session configuration
 const MemoryStoreSession = MemoryStore(session);
-app.use(session({
-  secret: process.env.SESSION_SECRET || "change-this-in-production",
-  resave: false,
-  saveUninitialized: false,
-  store: new MemoryStoreSession({
-    checkPeriod: 86400000, // prune expired entries every 24h
-  }),
-  cookie: {
-    secure: process.env.NODE_ENV === "production",
-    httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000, // 24 hours
-  },
-}));
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || 'change-this-in-production',
+    resave: false,
+    saveUninitialized: false,
+    store: new MemoryStoreSession({
+      checkPeriod: 86400000, // prune expired entries every 24h
+    }),
+    cookie: {
+      secure: process.env.NODE_ENV === 'production',
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    },
+  })
+);
 
 // Passport configuration
-passport.use(new LocalStrategy(
-  { usernameField: "username" },
-  async (username: string, password: string, done) => {
-    try {
-      const user = await storage.authenticateUser({ username, password });
-      if (!user) {
-        return done(null, false, { message: "Invalid credentials" });
+passport.use(
+  new LocalStrategy(
+    { usernameField: 'username' },
+    async (username: string, password: string, done) => {
+      try {
+        const user = await storage.authenticateUser({ username, password });
+        if (!user) {
+          return done(null, false, { message: 'Invalid credentials' });
+        }
+        return done(null, user);
+      } catch (error) {
+        return done(error);
       }
-      return done(null, user);
-    } catch (error) {
-      return done(error);
     }
-  }
-));
+  )
+);
 
 passport.serializeUser((user: User, done) => {
   done(null, user.id);
@@ -131,21 +137,25 @@ passport.deserializeUser(async (id: string, done) => {
 app.use(passport.initialize());
 app.use(passport.session());
 
-export function log(message: string, source = "express", level: "info" | "warn" | "error" = "info") {
+export function log(
+  message: string,
+  source = 'express',
+  level: 'info' | 'warn' | 'error' = 'info'
+) {
   const timestamp = new Date().toISOString();
   const logEntry = {
     timestamp,
     level,
     source,
     message,
-    ...(level === "error" && { stack: new Error().stack })
+    ...(level === 'error' && { stack: new Error().stack }),
   };
 
   const formattedMessage = `[${timestamp}] ${level.toUpperCase()} [${source}] ${message}`;
 
-  if (level === "error") {
+  if (level === 'error') {
     console.error(formattedMessage);
-  } else if (level === "warn") {
+  } else if (level === 'warn') {
     console.warn(formattedMessage);
   } else {
     console.log(formattedMessage);
@@ -166,9 +176,9 @@ app.use((req, res, next) => {
     return originalResJson.apply(res, [bodyJson, ...args]);
   };
 
-  res.on("finish", () => {
+  res.on('finish', () => {
     const duration = Date.now() - start;
-    if (path.startsWith("/api")) {
+    if (path.startsWith('/api')) {
       let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
       if (capturedJsonResponse) {
         logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
@@ -186,20 +196,20 @@ app.use((req, res, next) => {
 
   app.use((err: any, req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
-    const message = err.message || "Internal Server Error";
+    const message = err.message || 'Internal Server Error';
 
     // Structured error logging
-    log(`HTTP ${status} - ${req.method} ${req.path}: ${message}`, "error", "error");
+    log(`HTTP ${status} - ${req.method} ${req.path}: ${message}`, 'error', 'error');
 
     // Only send response if headers haven't been sent yet
     if (!res.headersSent) {
       res.status(status).json({
         message,
-        ...(process.env.NODE_ENV === "development" && {
+        ...(process.env.NODE_ENV === 'development' && {
           stack: err.stack,
           url: req.url,
-          method: req.method
-        })
+          method: req.method,
+        }),
       });
     }
   });
@@ -207,10 +217,10 @@ app.use((req, res, next) => {
   // importantly only setup vite in development and after
   // setting up all the other routes so the catch-all route
   // doesn't interfere with the other routes
-  if (process.env.NODE_ENV === "production") {
+  if (process.env.NODE_ENV === 'production') {
     serveStatic(app);
   } else {
-    const { setupVite } = await import("./vite");
+    const { setupVite } = await import('./vite');
     await setupVite(httpServer, app);
   }
 
@@ -218,15 +228,15 @@ app.use((req, res, next) => {
   // Other ports are firewalled. Default to 5000 if not specified.
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
-  const port = parseInt(process.env.PORT || "5000", 10);
+  const port = parseInt(process.env.PORT || '5000', 10);
   httpServer.listen(
     {
       port,
-      host: "0.0.0.0",
+      host: '0.0.0.0',
       reusePort: true,
     },
     () => {
       log(`serving on port ${port}`);
-    },
+    }
   );
 })();

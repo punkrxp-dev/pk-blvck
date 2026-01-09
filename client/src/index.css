@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "tw-animate-css";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
 @custom-variant dark (&:is(.dark *));
 
@@ -101,10 +101,57 @@ html {
 }
 
 @keyframes subtle-pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.7; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
 }
 
 .pulse-subtle {
   animation: subtle-pulse 3s ease-in-out infinite;
+}
+
+/* Mobile-first optimizations */
+@media (max-width: 768px) {
+  /* Ensure video covers full viewport on mobile */
+  video {
+    object-fit: cover !important;
+    transform: scale(1.01); /* Prevent tiny gaps on some devices */
+  }
+
+  /* Improve touch targets */
+  button,
+  [role='button'] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Optimize text rendering on mobile */
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+}
+
+/* Autoplay fallback for browsers that block autoplay */
+video[autoplay] {
+  /* Ensure video is ready to play */
+  pointer-events: none;
+}
+
+/* Prevent scroll bounce on iOS */
+html,
+body {
+  overscroll-behavior-y: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Ensure full height on mobile browsers */
+#root {
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
 }
