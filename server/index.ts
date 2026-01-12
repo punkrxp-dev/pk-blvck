@@ -9,6 +9,11 @@ import MemoryStore from 'memorystore';
 import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import cors from 'cors';
+import crypto from 'crypto';
+import DOMPurify from 'dompurify';
+import { JSDOM } from 'jsdom';
+import { body, validationResult } from 'express-validator';
+import isEmail from 'isemail';
 import { storage } from './storage';
 import { type User } from '@shared/schema';
 
@@ -21,6 +26,12 @@ declare global {
       createdAt: Date;
       updatedAt: Date;
     }
+  }
+}
+
+declare module 'express-session' {
+  interface SessionData {
+    csrfToken?: string;
   }
 }
 
@@ -42,8 +53,25 @@ app.use(
         styleSrc: ["'self'", "'unsafe-inline'"],
         scriptSrc: ["'self'"],
         imgSrc: ["'self'", 'data:', 'https:'],
+        fontSrc: ["'self'", 'https:', 'data:'],
+        connectSrc: ["'self'"],
+        mediaSrc: ["'self'", 'https:'],
+        objectSrc: ["'none'"],
+        frameSrc: ["'none'"],
+        baseUri: ["'self'"],
+        formAction: ["'self'"],
+        upgradeInsecureRequests: [],
       },
     },
+    hsts: {
+      maxAge: 31536000,
+      includeSubDomains: true,
+      preload: true,
+    },
+    noSniff: true,
+    xssFilter: true,
+    referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+    crossOriginEmbedderPolicy: false, // Disabled for compatibility
   })
 );
 
@@ -54,8 +82,8 @@ app.use(
   })
 );
 
-// Rate limiting
-const limiter = rateLimit({
+// Rate limiting - Global limiter
+const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 100, // limit each IP to 100 requests per windowMs
   message: 'Too many requests from this IP, please try again later.',
@@ -63,15 +91,50 @@ const limiter = rateLimit({
   legacyHeaders: false,
 });
 
+// API specific limiter
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 200, // Higher limit for API calls
+  message: 'Too many API requests, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Authentication limiter - Very strict
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 5, // limit each IP to 5 auth attempts per windowMs
   message: 'Too many authentication attempts, please try again later.',
   standardHeaders: true,
   legacyHeaders: false,
+  skipSuccessfulRequests: true, // Don't count successful auth attempts
 });
 
-app.use(limiter);
+// Registration limiter - Moderate
+const registerLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 3, // limit each IP to 3 registrations per hour
+  message: 'Too many registration attempts, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// Password reset limiter - Strict
+const passwordResetLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000, // 1 hour
+  max: 2, // limit each IP to 2 password resets per hour
+  message: 'Too many password reset attempts, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+app.use(globalLimiter);
+
+// Apply specific limiters to routes
+app.use('/api/auth/login', authLimiter);
+app.use('/api/auth/register', registerLimiter);
+// app.use('/api/auth/reset-password', passwordResetLimiter); // When implemented
+app.use('/api', apiLimiter);
 
 // Body parsing with size limits
 app.use(
@@ -84,6 +147,41 @@ app.use(
 );
 
 app.use(express.urlencoded({ extended: false, limit: '10mb' }));
+
+// Input sanitization middleware
+app.use((req: Request, res: Response, next: NextFunction) => {
+  // Sanitize all string inputs recursively
+  const sanitizeObject = (obj: any): any => {
+    if (typeof obj === 'string') {
+      // Use DOMPurify to sanitize HTML/XSS
+      const window = new JSDOM('').window;
+      const DOMPurifyInstance = DOMPurify(window);
+      return DOMPurifyInstance.sanitize(obj, { ALLOWED_TAGS: [] }).trim();
+    } else if (Array.isArray(obj)) {
+      return obj.map(sanitizeObject);
+    } else if (obj !== null && typeof obj === 'object') {
+      const sanitized: any = {};
+      for (const [key, value] of Object.entries(obj)) {
+        sanitized[key] = sanitizeObject(value);
+      }
+      return sanitized;
+    }
+    return obj;
+  };
+
+  // Sanitize request body, query, and params
+  if (req.body && typeof req.body === 'object') {
+    req.body = sanitizeObject(req.body);
+  }
+  if (req.query && typeof req.query === 'object') {
+    req.query = sanitizeObject(req.query);
+  }
+  if (req.params && typeof req.params === 'object') {
+    req.params = sanitizeObject(req.params);
+  }
+
+  next();
+});
 
 // Session configuration
 const MemoryStoreSession = MemoryStore(session);
@@ -102,6 +200,35 @@ app.use(
     },
   })
 );
+
+// CSRF Protection Middleware
+app.use((req, res, next) => {
+  // Generate CSRF token for session if not exists
+  if (!req.session.csrfToken) {
+    req.session.csrfToken = crypto.randomBytes(32).toString('hex');
+  }
+
+  // Add CSRF token to response headers for client
+  res.setHeader('X-CSRF-Token', req.session.csrfToken);
+
+  // Skip CSRF check for GET, HEAD, OPTIONS
+  if (['GET', 'HEAD', 'OPTIONS'].includes(req.method)) {
+    return next();
+  }
+
+  // Check CSRF token for state-changing operations
+  const token = req.headers['x-csrf-token'] || req.headers['csrf-token'] || req.body?._csrf;
+
+  if (!token || token !== req.session.csrfToken) {
+    log(`CSRF token validation failed for ${req.method} ${req.path}`, 'security', 'warn');
+    return res.status(403).json({
+      message: 'CSRF token validation failed',
+      error: 'Invalid or missing CSRF token'
+    });
+  }
+
+  next();
+});
 
 // Passport configuration
 passport.use(
@@ -169,6 +296,7 @@ app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;
   let capturedJsonResponse: Record<string, any> | undefined = undefined;
+  let hasLogged = false; // Prevent multiple logging
 
   const originalResJson = res.json;
   res.json = function (bodyJson, ...args) {
@@ -176,20 +304,43 @@ app.use((req, res, next) => {
     return originalResJson.apply(res, [bodyJson, ...args]);
   };
 
-  res.on('finish', () => {
+  const logRequest = () => {
+    if (hasLogged) return; // Prevent duplicate logging
+    hasLogged = true;
+
     const duration = Date.now() - start;
     if (path.startsWith('/api')) {
       let logLine = `${req.method} ${path} ${res.statusCode} in ${duration}ms`;
       if (capturedJsonResponse) {
-        logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
+        // Sanitize sensitive data before logging
+        const sanitizedResponse = sanitizeForLogging(capturedJsonResponse);
+        logLine += ` :: ${JSON.stringify(sanitizedResponse)}`;
       }
-
       log(logLine);
     }
-  });
+  };
+
+  res.on('finish', logRequest);
+  res.on('close', logRequest); // Ensure logging happens even if connection closes
 
   next();
 });
+
+// Helper function to sanitize sensitive data from logs
+function sanitizeForLogging(data: any): any {
+  if (typeof data !== 'object' || data === null) return data;
+
+  const sanitized = { ...data };
+  const sensitiveFields = ['password', 'token', 'secret', 'key', 'authorization'];
+
+  for (const field of sensitiveFields) {
+    if (sanitized[field]) {
+      sanitized[field] = '[REDACTED]';
+    }
+  }
+
+  return sanitized;
+}
 
 (async () => {
   await registerRoutes(httpServer, app);

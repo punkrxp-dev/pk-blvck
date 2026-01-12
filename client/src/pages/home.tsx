@@ -12,22 +12,45 @@ export default function Home() {
     const video = videoRef.current;
     if (!video) return;
 
+    let isMounted = true; // Prevent state updates after unmount
+    let clickHandler: (() => void) | null = null;
+    let touchHandler: (() => void) | null = null;
+
     const attemptPlay = async () => {
+      if (!isMounted || !video) return;
+
       try {
         // Some browsers require user interaction before autoplay
-        if (video.paused) {
+        if (video.paused && !video.ended) {
           await video.play();
         }
       } catch (error) {
+        if (!isMounted) return;
+
         console.log('Autoplay prevented by browser, video will play on user interaction');
         // Add click listener to start video on first user interaction
         const startVideo = () => {
+          if (!isMounted || !video) return;
           video.play().catch(console.error);
-          document.removeEventListener('click', startVideo);
-          document.removeEventListener('touchstart', startVideo);
+          cleanupListeners();
         };
-        document.addEventListener('click', startVideo);
-        document.addEventListener('touchstart', startVideo);
+
+        clickHandler = startVideo;
+        touchHandler = startVideo;
+
+        document.addEventListener('click', clickHandler, { once: true });
+        document.addEventListener('touchstart', touchHandler, { once: true });
+      }
+    };
+
+    const cleanupListeners = () => {
+      if (clickHandler) {
+        document.removeEventListener('click', clickHandler);
+        clickHandler = null;
+      }
+      if (touchHandler) {
+        document.removeEventListener('touchstart', touchHandler);
+        touchHandler = null;
       }
     };
 
@@ -35,12 +58,14 @@ export default function Home() {
     attemptPlay();
 
     // Also try after a short delay (helps on some mobile devices)
-    const timer = setTimeout(attemptPlay, 100);
+    const timer = setTimeout(() => {
+      if (isMounted) attemptPlay();
+    }, 100);
 
     return () => {
+      isMounted = false;
       clearTimeout(timer);
-      document.removeEventListener('click', () => {});
-      document.removeEventListener('touchstart', () => {});
+      cleanupListeners();
     };
   }, []);
 

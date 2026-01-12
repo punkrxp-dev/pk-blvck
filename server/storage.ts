@@ -6,9 +6,46 @@ import postgres from 'postgres';
 import { users } from '@shared/schema';
 import { eq } from 'drizzle-orm';
 
-// Database connection
-const client = postgres(process.env.DATABASE_URL!);
+// Concurrency control - Simple in-memory locks for critical operations
+const locks = new Map<string, Promise<any>>();
+const MAX_CONCURRENT_OPERATIONS = 10;
+let activeOperations = 0;
+
+// Database connection with connection pooling limits
+const client = postgres(process.env.DATABASE_URL!, {
+  max: 10, // Maximum connections
+  idle_timeout: 30, // Close idle connections after 30 seconds
+  connect_timeout: 10, // Connection timeout
+});
 const db = drizzle(client, { schema: { users } });
+
+// Concurrency control functions
+async function withConcurrencyLimit<T>(key: string, operation: () => Promise<T>): Promise<T> {
+  // Wait if too many concurrent operations
+  while (activeOperations >= MAX_CONCURRENT_OPERATIONS) {
+    await new Promise(resolve => setTimeout(resolve, 10));
+  }
+
+  activeOperations++;
+  try {
+    // Use locks to prevent race conditions for the same resource
+    const existingLock = locks.get(key);
+    if (existingLock) {
+      await existingLock;
+    }
+
+    const lockPromise = operation();
+    locks.set(key, lockPromise);
+
+    try {
+      return await lockPromise;
+    } finally {
+      locks.delete(key);
+    }
+  } finally {
+    activeOperations--;
+  }
+}
 
 // modify the interface with any CRUD methods
 // you might need
@@ -45,30 +82,32 @@ export class PostgresStorage implements IStorage {
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    try {
-      // Hash the password before storing
-      const hashedPassword = await bcrypt.hash(insertUser.password, this.saltRounds);
+    return withConcurrencyLimit(`createUser:${insertUser.username}`, async () => {
+      try {
+        // Hash the password before storing
+        const hashedPassword = await bcrypt.hash(insertUser.password, this.saltRounds);
 
-      const result = await db
-        .insert(users)
-        .values({
-          username: insertUser.username,
-          password: hashedPassword,
-        })
-        .returning();
+        const result = await db
+          .insert(users)
+          .values({
+            username: insertUser.username,
+            password: hashedPassword,
+          })
+          .returning();
 
-      if (!result[0]) {
+        if (!result[0]) {
+          throw new Error('Failed to create user');
+        }
+
+        return result[0];
+      } catch (error) {
+        console.error('Error creating user:', error);
+        if (error instanceof Error && error.message.includes('duplicate key')) {
+          throw new Error('Username already exists');
+        }
         throw new Error('Failed to create user');
       }
-
-      return result[0];
-    } catch (error) {
-      console.error('Error creating user:', error);
-      if (error instanceof Error && error.message.includes('duplicate key')) {
-        throw new Error('Username already exists');
-      }
-      throw new Error('Failed to create user');
-    }
+    });
   }
 
   async authenticateUser(credentials: LoginUser): Promise<User | null> {
@@ -87,22 +126,24 @@ export class PostgresStorage implements IStorage {
   }
 
   async updateUserPassword(id: string, newPassword: string): Promise<boolean> {
-    try {
-      const hashedPassword = await bcrypt.hash(newPassword, this.saltRounds);
-      const result = await db
-        .update(users)
-        .set({
-          password: hashedPassword,
-          updatedAt: new Date(),
-        })
-        .where(eq(users.id, id))
-        .returning();
+    return withConcurrencyLimit(`updatePassword:${id}`, async () => {
+      try {
+        const hashedPassword = await bcrypt.hash(newPassword, this.saltRounds);
+        const result = await db
+          .update(users)
+          .set({
+            password: hashedPassword,
+            updatedAt: new Date(),
+          })
+          .where(eq(users.id, id))
+          .returning();
 
-      return result.length > 0;
-    } catch (error) {
-      console.error('Error updating user password:', error);
-      return false;
-    }
+        return result.length > 0;
+      } catch (error) {
+        console.error('Error updating user password:', error);
+        return false;
+      }
+    });
   }
 }
 
