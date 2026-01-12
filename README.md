@@ -106,6 +106,8 @@ make docs         # Abrir documentação
 PUNK BLVCK
 ├── client/          # Frontend React + Vite
 ├── server/          # Backend Express + TypeScript
+│   ├── ai/          # 🤖 AI Infrastructure (GPT-4o + Gemini)
+│   └── ...
 ├── shared/          # Schemas e tipos compartilhados
 ├── docs/            # Documentação e relatórios
 └── Makefile         # Comandos de automação
@@ -115,6 +117,7 @@ PUNK BLVCK
 
 - **Frontend**: React 19, TypeScript, Tailwind CSS, Vite
 - **Backend**: Express.js, TypeScript, PostgreSQL, Drizzle ORM
+- **AI/LLM**: Vercel AI SDK, LangChain, GPT-4o, Gemini 2.0 Flash
 - **Segurança**: bcrypt, Helmet, Passport.js, Rate Limiting
 - **Ferramentas**: ESLint, TypeScript, Makefile
 
@@ -156,12 +159,46 @@ make security-fix   # Correções automáticas
 ## 📚 Documentação
 
 - **[Relatório de Segurança](./docs/correcoes-criticas.md)**: Correções críticas aplicadas
+- **[Relatório de Integração AI](./docs/ai-integration-report.md)**: Stack de IA configurada
+- **[AI Module Guide](./server/ai/README.md)**: Como usar os modelos de IA
 - **[Makefile](./Makefile)**: Todos os comandos disponíveis
 - **[Arquitetura NEØ](./docs/)**: Detalhes da arquitetura protegida
 
 ```bash
 make docs  # Abrir documentação
 ```
+
+## 🤖 Configuração de IA
+
+### Setup Inicial
+
+```bash
+# 1. Configure as API keys no .env
+OPENAI_API_KEY=sk-proj-your-key-here
+GOOGLE_API_KEY=your-google-key-here
+
+# 2. Teste a configuração
+tsx server/test-ai-config.ts
+```
+
+### Modelos Disponíveis
+
+- **GPT-4o (OpenAI)**: Tarefas complexas, raciocínio avançado
+- **Gemini 2.0 Flash (Google)**: Respostas rápidas, fallback
+
+### Uso Básico
+
+```typescript
+import { generateText } from 'ai';
+import { primaryModel } from './server/ai';
+
+const result = await generateText({
+  model: primaryModel,
+  prompt: 'Sua pergunta aqui',
+});
+```
+
+Ver [documentação completa](./server/ai/README.md) para mais exemplos.
 
 ## 🐳 Docker - Deploy Instantâneo
 

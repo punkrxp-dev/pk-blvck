@@ -2,7 +2,7 @@
 # Versão: 2.0.0 - Security Hardened
 # Arquitetura: NEØ Protected
 
-.PHONY: help install dev dev-server dev-client build start check db-push db-generate db-studio clean lint test security-audit setup-production setup-dev logs backup restore
+.PHONY: help install dev dev-server dev-client build start check db-push db-generate db-studio clean lint test security-audit setup-production setup-dev logs backup restore ai-test ai-config ai-docs
 
 # 🎨 CORES PARA OUTPUT
 RED=\033[0;31m
@@ -203,6 +203,79 @@ deploy-check: ## Verificações pré-deployment
 	$(MAKE) test
 	@echo "$(GREEN)✅ Verificações concluídas!$(NC)"
 
+# 🤖 AI/LLM STACK
+ai-test: ## Testa configuração de IA (API keys e modelos)
+	@echo "$(BLUE)🤖 Testando configuração de IA...$(NC)"
+	@if [ ! -f ".env" ]; then \
+		echo "$(RED)❌ Arquivo .env não encontrado!$(NC)"; \
+		echo "$(YELLOW)💡 Copie .env.example para .env e configure as API keys$(NC)"; \
+		exit 1; \
+	fi
+	@echo "$(YELLOW)🔑 Verificando API keys...$(NC)"
+	tsx server/test-ai-config.ts
+	@echo "$(GREEN)✅ Teste de IA concluído!$(NC)"
+
+ai-config: ## Verifica status da configuração de IA
+	@echo "$(CYAN)🤖 STATUS DA CONFIGURAÇÃO DE IA$(NC)"
+	@echo "$(WHITE)═══════════════════════════════════════════════$(NC)"
+	@if [ -f ".env" ]; then \
+		if grep -q "OPENAI_API_KEY=sk-" .env 2>/dev/null; then \
+			echo "$(GREEN)✅ OpenAI API Key: Configurada$(NC)"; \
+		else \
+			echo "$(RED)❌ OpenAI API Key: Não configurada$(NC)"; \
+		fi; \
+		if grep -q "GOOGLE_API_KEY=" .env 2>/dev/null && ! grep -q "GOOGLE_API_KEY=your-google" .env; then \
+			echo "$(GREEN)✅ Google API Key: Configurada$(NC)"; \
+		else \
+			echo "$(RED)❌ Google API Key: Não configurada$(NC)"; \
+		fi; \
+	else \
+		echo "$(RED)❌ Arquivo .env não encontrado$(NC)"; \
+		echo "$(YELLOW)💡 Execute: cp .env.example .env$(NC)"; \
+	fi
+	@echo ""
+	@echo "$(CYAN)📦 Modelos Disponíveis:$(NC)"
+	@echo "  $(BLUE)• GPT-4o (OpenAI)$(NC) - Tarefas complexas"
+	@echo "  $(BLUE)• Gemini 2.0 Flash (Google)$(NC) - Respostas rápidas"
+	@echo ""
+	@echo "$(YELLOW)💡 Para testar: make ai-test$(NC)"
+
+ai-docs: ## Abre documentação de IA
+	@echo "$(BLUE)📚 Abrindo documentação de IA...$(NC)"
+	@if [ -f "server/ai/README.md" ]; then \
+		open server/ai/README.md 2>/dev/null || cat server/ai/README.md; \
+	else \
+		echo "$(RED)❌ Documentação de IA não encontrada$(NC)"; \
+	fi
+	@if [ -f "docs/ai-integration-report.md" ]; then \
+		echo "$(CYAN)📋 Relatório de integração disponível em: docs/ai-integration-report.md$(NC)"; \
+	fi
+
+ai-setup: ## Setup completo de IA (copia .env e mostra instruções)
+	@echo "$(MAGENTA)🤖 SETUP DE IA$(NC)"
+	@echo "$(WHITE)═══════════════════════════════════════════════$(NC)"
+	@if [ ! -f ".env" ]; then \
+		echo "$(BLUE)📝 Criando arquivo .env...$(NC)"; \
+		cp .env.example .env; \
+		echo "$(GREEN)✅ Arquivo .env criado!$(NC)"; \
+	else \
+		echo "$(YELLOW)ℹ️  Arquivo .env já existe$(NC)"; \
+	fi
+	@echo ""
+	@echo "$(CYAN)📋 PRÓXIMOS PASSOS:$(NC)"
+	@echo "$(YELLOW)1. Edite o arquivo .env e adicione suas API keys:$(NC)"
+	@echo "   $(WHITE)OPENAI_API_KEY=sk-proj-...$(NC)"
+	@echo "   $(WHITE)GOOGLE_API_KEY=...$(NC)"
+	@echo ""
+	@echo "$(YELLOW)2. Obtenha suas API keys:$(NC)"
+	@echo "   $(CYAN)• OpenAI:$(NC) https://platform.openai.com/api-keys"
+	@echo "   $(CYAN)• Google AI:$(NC) https://ai.google.dev/"
+	@echo ""
+	@echo "$(YELLOW)3. Teste a configuração:$(NC)"
+	@echo "   $(WHITE)make ai-test$(NC)"
+	@echo ""
+	@echo "$(GREEN)💡 Ver documentação completa: make ai-docs$(NC)"
+
 docker-build: ## Build da imagem Docker (frontend only)
 	@echo "$(BLUE)🐳 Construindo imagem Docker do frontend...$(NC)"
 	docker build -t punk-blvck-frontend .
@@ -289,12 +362,15 @@ status: ## Mostra status do projeto
 info: ## Informações detalhadas do projeto
 	@echo "$(MAGENTA)🏗️  PUNK BLVCK - Informações do Projeto$(NC)"
 	@echo "$(WHITE)═══════════════════════════════════════════════$(NC)"
-	@echo "$(CYAN)Versão:$(NC) 2.0.0 - Security Hardened"
+	@echo "$(CYAN)Versão:$(NC) 2.0.0 - Security Hardened + AI"
 	@echo "$(CYAN)Arquitetura:$(NC) NEØ Protected"
 	@echo "$(CYAN)Framework:$(NC) Express + React + TypeScript"
 	@echo "$(CYAN)Database:$(NC) PostgreSQL + Drizzle ORM"
+	@echo "$(CYAN)AI/LLM:$(NC) Vercel AI SDK + LangChain + GPT-4o + Gemini"
 	@echo "$(CYAN)Security:$(NC) bcrypt, helmet, rate-limiting, CORS"
 	@echo "$(CYAN)Auth:$(NC) Passport.js + Sessions"
+	@echo ""
+	@echo "$(YELLOW)🤖 Comandos de IA:$(NC) make ai-config, make ai-test, make ai-docs"
 	@echo ""
 
 # 🎯 ALIASES ÚTEIS
@@ -310,6 +386,8 @@ force-free: free-port-force ## Alias para free-port-force
 alt: dev-alt ## Alias para dev-alt
 deploy: deploy-frontend ## Alias para deploy-frontend
 tunnel: tunnel-localtunnel ## Alias para tunnel-localtunnel
+ai: ai-config ## Alias para ai-config
+test-ai: ai-test ## Alias para ai-test
 
 # 🔍 DIAGNÓSTICO
 check-port: ## Verifica se a porta 5000 está em uso

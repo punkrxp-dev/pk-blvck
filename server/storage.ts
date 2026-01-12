@@ -1,23 +1,13 @@
 import { type User, type InsertUser, type LoginUser } from '@shared/schema';
-import { randomUUID } from 'crypto';
 import bcrypt from 'bcrypt';
-import { drizzle } from 'drizzle-orm/postgres-js';
-import postgres from 'postgres';
 import { users } from '@shared/schema';
 import { eq } from 'drizzle-orm';
+import { db } from './db';
 
 // Concurrency control - Simple in-memory locks for critical operations
 const locks = new Map<string, Promise<any>>();
 const MAX_CONCURRENT_OPERATIONS = 10;
 let activeOperations = 0;
-
-// Database connection with connection pooling limits
-const client = postgres(process.env.DATABASE_URL!, {
-  max: 10, // Maximum connections
-  idle_timeout: 30, // Close idle connections after 30 seconds
-  connect_timeout: 10, // Connection timeout
-});
-const db = drizzle(client, { schema: { users } });
 
 // Concurrency control functions
 async function withConcurrencyLimit<T>(key: string, operation: () => Promise<T>): Promise<T> {
