@@ -1,6 +1,6 @@
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
-import { users } from '@shared/schema';
+import { users, leads } from '@shared/schema';
 
 // Validate DATABASE_URL
 if (!process.env.DATABASE_URL) {
@@ -29,7 +29,7 @@ export const client = postgres(process.env.DATABASE_URL, {
  * Import this instead of creating new connections.
  */
 export const db = drizzle(client, {
-    schema: { users },
+    schema: { users, leads },
     logger: process.env.NODE_ENV === 'development',
 });
 
