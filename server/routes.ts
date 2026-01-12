@@ -177,5 +177,85 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     }
   });
 
+  /**
+   * GET /api/mcp/leads
+   * 
+   * Retrieves leads from database with optional filtering
+   * Query params:
+   * - status: Filter by status (pending, processed, notified, failed)
+   * - intent: Filter by AI classification intent (high, medium, low, spam)
+   * - limit: Number of leads to return (default: 50, max: 100)
+   * 
+   * Returns: Array of leads with statistics
+   */
+  app.get('/api/mcp/leads', async (req: Request, res: Response) => {
+    try {
+      const { db } = await import('./db');
+      const { leads } = await import('@shared/schema');
+      const { eq, desc, and, sql } = await import('drizzle-orm');
+
+      // Parse query parameters
+      const statusFilter = req.query.status as string | undefined;
+      const intentFilter = req.query.intent as string | undefined;
+      const limit = Math.min(parseInt(req.query.limit as string) || 50, 100);
+
+      // Build where conditions
+      const conditions = [];
+      if (statusFilter) {
+        conditions.push(eq(leads.status, statusFilter));
+      }
+      if (intentFilter) {
+        conditions.push(sql`${leads.aiClassification}->>'intent' = ${intentFilter}`);
+      }
+
+      // Fetch leads
+      const leadsData = await db
+        .select()
+        .from(leads)
+        .where(conditions.length > 0 ? and(...conditions) : undefined)
+        .orderBy(desc(leads.createdAt))
+        .limit(limit);
+
+      // Calculate statistics
+      const allLeads = await db.select().from(leads);
+
+      const stats = {
+        total: allLeads.length,
+        high: allLeads.filter(l => l.aiClassification?.intent === 'high').length,
+        medium: allLeads.filter(l => l.aiClassification?.intent === 'medium').length,
+        low: allLeads.filter(l => l.aiClassification?.intent === 'low').length,
+        spam: allLeads.filter(l => l.aiClassification?.intent === 'spam').length,
+        processedToday: allLeads.filter(l => {
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+          return l.createdAt >= today;
+        }).length,
+      };
+
+      res.status(200).json({
+        success: true,
+        data: leadsData,
+        stats,
+        meta: {
+          count: leadsData.length,
+          limit,
+          filters: {
+            status: statusFilter || null,
+            intent: intentFilter || null,
+          },
+        },
+      });
+
+    } catch (error) {
+      console.error('Error fetching leads:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to fetch leads',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+    }
+  });
+
   return httpServer;
+
 }

@@ -81,11 +81,10 @@ export default function Home() {
               setActiveSection(i);
               document.getElementById(sections[i])?.scrollIntoView({ behavior: 'smooth' });
             }}
-            className={`w-2 h-2 md:w-1.5 md:h-1.5 rounded-full transition-all duration-300 touch-manipulation ${
-              activeSection === i
+            className={`w-2 h-2 md:w-1.5 md:h-1.5 rounded-full transition-all duration-300 touch-manipulation ${activeSection === i
                 ? 'bg-[hsl(25,100%,50%)] scale-110 md:scale-150 w-2.5 h-2.5 md:w-2.5 md:h-2.5'
                 : 'bg-white/30 hover:bg-white/50 active:bg-white/60'
-            }`}
+              }`}
             aria-label={`Go to section ${i + 1}`}
           />
         ))}
@@ -112,12 +111,19 @@ export default function Home() {
 
       {/* Slide Menu */}
       <div
-        className={`fixed inset-0 bg-black z-40 transition-transform duration-500 ${
-          navOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
+        className={`fixed inset-0 bg-black z-40 transition-transform duration-500 ${navOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
       >
         <div className='h-full flex flex-col justify-center px-8 md:px-16'>
           <div className='space-y-8'>
+            <a
+              href='/dashboard'
+              data-testid='nav-link-dashboard'
+              onClick={() => setNavOpen(false)}
+              className='block font-mono text-xs tracking-[0.3em] text-white/50 hover:text-[hsl(25,100%,50%)] transition-colors'
+            >
+              🎸 dashboard
+            </a>
             <a
               href='#programs'
               data-testid='nav-link-training'
