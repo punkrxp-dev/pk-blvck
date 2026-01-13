@@ -1,3 +1,6 @@
+// Carregar variáveis de ambiente do .env
+import 'dotenv/config';
+
 import express, { type Request, Response, NextFunction } from 'express';
 import { registerRoutes } from './routes';
 import { serveStatic } from './static';
