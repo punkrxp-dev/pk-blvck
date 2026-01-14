@@ -18,10 +18,10 @@ export function IntentBadge({ intent, confidence }: IntentBadgeProps) {
   };
 
   const labels = {
-    high: '🔥 Alta',
-    medium: '📊 Média',
-    low: '📝 Baixa',
-    spam: '🚫 Spam',
+    high: '⍟ Alta',
+    medium: '⧉ Média',
+    low: '◬ Baixa',
+    spam: '⨂ Spam',
   };
 
   return (

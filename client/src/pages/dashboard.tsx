@@ -37,7 +37,7 @@ function PunkBlackLogo() {
           <div className='text-black font-bold text-lg sm:text-xl font-mono'>PB</div>
         </div>
         <div className='absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-zinc-950 rounded-full border-2 border-orange-500 flex items-center justify-center'>
-          <span className='text-orange-500 text-[10px] sm:text-xs font-bold'>⚡</span>
+          <span className='text-orange-500 text-[10px] sm:text-xs font-bold'>⦿</span>
         </div>
       </div>
       <div>
@@ -288,26 +288,26 @@ export default function Dashboard() {
 
         {/* KPI Cards */}
         <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
-          <KPICard title='Total de Leads' value={stats.total} icon='📊' accentColor='blue' />
-          <KPICard title='Alta Intenção' value={stats.high} icon='🔥' accentColor='orange' />
+          <KPICard title='Total de Leads' value={stats.total} icon='⧉' accentColor='blue' />
+          <KPICard title='Alta Intenção' value={stats.high} icon='⍟' accentColor='orange' />
           <KPICard
             title='Processados Hoje'
             value={stats.processedToday}
-            icon='✅'
+            icon='⨀'
             accentColor='green'
           />
-          <KPICard title='Spam Detectado' value={stats.spam} icon='🚫' accentColor='red' />
+          <KPICard title='Spam Detectado' value={stats.spam} icon='⨂' accentColor='red' />
         </div>
 
         {/* Integrations Status */}
         <div className='bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-lg p-4 sm:p-6 shadow-lg'>
           <h2 className='text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4'>
-            🤖 Integrações Ativas
+            ⟁ Integrações Ativas
           </h2>
           <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4'>
             <div className='flex items-start gap-3 p-4 bg-zinc-800/50 border border-zinc-700 rounded-lg hover:bg-zinc-800/70 transition-colors'>
               <div className='w-10 h-10 bg-green-500/20 border border-green-500/50 rounded-full flex items-center justify-center flex-shrink-0'>
-                <span className='text-green-400 text-sm font-bold'>✓</span>
+                <span className='text-green-400 text-sm font-bold'>⨀</span>
               </div>
               <div className='min-w-0'>
                 <p className='text-sm font-medium text-white'>OpenAI GPT-4o</p>
@@ -468,7 +468,7 @@ export default function Dashboard() {
                           <span className='text-sm font-medium text-white'>{lead.email}</span>
                           {lead.enrichedData?.verified && (
                             <span className='text-green-500' title='Email verificado'>
-                              ✓
+                              ⨀
                             </span>
                           )}
                         </div>

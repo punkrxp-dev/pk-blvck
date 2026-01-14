@@ -84,10 +84,10 @@ export function LeadFiltersComponent({ filters, onFiltersChange }: LeadFiltersPr
         </SelectTrigger>
         <SelectContent>
           <SelectItem value='all'>Todas</SelectItem>
-          <SelectItem value='high'>🔥 Alta</SelectItem>
-          <SelectItem value='medium'>📊 Média</SelectItem>
-          <SelectItem value='low'>📝 Baixa</SelectItem>
-          <SelectItem value='spam'>🚫 Spam</SelectItem>
+          <SelectItem value='high'>⍟ Alta</SelectItem>
+          <SelectItem value='medium'>⧉ Média</SelectItem>
+          <SelectItem value='low'>◬ Baixa</SelectItem>
+          <SelectItem value='spam'>⨂ Spam</SelectItem>
         </SelectContent>
       </Select>
 

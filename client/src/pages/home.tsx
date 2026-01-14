@@ -122,7 +122,7 @@ export default function Home() {
               onClick={() => setNavOpen(false)}
               className='block font-mono text-xs tracking-[0.3em] text-white/50 hover:text-[hsl(25,100%,50%)] transition-colors'
             >
-              🎸 dashboard
+              ⧖ dashboard
             </a>
             <a
               href='#programs'

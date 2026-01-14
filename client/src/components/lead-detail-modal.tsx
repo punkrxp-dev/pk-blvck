@@ -48,7 +48,7 @@ export function LeadDetailModal({ lead, open, onOpenChange }: LeadDetailModalPro
                     variant='secondary'
                     className='mt-1 bg-green-500/20 text-green-400 border-green-500/50'
                   >
-                    ✓ Verificado
+                    ⨀ Verificado
                   </Badge>
                 )}
               </div>
