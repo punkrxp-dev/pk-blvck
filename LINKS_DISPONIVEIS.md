@@ -5,6 +5,7 @@
 ### **Frontend (Vercel)**
 
 - **URL:** https://pk-blvck.vercel.app
+- **Projeto:** vercel.com/prxps-projects/pk-blvck
 - **Status:** ✅ Ativo
 - **Descrição:** Dashboard completo com visualização de leads em tempo real
 - **Funcionalidades:**
@@ -15,7 +16,8 @@
   - 🎨 UI Punk Black com neon orange accents
 
 ### **API Backend (Railway)**
-- **URL:** https://pk-blvck-production.up.railway.app
+
+- **URL:** <https://pk-blvck-production.up.railway.app>
 - **Status:** ✅ Ativo
 - **Descrição:** API REST completa com IA integrada
 - **Health Check:** https://pk-blvck-production.up.railway.app/api/mcp/health
@@ -85,7 +87,7 @@
 - **Monitor:** Logs, métricas, health checks, redeploys
 
 ### **Vercel Dashboard**
-- **URL:** https://vercel.com/dashboard
+- **URL:** https://vercel.com/prxps-projects/pk-blvck
 - **Status:** ✅ Ativo
 - **Monitor:** Deployments, analytics, logs
 
@@ -142,6 +144,7 @@ curl -X POST https://pk-blvck-production.up.railway.app/api/mcp/ingest \
 | Componente | Status | URL |
 |------------|--------|-----|
 | Frontend | ✅ Ativo | https://pk-blvck.vercel.app |
+| Projeto Vercel | ✅ Ativo | vercel.com/prxps-projects/pk-blvck |
 | Backend API | ✅ Ativo | https://pk-blvck-production.up.railway.app |
 | Database | ✅ Ativo | Neon Postgres |
 | OpenAI | ✅ Configurado | - |
