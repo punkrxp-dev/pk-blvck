@@ -288,6 +288,7 @@ stats = {
 
 ### Header
 
+- Logo Punk | Black com ícone PB e raio
 - Título "🎸 PUNK | BLVCK"
 - Indicador "Ao vivo" no canto
 - Background escuro com gradiente sutil
@@ -304,6 +305,17 @@ stats = {
 - Linhas com hover effect
 - Badges coloridos
 - Scroll horizontal em mobile
+
+### Seção de Integrações
+
+Mostra o status e funcionalidades das APIs integradas:
+
+- **🟢 OpenAI GPT-4o**: Classifica leads por intenção (alta/média/baixa/spam) usando IA avançada
+- **🔵 Google Gemini**: Sistema de backup automático quando OpenAI indisponível ou sem quota
+- **🟣 Hunter.io**: Enriquece dados automaticamente (nome completo, empresa, cargo, domínio profissional)
+- **🟠 Resend**: Envia notificações automáticas por email para leads qualificados
+
+Cada integração mostra status visual com ícones coloridos e descrições claras das funcionalidades.
 
 ---
 

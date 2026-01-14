@@ -266,6 +266,62 @@ export default function Dashboard() {
                     />
                 </div>
 
+                {/* Integrations Status */}
+                <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-lg p-6 shadow-lg">
+                    <h2 className="text-xl font-bold text-white mb-4">
+                        🤖 Integrações Ativas
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <div className="flex items-start gap-3 p-4 bg-zinc-800/50 border border-zinc-700 rounded-lg hover:bg-zinc-800/70 transition-colors">
+                            <div className="w-10 h-10 bg-green-500/20 border border-green-500/50 rounded-full flex items-center justify-center flex-shrink-0">
+                                <span className="text-green-400 text-sm font-bold">✓</span>
+                            </div>
+                            <div className="min-w-0">
+                                <p className="text-sm font-medium text-white">OpenAI GPT-4o</p>
+                                <p className="text-xs text-zinc-400 leading-tight">
+                                    Classifica leads por intenção (alta/média/baixa/spam) usando IA avançada
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="flex items-start gap-3 p-4 bg-zinc-800/50 border border-zinc-700 rounded-lg hover:bg-zinc-800/70 transition-colors">
+                            <div className="w-10 h-10 bg-blue-500/20 border border-blue-500/50 rounded-full flex items-center justify-center flex-shrink-0">
+                                <span className="text-blue-400 text-sm font-bold">G</span>
+                            </div>
+                            <div className="min-w-0">
+                                <p className="text-sm font-medium text-white">Google Gemini</p>
+                                <p className="text-xs text-zinc-400 leading-tight">
+                                    Backup automático quando OpenAI indisponível ou sem quota
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="flex items-start gap-3 p-4 bg-zinc-800/50 border border-zinc-700 rounded-lg hover:bg-zinc-800/70 transition-colors">
+                            <div className="w-10 h-10 bg-purple-500/20 border border-purple-500/50 rounded-full flex items-center justify-center flex-shrink-0">
+                                <span className="text-purple-400 text-sm font-bold">H</span>
+                            </div>
+                            <div className="min-w-0">
+                                <p className="text-sm font-medium text-white">Hunter.io</p>
+                                <p className="text-xs text-zinc-400 leading-tight">
+                                    Enriquece dados: nome completo, empresa, cargo, domínio profissional
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="flex items-start gap-3 p-4 bg-zinc-800/50 border border-zinc-700 rounded-lg hover:bg-zinc-800/70 transition-colors">
+                            <div className="w-10 h-10 bg-orange-500/20 border border-orange-500/50 rounded-full flex items-center justify-center flex-shrink-0">
+                                <span className="text-orange-400 text-sm font-bold">R</span>
+                            </div>
+                            <div className="min-w-0">
+                                <p className="text-sm font-medium text-white">Resend</p>
+                                <p className="text-xs text-zinc-400 leading-tight">
+                                    Envia notificações automáticas por email para leads qualificados
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 {/* Intent Distribution */}
                 <div className="bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-lg p-6 shadow-lg">
                     <h2 className="text-xl font-bold text-white mb-4">
