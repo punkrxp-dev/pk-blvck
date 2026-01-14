@@ -14,6 +14,9 @@ COPY package*.json ./
 RUN npm ci && \
     npm cache clean --force
 
+# Instalar curl para health check
+RUN apk add --no-cache curl
+
 # Copiar código fonte
 COPY . .
 
@@ -34,9 +37,9 @@ USER nextjs
 # Expor porta que Railway espera
 EXPOSE 8080
 
-# Health check
+# Health check simplificado para Railway
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD node -e "require('http').get('http://localhost:8080/api/mcp/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) }).on('error', () => process.exit(1))"
+    CMD curl -f http://localhost:8080/api/mcp/health || exit 1
 
 # Comando para iniciar aplicação
 CMD ["npm", "start"]
