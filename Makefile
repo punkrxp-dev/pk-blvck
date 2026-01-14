@@ -212,7 +212,7 @@ ai-test: ## Testa configuração de IA (API keys e modelos)
 		exit 1; \
 	fi
 	@echo "$(YELLOW)🔑 Verificando API keys...$(NC)"
-	tsx server/test-ai-config.ts
+	npx tsx server/test-ai-config.ts
 	@echo "$(GREEN)✅ Teste de IA concluído!$(NC)"
 
 ai-config: ## Verifica status da configuração de IA

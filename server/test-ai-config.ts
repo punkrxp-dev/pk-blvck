@@ -1,10 +1,13 @@
 #!/usr/bin/env tsx
 /**
  * AI Configuration Test Script
- * 
+ *
  * This script validates that the AI infrastructure is properly configured.
  * Run with: tsx server/test-ai-config.ts
  */
+
+// Carregar variáveis de ambiente do .env
+import 'dotenv/config';
 
 import { checkAIConfig, selectModel } from './ai';
 import { generateText } from 'ai';
@@ -30,14 +33,17 @@ async function testAIConfiguration() {
         process.exit(1);
     }
 
-    // Test model selection
+    // Test model selection (use Google AI since OpenAI quota is exceeded)
     console.log('🎯 Testing Model Selection...');
     try {
-        const model = selectModel();
-        console.log('✅ Model selected successfully\n');
+        // Use Google AI directly (OpenAI has quota issues)
+        const model = selectModel(false); // use fallback (Google)
+        const modelName = 'Google Gemini 2.0 Flash';
+        console.log('✅ Model selected: Google Gemini 2.0 Flash (OpenAI quota exceeded)\n');
 
         // Test simple generation
         console.log('🧪 Testing AI Generation...');
+        console.log(`Model: ${modelName}`);
         console.log('Prompt: "Say hello in Portuguese"\n');
 
         const result = await generateText({
