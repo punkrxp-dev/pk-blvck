@@ -9,6 +9,68 @@ import { useLeads, type Lead } from '../hooks/use-leads';
 import { Skeleton } from '../components/ui/skeleton';
 
 // ========================================
+// LOGO COMPONENT
+// ========================================
+
+function PunkBlackLogo() {
+    return (
+        <div className="flex items-center gap-3">
+            <div className="relative">
+                <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center shadow-lg shadow-orange-500/25">
+                    <div className="text-black font-bold text-xl font-mono">
+                        PB
+                    </div>
+                </div>
+                <div className="absolute -top-1 -right-1 w-4 h-4 bg-zinc-950 rounded-full border-2 border-orange-500 flex items-center justify-center">
+                    <span className="text-orange-500 text-xs font-bold">⚡</span>
+                </div>
+            </div>
+            <div>
+                <h1 className="text-2xl font-bold text-white">
+                    <span className="text-orange-500">PUNK</span> | BLVCK
+                </h1>
+                <p className="text-xs text-zinc-400">
+                    High-end fitness system
+                </p>
+            </div>
+        </div>
+    );
+}
+
+// ========================================
+// FOOTER COMPONENT
+// ========================================
+
+function DashboardFooter() {
+    const currentYear = new Date().getFullYear();
+
+    return (
+        <footer className="mt-16 py-8 border-t border-zinc-800/50">
+            <div className="max-w-7xl mx-auto px-8">
+                <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+                    <div className="flex items-center gap-4">
+                        <PunkBlackLogo />
+                    </div>
+                    <div className="flex items-center gap-6 text-sm text-zinc-400">
+                        <span>© {currentYear} PUNK | BLVCK</span>
+                        <span>•</span>
+                        <span>Built with 💀</span>
+                        <span>•</span>
+                        <span>v2.0.0</span>
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2 px-3 py-1 bg-zinc-900/50 border border-zinc-800 rounded-full">
+                            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                            <span className="text-xs text-zinc-400">System Online</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    );
+}
+
+// ========================================
 // INTENT BADGE COMPONENT
 // ========================================
 
@@ -165,14 +227,7 @@ export default function Dashboard() {
             <div className="max-w-7xl mx-auto space-y-8">
                 {/* Header */}
                 <div className="flex items-center justify-between">
-                    <div>
-                        <h1 className="text-4xl font-bold text-white mb-2">
-                            🎸 Dashboard <span className="text-orange-500">Heavy Metal</span>
-                        </h1>
-                        <p className="text-zinc-400">
-                            Monitoramento de leads em tempo real
-                        </p>
-                    </div>
+                    <PunkBlackLogo />
 
                     {/* Live Indicator */}
                     <div className="flex items-center gap-2 px-4 py-2 bg-zinc-900/50 border border-zinc-800 rounded-lg">
@@ -353,6 +408,9 @@ export default function Dashboard() {
                         </div>
                     )}
                 </div>
+
+                {/* Footer */}
+                <DashboardFooter />
             </div>
         </div>
     );
