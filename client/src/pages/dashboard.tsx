@@ -298,7 +298,7 @@ export default function Dashboard() {
         {/* Integrations Status */}
         <div className='bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-lg p-6 shadow-lg'>
           <h2 className='text-xl font-bold text-white mb-4'>🤖 Integrações Ativas</h2>
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
+          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4'>
             <div className='flex items-start gap-3 p-4 bg-zinc-800/50 border border-zinc-700 rounded-lg hover:bg-zinc-800/70 transition-colors'>
               <div className='w-10 h-10 bg-green-500/20 border border-green-500/50 rounded-full flex items-center justify-center flex-shrink-0'>
                 <span className='text-green-400 text-sm font-bold'>✓</span>
@@ -343,6 +343,18 @@ export default function Dashboard() {
                 <p className='text-sm font-medium text-white'>Resend</p>
                 <p className='text-xs text-zinc-400 leading-tight'>
                   Envia notificações automáticas por email para leads qualificados
+                </p>
+              </div>
+            </div>
+
+            <div className='flex items-start gap-3 p-4 bg-zinc-800/50 border border-zinc-700 rounded-lg hover:bg-zinc-800/70 transition-colors'>
+              <div className='w-10 h-10 bg-cyan-500/20 border border-cyan-500/50 rounded-full flex items-center justify-center flex-shrink-0'>
+                <span className='text-cyan-400 text-sm font-bold'>N</span>
+              </div>
+              <div className='min-w-0'>
+                <p className='text-sm font-medium text-white'>Neon Postgres</p>
+                <p className='text-xs text-zinc-400 leading-tight'>
+                  Banco de dados PostgreSQL gerenciado na nuvem com Drizzle ORM
                 </p>
               </div>
             </div>
