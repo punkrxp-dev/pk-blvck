@@ -61,6 +61,12 @@ export interface LeadsResponse {
       status: string | null;
       intent: string | null;
     };
+    pagination?: {
+      total: number;
+      page: number;
+      pageSize: number;
+      totalPages: number;
+    };
   };
 }
 
@@ -68,6 +74,10 @@ export interface UseLeadsOptions {
   status?: string;
   intent?: string;
   limit?: number;
+  page?: number;
+  pageSize?: number;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
   refetchInterval?: number;
 }
 
@@ -81,15 +91,17 @@ export interface UseLeadsOptions {
 async function fetchLeads(options: UseLeadsOptions = {}): Promise<LeadsResponse> {
   const params = new URLSearchParams();
 
-  if (options.status) params.append('status', options.status);
-  if (options.intent) params.append('intent', options.intent);
+  if (options.status && options.status !== 'all') params.append('status', options.status);
+  if (options.intent && options.intent !== 'all') params.append('intent', options.intent);
   if (options.limit) params.append('limit', options.limit.toString());
+  if (options.page) params.append('page', options.page.toString());
+  if (options.pageSize) params.append('pageSize', options.pageSize.toString());
+  if (options.sortBy) params.append('sortBy', options.sortBy);
+  if (options.sortOrder) params.append('sortOrder', options.sortOrder);
 
   // Use API URL from environment or fallback to local development
   const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
   const url = `${apiBaseUrl}/api/mcp/leads${params.toString() ? `?${params.toString()}` : ''}`;
-
-  // console.log('🔗 Final URL:', url); // Debug removed
 
   const response = await fetch(url);
 

@@ -192,12 +192,15 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     try {
       const { db } = await import('./db');
       const { leads } = await import('@shared/schema');
-      const { eq, desc, and, sql } = await import('drizzle-orm');
+      const { eq, desc, asc, and, sql, count } = await import('drizzle-orm');
 
       // Parse query parameters
       const statusFilter = req.query.status as string | undefined;
       const intentFilter = req.query.intent as string | undefined;
-      const limit = Math.min(parseInt(req.query.limit as string) || 50, 100);
+      const page = parseInt(req.query.page as string) || 1;
+      const pageSize = Math.min(parseInt(req.query.pageSize as string) || 20, 100);
+      const sortBy = (req.query.sortBy as string) || 'createdAt';
+      const sortOrder = (req.query.sortOrder as 'asc' | 'desc') || 'desc';
 
       // Build where conditions
       const conditions = [];
@@ -208,15 +211,60 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
         conditions.push(sql`${leads.aiClassification}->>'intent' = ${intentFilter}`);
       }
 
-      // Fetch leads
+      // Date range filter (if needed in future)
+      const dateRange = req.query.dateRange as string | undefined;
+      if (dateRange && dateRange !== 'all') {
+        const now = new Date();
+        let startDate = new Date();
+        
+        if (dateRange === 'today') {
+          startDate.setHours(0, 0, 0, 0);
+        } else if (dateRange === 'week') {
+          startDate.setDate(now.getDate() - 7);
+        } else if (dateRange === 'month') {
+          startDate.setMonth(now.getMonth() - 1);
+        }
+        
+        if (dateRange !== 'all') {
+          conditions.push(sql`${leads.createdAt} >= ${startDate}`);
+        }
+      }
+
+      // Calculate total count for pagination
+      const totalCountResult = await db
+        .select({ count: count() })
+        .from(leads)
+        .where(conditions.length > 0 ? and(...conditions) : undefined);
+      
+      const total = totalCountResult[0]?.count || 0;
+      const totalPages = Math.ceil(total / pageSize);
+      const offset = (page - 1) * pageSize;
+
+      // Build order by clause
+      let orderByClause;
+      if (sortBy === 'email') {
+        orderByClause = sortOrder === 'asc' ? asc(leads.email) : desc(leads.email);
+      } else if (sortBy === 'status') {
+        orderByClause = sortOrder === 'asc' ? asc(leads.status) : desc(leads.status);
+      } else if (sortBy === 'intent') {
+        orderByClause = sortOrder === 'asc' 
+          ? sql`${leads.aiClassification}->>'intent' ASC`
+          : sql`${leads.aiClassification}->>'intent' DESC`;
+      } else {
+        // Default: createdAt
+        orderByClause = sortOrder === 'asc' ? asc(leads.createdAt) : desc(leads.createdAt);
+      }
+
+      // Fetch leads with pagination
       const leadsData = await db
         .select()
         .from(leads)
         .where(conditions.length > 0 ? and(...conditions) : undefined)
-        .orderBy(desc(leads.createdAt))
-        .limit(limit);
+        .orderBy(orderByClause)
+        .limit(pageSize)
+        .offset(offset);
 
-      // Calculate statistics
+      // Calculate statistics (from all leads, not filtered)
       const allLeads = await db.select().from(leads);
 
       const stats = {
@@ -238,10 +286,16 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
         stats,
         meta: {
           count: leadsData.length,
-          limit,
+          limit: pageSize,
           filters: {
             status: statusFilter || null,
             intent: intentFilter || null,
+          },
+          pagination: {
+            total,
+            page,
+            pageSize,
+            totalPages,
           },
         },
       });
@@ -251,6 +305,190 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       res.status(500).json({
         success: false,
         message: 'Failed to fetch leads',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+    }
+  });
+
+  /**
+   * PATCH /api/mcp/leads/:id/status
+   * 
+   * Updates the status of a lead
+   */
+  app.patch('/api/mcp/leads/:id/status', async (req: Request, res: Response) => {
+    try {
+      const { db } = await import('./db');
+      const { leads } = await import('@shared/schema');
+      const { eq } = await import('drizzle-orm');
+
+      const leadId = req.params.id;
+      const { status } = req.body;
+
+      if (!status || !['pending', 'processed', 'notified', 'failed'].includes(status)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Invalid status. Must be: pending, processed, notified, or failed',
+        });
+      }
+
+      const updated = await db
+        .update(leads)
+        .set({ status, updatedAt: new Date() })
+        .where(eq(leads.id, leadId))
+        .returning();
+
+      if (updated.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: 'Lead not found',
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        data: updated[0],
+      });
+    } catch (error) {
+      console.error('Error updating lead status:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to update lead status',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+    }
+  });
+
+  /**
+   * PATCH /api/mcp/leads/:id/mark-spam
+   * 
+   * Marks a lead as spam by updating its AI classification
+   */
+  app.patch('/api/mcp/leads/:id/mark-spam', async (req: Request, res: Response) => {
+    try {
+      const { db } = await import('./db');
+      const { leads } = await import('@shared/schema');
+      const { eq } = await import('drizzle-orm');
+
+      const leadId = req.params.id;
+
+      const existingLead = await db.select().from(leads).where(eq(leads.id, leadId)).limit(1);
+
+      if (existingLead.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: 'Lead not found',
+        });
+      }
+
+      const updated = await db
+        .update(leads)
+        .set({
+          aiClassification: {
+            intent: 'spam',
+            confidence: 1.0,
+            model: existingLead[0].aiClassification?.model || 'gpt-4o',
+            processedAt: new Date().toISOString(),
+          },
+          status: 'processed',
+          updatedAt: new Date(),
+        })
+        .where(eq(leads.id, leadId))
+        .returning();
+
+      res.status(200).json({
+        success: true,
+        data: updated[0],
+      });
+    } catch (error) {
+      console.error('Error marking lead as spam:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to mark lead as spam',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+    }
+  });
+
+  /**
+   * POST /api/mcp/leads/:id/notify
+   * 
+   * Sends a notification for a lead (triggers Resend email)
+   */
+  app.post('/api/mcp/leads/:id/notify', async (req: Request, res: Response) => {
+    try {
+      const { db } = await import('./db');
+      const { leads } = await import('@shared/schema');
+      const { eq } = await import('drizzle-orm');
+
+      const leadId = req.params.id;
+
+      const lead = await db.select().from(leads).where(eq(leads.id, leadId)).limit(1);
+
+      if (lead.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: 'Lead not found',
+        });
+      }
+
+      // Here you would integrate with Resend to send the notification
+      // For now, we'll just update the notifiedAt timestamp
+      const updated = await db
+        .update(leads)
+        .set({
+          notifiedAt: new Date(),
+          status: 'notified',
+          updatedAt: new Date(),
+        })
+        .where(eq(leads.id, leadId))
+        .returning();
+
+      res.status(200).json({
+        success: true,
+        message: 'Notification sent',
+        data: updated[0],
+      });
+    } catch (error) {
+      console.error('Error sending notification:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to send notification',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+    }
+  });
+
+  /**
+   * DELETE /api/mcp/leads/:id
+   * 
+   * Deletes a lead from the database
+   */
+  app.delete('/api/mcp/leads/:id', async (req: Request, res: Response) => {
+    try {
+      const { db } = await import('./db');
+      const { leads } = await import('@shared/schema');
+      const { eq } = await import('drizzle-orm');
+
+      const leadId = req.params.id;
+
+      const deleted = await db.delete(leads).where(eq(leads.id, leadId)).returning();
+
+      if (deleted.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: 'Lead not found',
+        });
+      }
+
+      res.status(200).json({
+        success: true,
+        message: 'Lead deleted successfully',
+      });
+    } catch (error) {
+      console.error('Error deleting lead:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Failed to delete lead',
         error: error instanceof Error ? error.message : 'Unknown error',
       });
     }

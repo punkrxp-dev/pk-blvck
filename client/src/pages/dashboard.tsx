@@ -5,8 +5,25 @@
  * Aesthetic: Dark background with neon orange accents
  */
 
+import { useState } from 'react';
 import { useLeads, type Lead } from '../hooks/use-leads';
 import { Skeleton } from '../components/ui/skeleton';
+import { LeadFiltersComponent, type LeadFilters } from '../components/lead-filters';
+import { LeadDetailModal } from '../components/lead-detail-modal';
+import { LeadActions } from '../components/lead-actions';
+import { IntentBadge } from '../components/intent-badge';
+import { exportLeadsToCSV } from '../utils/csv-export';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+  PaginationEllipsis,
+} from '../components/ui/pagination';
+import { Button } from '../components/ui/button';
+import { Download, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 
 // ========================================
 // LOGO COMPONENT
@@ -50,7 +67,7 @@ function DashboardFooter() {
           <div className='flex items-center gap-6 text-sm text-zinc-400'>
             <span>© {currentYear} PUNK | BLVCK</span>
             <span>•</span>
-            <span>Built with 💀</span>
+            <span>Built with NEØ Protocol</span>
             <span>•</span>
             <span>v2.0.0</span>
           </div>
@@ -67,36 +84,30 @@ function DashboardFooter() {
 }
 
 // ========================================
-// INTENT BADGE COMPONENT
+// SORTABLE TABLE HEADER
 // ========================================
 
-interface IntentBadgeProps {
-  intent: 'high' | 'medium' | 'low' | 'spam';
-  confidence?: number;
+interface SortableHeaderProps {
+  field: string;
+  currentSort: { field: string; order: 'asc' | 'desc' };
+  onSort: (field: string) => void;
+  children: React.ReactNode;
 }
 
-function IntentBadge({ intent, confidence }: IntentBadgeProps) {
-  const styles = {
-    high: 'bg-orange-500/20 text-orange-500 border-orange-500/50 shadow-orange-500/20',
-    medium: 'bg-blue-500/20 text-blue-400 border-blue-500/50 shadow-blue-500/20',
-    low: 'bg-gray-500/20 text-gray-400 border-gray-500/50 shadow-gray-500/20',
-    spam: 'bg-red-500/20 text-red-400 border-red-500/50 shadow-red-500/20',
-  };
-
-  const labels = {
-    high: '🔥 Alta',
-    medium: '📊 Média',
-    low: '📝 Baixa',
-    spam: '🚫 Spam',
-  };
+function SortableHeader({ field, currentSort, onSort, children }: SortableHeaderProps) {
+  const isActive = currentSort.field === field;
+  const Icon = isActive ? (currentSort.order === 'asc' ? ArrowUp : ArrowDown) : ArrowUpDown;
 
   return (
-    <span
-      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border shadow-sm ${styles[intent]}`}
+    <th
+      className='px-6 py-4 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider cursor-pointer hover:text-zinc-300 transition-colors'
+      onClick={() => onSort(field)}
     >
-      {labels[intent]}
-      {confidence && <span className='opacity-70'>{Math.round(confidence * 100)}%</span>}
-    </span>
+      <div className='flex items-center gap-2'>
+        {children}
+        <Icon className={`h-4 w-4 ${isActive ? 'text-orange-500' : 'text-zinc-500'}`} />
+      </div>
+    </th>
   );
 }
 
@@ -172,7 +183,40 @@ function DashboardSkeleton() {
 // ========================================
 
 export default function Dashboard() {
-  const { data, isLoading, error, isRefetching } = useLeads();
+  const [filters, setFilters] = useState<LeadFilters>({
+    status: 'all',
+    intent: 'all',
+    dateRange: 'all',
+  });
+  const [page, setPage] = useState(1);
+  const [pageSize] = useState(20);
+  const [sortState, setSortState] = useState<{ field: string; order: 'asc' | 'desc' }>({
+    field: 'createdAt',
+    order: 'desc',
+  });
+  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const handleSort = (field: string) => {
+    setSortState(prev => ({
+      field,
+      order: prev.field === field && prev.order === 'asc' ? 'desc' : 'asc',
+    }));
+  };
+
+  const handleFiltersChange = (newFilters: LeadFilters) => {
+    setFilters(newFilters);
+    setPage(1); // Reset to first page when filters change
+  };
+
+  const { data, isLoading, error, isRefetching } = useLeads({
+    status: filters.status !== 'all' ? filters.status : undefined,
+    intent: filters.intent !== 'all' ? filters.intent : undefined,
+    page,
+    pageSize,
+    sortBy: sortState.field,
+    sortOrder: sortState.order,
+  });
 
   if (error) {
     return (
@@ -209,6 +253,16 @@ export default function Dashboard() {
   };
 
   const leads = data?.data || [];
+  const pagination = data?.meta?.pagination;
+
+  const handleExportCSV = () => {
+    exportLeadsToCSV(leads, `leads-${new Date().toISOString().split('T')[0]}.csv`);
+  };
+
+  const handleRowClick = (lead: Lead) => {
+    setSelectedLead(lead);
+    setModalOpen(true);
+  };
 
   return (
     <div className='min-h-screen bg-zinc-950 text-white p-8'>
@@ -318,11 +372,31 @@ export default function Dashboard() {
           </div>
         </div>
 
+        {/* Filters */}
+        <LeadFiltersComponent filters={filters} onFiltersChange={handleFiltersChange} />
+
         {/* Leads Table */}
         <div className='bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-lg shadow-lg overflow-hidden'>
-          <div className='p-6 border-b border-zinc-800'>
-            <h2 className='text-xl font-bold text-white'>Leads Recentes</h2>
-            <p className='text-sm text-zinc-400 mt-1'>Últimos {leads.length} leads capturados</p>
+          <div className='p-6 border-b border-zinc-800 flex items-center justify-between'>
+            <div>
+              <h2 className='text-xl font-bold text-white'>Leads</h2>
+              <p className='text-sm text-zinc-400 mt-1'>
+                {pagination
+                  ? `Mostrando ${(pagination.page - 1) * pagination.pageSize + 1}-${Math.min(
+                      pagination.page * pagination.pageSize,
+                      pagination.total
+                    )} de ${pagination.total} leads`
+                  : `Últimos ${leads.length} leads capturados`}
+              </p>
+            </div>
+            <Button
+              onClick={handleExportCSV}
+              variant='outline'
+              className='bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700'
+            >
+              <Download className='h-4 w-4 mr-2' />
+              Exportar CSV
+            </Button>
           </div>
 
           {leads.length === 0 ? (
@@ -337,29 +411,36 @@ export default function Dashboard() {
               <table className='w-full'>
                 <thead className='bg-zinc-900/80'>
                   <tr className='border-b border-zinc-800'>
-                    <th className='px-6 py-4 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider'>
+                    <SortableHeader field='email' currentSort={sortState} onSort={handleSort}>
                       Email
-                    </th>
+                    </SortableHeader>
                     <th className='px-6 py-4 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider'>
                       Empresa
                     </th>
                     <th className='px-6 py-4 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider'>
                       Cargo
                     </th>
-                    <th className='px-6 py-4 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider'>
+                    <SortableHeader field='intent' currentSort={sortState} onSort={handleSort}>
                       Intenção
-                    </th>
-                    <th className='px-6 py-4 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider'>
+                    </SortableHeader>
+                    <SortableHeader field='status' currentSort={sortState} onSort={handleSort}>
                       Status
-                    </th>
-                    <th className='px-6 py-4 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider'>
+                    </SortableHeader>
+                    <SortableHeader field='createdAt' currentSort={sortState} onSort={handleSort}>
                       Data
+                    </SortableHeader>
+                    <th className='px-6 py-4 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider w-12'>
+                      Ações
                     </th>
                   </tr>
                 </thead>
                 <tbody className='divide-y divide-zinc-800'>
                   {leads.map((lead: Lead) => (
-                    <tr key={lead.id} className='hover:bg-zinc-800/50 transition-colors'>
+                    <tr
+                      key={lead.id}
+                      className='hover:bg-zinc-800/50 transition-colors cursor-pointer'
+                      onClick={() => handleRowClick(lead)}
+                    >
                       <td className='px-6 py-4 whitespace-nowrap'>
                         <div className='flex items-center gap-2'>
                           <span className='text-sm font-medium text-white'>{lead.email}</span>
@@ -418,13 +499,76 @@ export default function Dashboard() {
                           minute: '2-digit',
                         })}
                       </td>
+                      <td
+                        className='px-6 py-4 whitespace-nowrap'
+                        onClick={e => e.stopPropagation()}
+                      >
+                        <LeadActions lead={lead} onViewDetails={() => handleRowClick(lead)} />
+                      </td>
                     </tr>
                   ))}
                 </tbody>
               </table>
             </div>
           )}
+
+          {/* Pagination */}
+          {pagination && pagination.totalPages > 1 && (
+            <div className='p-6 border-t border-zinc-800'>
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      onClick={() => setPage(p => Math.max(1, p - 1))}
+                      className={
+                        page === 1
+                          ? 'pointer-events-none opacity-50'
+                          : 'cursor-pointer text-white hover:text-orange-500'
+                      }
+                    />
+                  </PaginationItem>
+                  {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+                    let pageNum: number;
+                    if (pagination.totalPages <= 5) {
+                      pageNum = i + 1;
+                    } else if (page <= 3) {
+                      pageNum = i + 1;
+                    } else if (page >= pagination.totalPages - 2) {
+                      pageNum = pagination.totalPages - 4 + i;
+                    } else {
+                      pageNum = page - 2 + i;
+                    }
+                    return (
+                      <PaginationItem key={pageNum}>
+                        <PaginationLink
+                          onClick={() => setPage(pageNum)}
+                          isActive={page === pageNum}
+                          className='cursor-pointer text-white hover:text-orange-500'
+                        >
+                          {pageNum}
+                        </PaginationLink>
+                      </PaginationItem>
+                    );
+                  })}
+                  {pagination.totalPages > 5 && <PaginationEllipsis />}
+                  <PaginationItem>
+                    <PaginationNext
+                      onClick={() => setPage(p => Math.min(pagination.totalPages, p + 1))}
+                      className={
+                        page === pagination.totalPages
+                          ? 'pointer-events-none opacity-50'
+                          : 'cursor-pointer text-white hover:text-orange-500'
+                      }
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
         </div>
+
+        {/* Lead Detail Modal */}
+        <LeadDetailModal lead={selectedLead} open={modalOpen} onOpenChange={setModalOpen} />
 
         {/* Footer */}
         <DashboardFooter />

@@ -96,6 +96,7 @@ O Dashboard fornece uma visão completa e em tempo real de todos os leads proces
   - 🚫 Spam (red)
 
 #### Status
+
 - Estado atual do lead
 - **Valores:**
   - `processed` (verde)
@@ -103,6 +104,7 @@ O Dashboard fornece uma visão completa e em tempo real de todos os leads proces
   - `failed` (vermelho)
 
 #### Data
+
 - Timestamp de criação
 - Formato: DD/MM HH:MM
 
@@ -113,6 +115,7 @@ O Dashboard fornece uma visão completa e em tempo real de todos os leads proces
 ### Indicador "Ao Vivo"
 
 No canto superior direito:
+
 - 🟢 **Verde:** Dados atualizados
 - 🟠 **Laranja pulsando:** Atualizando...
 
@@ -132,6 +135,7 @@ Para alterar o intervalo, edite o hook `useLeads`.
 ### 1. Monitoramento Básico
 
 Simplesmente abra o dashboard e observe:
+
 - Novos leads aparecem automaticamente
 - KPIs atualizam em tempo real
 - Tabela se atualiza a cada 5 segundos
@@ -139,6 +143,7 @@ Simplesmente abra o dashboard e observe:
 ### 2. Identificar Leads Quentes
 
 Procure por:
+
 - 🔥 Badge **"Alta"** (orange)
 - ✓ Email verificado
 - Cargo sênior (CEO, CTO, Founder)
@@ -147,16 +152,19 @@ Procure por:
 ### 3. Priorizar Follow-up
 
 **Alta prioridade:**
+
 - Intent: High
 - Confidence: > 80%
 - Email verificado
 - Status: processed
 
 **Média prioridade:**
+
 - Intent: Medium
 - Confidence: 60-80%
 
 **Baixa prioridade:**
+
 - Intent: Low
 - Spam: Ignorar
 
@@ -223,6 +231,7 @@ Edite as classes Tailwind em `dashboard.tsx`:
 ### Distribuição de Intenção
 
 Seção mostra breakdown visual:
+
 - Quantos leads em cada categoria
 - Atualiza em tempo real
 - Ajuda a entender padrões
@@ -252,6 +261,7 @@ stats = {
    ```
 
 2. Verifique o endpoint:
+
    ```bash
    curl http://localhost:5000/api/mcp/leads
    ```
@@ -263,6 +273,7 @@ stats = {
 1. Verifique o indicador "Ao vivo"
 2. Veja o Network tab (F12)
 3. Confirme que há leads no banco:
+
    ```bash
    tsx server/test-mcp.ts
    ```
@@ -270,6 +281,7 @@ stats = {
 ### Tabela vazia
 
 1. Crie leads de teste:
+
    ```bash
    curl -X POST http://localhost:5000/api/mcp/ingest \
      -H "Content-Type: application/json" \
@@ -301,6 +313,7 @@ stats = {
 - Números em destaque
 
 ### Tabela
+
 - Header fixo com labels uppercase
 - Linhas com hover effect
 - Badges coloridos

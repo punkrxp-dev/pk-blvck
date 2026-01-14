@@ -57,3 +57,5 @@ vite.config.ts.*
 *.cert
 .secrets
 secrets.json
+.vercel
+.env*.local
