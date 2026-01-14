@@ -3,6 +3,7 @@
 ## 📊 **DASHBOARD PRINCIPAL**
 
 ### **Frontend (Vercel)**
+
 - **URL:** https://pk-blvck.vercel.app
 - **Status:** ✅ Ativo
 - **Descrição:** Dashboard completo com visualização de leads em tempo real
