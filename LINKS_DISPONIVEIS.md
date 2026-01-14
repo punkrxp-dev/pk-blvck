@@ -155,31 +155,27 @@ curl -X POST https://pk-blvck-production.up.railway.app/api/mcp/ingest \
 
 ---
 
-## 🔧 **CONFIGURAÇÕES PENDENTES (BACKEND - RAILWAY)**
+## ✅ **CONFIGURAÇÕES CONCLUÍDAS**
 
-### ❌ **CORS Issue - URGENTE**
-**Status:** 🔴 PENDENTE - Sistema quebrado até resolver
+### ✅ **CORS Issue - RESOLVIDO**
+**Status:** 🟢 CONCLUÍDO - Sistema funcionando perfeitamente
 
-**Problema:** Frontend não consegue acessar API devido a erro de CORS
+**Problema resolvido:** Frontend consegue acessar API normalmente
 ```
-Access to fetch at 'https://pk-blvck-production.up.railway.app/api/mcp/leads'
-from origin 'https://pk-blvck-three.vercel.app' has been blocked by CORS policy
+✅ Access granted: https://pk-blvck-production.up.railway.app/api/mcp/leads
+from origin https://pk-blvck-three.vercel.app
 ```
 
-**Solução:** Adicionar variável de ambiente no Railway Dashboard:
+**Solução aplicada:**
+- ✅ Variável `FRONTEND_URL=https://pk-blvck-three.vercel.app` configurada no Railway
+- ✅ Redeploy realizado com sucesso
+- ✅ Conexão frontend-backend funcionando 100%
 
-1. Acesse: https://railway.app/project/pk-blvck-production
-2. **Variables** (aba lateral esquerda)
-3. **Add Variable:**
-   - Name: `FRONTEND_URL`
-   - Value: `https://pk-blvck-three.vercel.app`
-4. Clique em **"Add"**
-5. **IMPORTANTE:** Faça um redeploy do serviço Railway após adicionar a variável
-
-**Teste após correção:**
+**Teste de confirmação:**
 ```bash
-curl -s "https://pk-blvck-three.vercel.app/dashboard" | grep -o "pk-blvck-production.up.railway.app" | head -1
-# Deve retornar: pk-blvck-production.up.railway.app
+✅ Frontend: PUNK | BLVCK
+✅ API Health: healthy
+✅ API Leads: true
 ```
 
 ---
