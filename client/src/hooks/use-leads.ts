@@ -89,6 +89,8 @@ async function fetchLeads(options: UseLeadsOptions = {}): Promise<LeadsResponse>
   const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
   const url = `${apiBaseUrl}/api/mcp/leads${params.toString() ? `?${params.toString()}` : ''}`;
 
+  console.log('🔗 Final URL:', url);
+
   const response = await fetch(url);
 
   if (!response.ok) {
@@ -138,4 +140,4 @@ export function useHighIntentLeads() {
 export function useTodayLeads() {
   return useLeads({ status: 'processed' });
 }
-console.log("VITE_API_URL:", import.meta.env.VITE_API_URL);
+console.log('VITE_API_URL:', import.meta.env.VITE_API_URL);
