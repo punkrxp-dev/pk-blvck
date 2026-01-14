@@ -287,11 +287,13 @@ stats = {
 ## 🎨 Screenshots (Descrição)
 
 ### Header
-- Título "🎸 Dashboard Heavy Metal"
+
+- Título "🎸 PUNK | BLVCK"
 - Indicador "Ao vivo" no canto
 - Background escuro com gradiente sutil
 
 ### KPI Cards
+
 - Grid responsivo (1-4 colunas)
 - Cards com border glow
 - Ícones grandes
