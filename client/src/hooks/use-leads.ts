@@ -85,7 +85,9 @@ async function fetchLeads(options: UseLeadsOptions = {}): Promise<LeadsResponse>
     if (options.intent) params.append('intent', options.intent);
     if (options.limit) params.append('limit', options.limit.toString());
 
-    const url = `/api/mcp/leads${params.toString() ? `?${params.toString()}` : ''}`;
+    // Use API URL from environment or fallback to local development
+    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+    const url = `${apiBaseUrl}/api/mcp/leads${params.toString() ? `?${params.toString()}` : ''}`;
 
     const response = await fetch(url);
 
