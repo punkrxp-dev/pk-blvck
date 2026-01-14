@@ -4,9 +4,9 @@
 
 ### **Frontend (Vercel)**
 
-- **URL:** https://pk-blvck.vercel.app
+- **URL:** https://pk-blvck-three.vercel.app
 - **Projeto:** vercel.com/prxps-projects/pk-blvck
-- **Status:** ✅ Ativo
+- **Status:** ✅ Ativo (Deploy automático)
 - **Descrição:** Dashboard completo com visualização de leads em tempo real
 - **Funcionalidades:**
   - 📊 KPIs de leads (total, alta intenção, processados hoje, spam)
@@ -143,7 +143,7 @@ curl -X POST https://pk-blvck-production.up.railway.app/api/mcp/ingest \
 
 | Componente | Status | URL |
 |------------|--------|-----|
-| Frontend | ✅ Ativo | https://pk-blvck.vercel.app |
+| Frontend | ✅ Ativo | https://pk-blvck-three.vercel.app |
 | Projeto Vercel | ✅ Ativo | vercel.com/prxps-projects/pk-blvck |
 | Backend API | ✅ Ativo | https://pk-blvck-production.up.railway.app |
 | Database | ✅ Ativo | Neon Postgres |
