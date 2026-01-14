@@ -25,19 +25,21 @@ export function LeadDetailModal({ lead, open, onOpenChange }: LeadDetailModalPro
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className='max-w-2xl max-h-[90vh] overflow-y-auto bg-zinc-900 border-zinc-800 text-white'>
+      <DialogContent className='max-w-[95vw] sm:max-w-2xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto bg-zinc-900 border-zinc-800 text-white p-4 sm:p-6'>
         <DialogHeader>
-          <DialogTitle className='text-2xl text-white'>Detalhes do Lead</DialogTitle>
-          <DialogDescription className='text-zinc-400'>
+          <DialogTitle className='text-xl sm:text-2xl text-white'>Detalhes do Lead</DialogTitle>
+          <DialogDescription className='text-sm sm:text-base text-zinc-400'>
             Informações completas e classificação por IA
           </DialogDescription>
         </DialogHeader>
 
-        <div className='space-y-6 mt-4'>
+        <div className='space-y-4 sm:space-y-6 mt-4'>
           {/* Basic Information */}
           <div>
-            <h3 className='text-lg font-semibold text-white mb-3'>Informações Básicas</h3>
-            <div className='grid grid-cols-2 gap-4'>
+            <h3 className='text-base sm:text-lg font-semibold text-white mb-2 sm:mb-3'>
+              Informações Básicas
+            </h3>
+            <div className='grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4'>
               <div>
                 <p className='text-sm text-zinc-400 mb-1'>Email</p>
                 <p className='text-white font-medium'>{lead.email}</p>
@@ -113,13 +115,13 @@ export function LeadDetailModal({ lead, open, onOpenChange }: LeadDetailModalPro
                   </div>
                 )}
                 {lead.enrichedData.linkedin && (
-                  <div className='col-span-2'>
+                  <div className='col-span-1 sm:col-span-2'>
                     <p className='text-sm text-zinc-400 mb-1'>LinkedIn</p>
                     <a
                       href={lead.enrichedData.linkedin}
                       target='_blank'
                       rel='noopener noreferrer'
-                      className='text-orange-500 hover:text-orange-400 underline'
+                      className='text-orange-500 hover:text-orange-400 underline break-all'
                     >
                       {lead.enrichedData.linkedin}
                     </a>

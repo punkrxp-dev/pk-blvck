@@ -31,20 +31,22 @@ import { Download, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 
 function PunkBlackLogo() {
   return (
-    <div className='flex items-center gap-3'>
+    <div className='flex items-center gap-2 sm:gap-3'>
       <div className='relative'>
-        <div className='w-12 h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center shadow-lg shadow-orange-500/25'>
-          <div className='text-black font-bold text-xl font-mono'>PB</div>
+        <div className='w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center shadow-lg shadow-orange-500/25'>
+          <div className='text-black font-bold text-lg sm:text-xl font-mono'>PB</div>
         </div>
-        <div className='absolute -top-1 -right-1 w-4 h-4 bg-zinc-950 rounded-full border-2 border-orange-500 flex items-center justify-center'>
-          <span className='text-orange-500 text-xs font-bold'>⚡</span>
+        <div className='absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-zinc-950 rounded-full border-2 border-orange-500 flex items-center justify-center'>
+          <span className='text-orange-500 text-[10px] sm:text-xs font-bold'>⚡</span>
         </div>
       </div>
       <div>
-        <h1 className='text-2xl font-bold text-white'>
+        <h1 className='text-lg sm:text-2xl font-bold text-white'>
           <span className='text-orange-500'>PUNK</span> | BLVCK
         </h1>
-        <p className='text-xs text-zinc-400'>High-end fitness system</p>
+        <p className='text-[10px] sm:text-xs text-zinc-400 hidden sm:block'>
+          High-end fitness system
+        </p>
       </div>
     </div>
   );
@@ -58,23 +60,23 @@ function DashboardFooter() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className='mt-16 py-8 border-t border-zinc-800/50'>
-      <div className='max-w-7xl mx-auto px-8'>
-        <div className='flex flex-col md:flex-row justify-between items-center gap-4'>
-          <div className='flex items-center gap-4'>
+    <footer className='mt-8 sm:mt-16 py-4 sm:py-8 border-t border-zinc-800/50'>
+      <div className='max-w-7xl mx-auto px-4 sm:px-8'>
+        <div className='flex flex-col md:flex-row justify-between items-center gap-3 sm:gap-4'>
+          <div className='flex items-center gap-2 sm:gap-4'>
             <PunkBlackLogo />
           </div>
-          <div className='flex items-center gap-6 text-sm text-zinc-400'>
+          <div className='flex flex-wrap items-center justify-center gap-2 sm:gap-6 text-xs sm:text-sm text-zinc-400'>
             <span>© {currentYear} PUNK | BLVCK</span>
-            <span>•</span>
-            <span>Built with NEØ Protocol</span>
-            <span>•</span>
+            <span className='hidden sm:inline'>•</span>
+            <span className='hidden sm:inline'>Built with NEØ Protocol</span>
+            <span className='hidden sm:inline'>•</span>
             <span>v2.0.0</span>
           </div>
-          <div className='flex items-center gap-4'>
-            <div className='flex items-center gap-2 px-3 py-1 bg-zinc-900/50 border border-zinc-800 rounded-full'>
+          <div className='flex items-center gap-2 sm:gap-4'>
+            <div className='flex items-center gap-2 px-2 sm:px-3 py-1 bg-zinc-900/50 border border-zinc-800 rounded-full'>
               <div className='w-2 h-2 bg-green-500 rounded-full animate-pulse'></div>
-              <span className='text-xs text-zinc-400'>System Online</span>
+              <span className='text-[10px] sm:text-xs text-zinc-400'>System Online</span>
             </div>
           </div>
         </div>
@@ -100,12 +102,14 @@ function SortableHeader({ field, currentSort, onSort, children }: SortableHeader
 
   return (
     <th
-      className='px-6 py-4 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider cursor-pointer hover:text-zinc-300 transition-colors'
+      className='px-3 sm:px-6 py-3 sm:py-4 text-left text-[10px] sm:text-xs font-medium text-zinc-400 uppercase tracking-wider cursor-pointer hover:text-zinc-300 transition-colors'
       onClick={() => onSort(field)}
     >
-      <div className='flex items-center gap-2'>
+      <div className='flex items-center gap-1 sm:gap-2'>
         {children}
-        <Icon className={`h-4 w-4 ${isActive ? 'text-orange-500' : 'text-zinc-500'}`} />
+        <Icon
+          className={`h-3 w-3 sm:h-4 sm:w-4 ${isActive ? 'text-orange-500' : 'text-zinc-500'}`}
+        />
       </div>
     </th>
   );
@@ -140,13 +144,13 @@ function KPICard({ title, value, icon, accentColor = 'orange' }: KPICardProps) {
 
   return (
     <div
-      className={`bg-zinc-900/50 backdrop-blur-sm border rounded-lg p-6 shadow-lg ${accentStyles[accentColor]}`}
+      className={`bg-zinc-900/50 backdrop-blur-sm border rounded-lg p-4 sm:p-6 shadow-lg ${accentStyles[accentColor]}`}
     >
       <div className='flex items-center justify-between mb-2'>
-        <p className='text-sm font-medium text-zinc-400'>{title}</p>
-        {icon && <span className='text-2xl'>{icon}</span>}
+        <p className='text-xs sm:text-sm font-medium text-zinc-400'>{title}</p>
+        {icon && <span className='text-xl sm:text-2xl'>{icon}</span>}
       </div>
-      <p className={`text-3xl font-bold ${textStyles[accentColor]}`}>{value}</p>
+      <p className={`text-2xl sm:text-3xl font-bold ${textStyles[accentColor]}`}>{value}</p>
     </div>
   );
 }
@@ -265,18 +269,18 @@ export default function Dashboard() {
   };
 
   return (
-    <div className='min-h-screen bg-zinc-950 text-white p-8'>
-      <div className='max-w-7xl mx-auto space-y-8'>
+    <div className='min-h-screen bg-zinc-950 text-white p-4 sm:p-6 lg:p-8'>
+      <div className='max-w-7xl mx-auto space-y-4 sm:space-y-6 lg:space-y-8'>
         {/* Header */}
-        <div className='flex items-center justify-between'>
+        <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4'>
           <PunkBlackLogo />
 
           {/* Live Indicator */}
-          <div className='flex items-center gap-2 px-4 py-2 bg-zinc-900/50 border border-zinc-800 rounded-lg'>
+          <div className='flex items-center gap-2 px-3 sm:px-4 py-2 bg-zinc-900/50 border border-zinc-800 rounded-lg w-full sm:w-auto'>
             <div
               className={`w-2 h-2 rounded-full ${isRefetching ? 'bg-orange-500 animate-pulse' : 'bg-green-500'}`}
             />
-            <span className='text-sm text-zinc-400'>
+            <span className='text-xs sm:text-sm text-zinc-400'>
               {isRefetching ? 'Atualizando...' : 'Ao vivo'}
             </span>
           </div>
@@ -296,9 +300,11 @@ export default function Dashboard() {
         </div>
 
         {/* Integrations Status */}
-        <div className='bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-lg p-6 shadow-lg'>
-          <h2 className='text-xl font-bold text-white mb-4'>🤖 Integrações Ativas</h2>
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4'>
+        <div className='bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-lg p-4 sm:p-6 shadow-lg'>
+          <h2 className='text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4'>
+            🤖 Integrações Ativas
+          </h2>
+          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4'>
             <div className='flex items-start gap-3 p-4 bg-zinc-800/50 border border-zinc-700 rounded-lg hover:bg-zinc-800/70 transition-colors'>
               <div className='w-10 h-10 bg-green-500/20 border border-green-500/50 rounded-full flex items-center justify-center flex-shrink-0'>
                 <span className='text-green-400 text-sm font-bold'>✓</span>
@@ -362,9 +368,11 @@ export default function Dashboard() {
         </div>
 
         {/* Intent Distribution */}
-        <div className='bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-lg p-6 shadow-lg'>
-          <h2 className='text-xl font-bold text-white mb-4'>Distribuição de Intenção</h2>
-          <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
+        <div className='bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-lg p-4 sm:p-6 shadow-lg'>
+          <h2 className='text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4'>
+            Distribuição de Intenção
+          </h2>
+          <div className='grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4'>
             <div className='text-center'>
               <p className='text-2xl font-bold text-orange-500'>{stats.high}</p>
               <p className='text-sm text-zinc-400'>Alta</p>
@@ -389,10 +397,10 @@ export default function Dashboard() {
 
         {/* Leads Table */}
         <div className='bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-lg shadow-lg overflow-hidden'>
-          <div className='p-6 border-b border-zinc-800 flex items-center justify-between'>
+          <div className='p-4 sm:p-6 border-b border-zinc-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0'>
             <div>
-              <h2 className='text-xl font-bold text-white'>Leads</h2>
-              <p className='text-sm text-zinc-400 mt-1'>
+              <h2 className='text-lg sm:text-xl font-bold text-white'>Leads</h2>
+              <p className='text-xs sm:text-sm text-zinc-400 mt-1'>
                 {pagination
                   ? `Mostrando ${(pagination.page - 1) * pagination.pageSize + 1}-${Math.min(
                       pagination.page * pagination.pageSize,
@@ -404,10 +412,12 @@ export default function Dashboard() {
             <Button
               onClick={handleExportCSV}
               variant='outline'
-              className='bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700'
+              size='sm'
+              className='bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700 w-full sm:w-auto'
             >
-              <Download className='h-4 w-4 mr-2' />
-              Exportar CSV
+              <Download className='h-4 w-4 sm:mr-2' />
+              <span className='hidden sm:inline'>Exportar CSV</span>
+              <span className='sm:hidden'>CSV</span>
             </Button>
           </div>
 
@@ -419,17 +429,17 @@ export default function Dashboard() {
               </p>
             </div>
           ) : (
-            <div className='overflow-x-auto'>
-              <table className='w-full'>
+            <div className='overflow-x-auto -mx-4 sm:mx-0'>
+              <table className='w-full min-w-[640px]'>
                 <thead className='bg-zinc-900/80'>
                   <tr className='border-b border-zinc-800'>
                     <SortableHeader field='email' currentSort={sortState} onSort={handleSort}>
                       Email
                     </SortableHeader>
-                    <th className='px-6 py-4 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider'>
+                    <th className='px-3 sm:px-6 py-3 sm:py-4 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider hidden sm:table-cell'>
                       Empresa
                     </th>
-                    <th className='px-6 py-4 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider'>
+                    <th className='px-3 sm:px-6 py-3 sm:py-4 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider hidden md:table-cell'>
                       Cargo
                     </th>
                     <SortableHeader field='intent' currentSort={sortState} onSort={handleSort}>
@@ -441,7 +451,7 @@ export default function Dashboard() {
                     <SortableHeader field='createdAt' currentSort={sortState} onSort={handleSort}>
                       Data
                     </SortableHeader>
-                    <th className='px-6 py-4 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider w-12'>
+                    <th className='px-3 sm:px-6 py-3 sm:py-4 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider w-12'>
                       Ações
                     </th>
                   </tr>
@@ -453,7 +463,7 @@ export default function Dashboard() {
                       className='hover:bg-zinc-800/50 transition-colors cursor-pointer'
                       onClick={() => handleRowClick(lead)}
                     >
-                      <td className='px-6 py-4 whitespace-nowrap'>
+                      <td className='px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap'>
                         <div className='flex items-center gap-2'>
                           <span className='text-sm font-medium text-white'>{lead.email}</span>
                           {lead.enrichedData?.verified && (
@@ -467,18 +477,23 @@ export default function Dashboard() {
                             {lead.enrichedData.firstName} {lead.enrichedData.lastName}
                           </p>
                         )}
+                        {lead.enrichedData?.company && (
+                          <p className='text-xs text-zinc-500 mt-1 sm:hidden'>
+                            {lead.enrichedData.company}
+                          </p>
+                        )}
                       </td>
-                      <td className='px-6 py-4 whitespace-nowrap'>
+                      <td className='px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap hidden sm:table-cell'>
                         <span className='text-sm text-zinc-300'>
                           {lead.enrichedData?.company || '-'}
                         </span>
                       </td>
-                      <td className='px-6 py-4 whitespace-nowrap'>
+                      <td className='px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap hidden md:table-cell'>
                         <span className='text-sm text-zinc-300'>
                           {lead.enrichedData?.position || '-'}
                         </span>
                       </td>
-                      <td className='px-6 py-4 whitespace-nowrap'>
+                      <td className='px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap'>
                         {lead.aiClassification ? (
                           <IntentBadge
                             intent={lead.aiClassification.intent}
@@ -488,7 +503,7 @@ export default function Dashboard() {
                           <span className='text-sm text-zinc-500'>-</span>
                         )}
                       </td>
-                      <td className='px-6 py-4 whitespace-nowrap'>
+                      <td className='px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap'>
                         <span
                           className={`inline-flex px-2 py-1 text-xs font-medium rounded ${
                             lead.status === 'processed'
@@ -503,7 +518,7 @@ export default function Dashboard() {
                           {lead.status}
                         </span>
                       </td>
-                      <td className='px-6 py-4 whitespace-nowrap text-sm text-zinc-400'>
+                      <td className='px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-zinc-400'>
                         {new Date(lead.createdAt).toLocaleDateString('pt-BR', {
                           day: '2-digit',
                           month: '2-digit',
@@ -512,7 +527,7 @@ export default function Dashboard() {
                         })}
                       </td>
                       <td
-                        className='px-6 py-4 whitespace-nowrap'
+                        className='px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap'
                         onClick={e => e.stopPropagation()}
                       >
                         <LeadActions lead={lead} onViewDetails={() => handleRowClick(lead)} />
@@ -526,50 +541,63 @@ export default function Dashboard() {
 
           {/* Pagination */}
           {pagination && pagination.totalPages > 1 && (
-            <div className='p-6 border-t border-zinc-800'>
+            <div className='p-4 sm:p-6 border-t border-zinc-800'>
               <Pagination>
-                <PaginationContent>
+                <PaginationContent className='flex-wrap gap-1 sm:gap-2'>
                   <PaginationItem>
                     <PaginationPrevious
                       onClick={() => setPage(p => Math.max(1, p - 1))}
                       className={
                         page === 1
                           ? 'pointer-events-none opacity-50'
-                          : 'cursor-pointer text-white hover:text-orange-500'
+                          : 'cursor-pointer text-white hover:text-orange-500 text-xs sm:text-sm'
                       }
                     />
                   </PaginationItem>
-                  {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+                  {Array.from({ length: Math.min(3, pagination.totalPages) }, (_, i) => {
                     let pageNum: number;
-                    if (pagination.totalPages <= 5) {
+                    if (pagination.totalPages <= 3) {
                       pageNum = i + 1;
-                    } else if (page <= 3) {
+                    } else if (page <= 2) {
                       pageNum = i + 1;
-                    } else if (page >= pagination.totalPages - 2) {
-                      pageNum = pagination.totalPages - 4 + i;
+                    } else if (page >= pagination.totalPages - 1) {
+                      pageNum = pagination.totalPages - 2 + i;
                     } else {
-                      pageNum = page - 2 + i;
+                      pageNum = page - 1 + i;
                     }
                     return (
                       <PaginationItem key={pageNum}>
                         <PaginationLink
                           onClick={() => setPage(pageNum)}
                           isActive={page === pageNum}
-                          className='cursor-pointer text-white hover:text-orange-500'
+                          className='cursor-pointer text-white hover:text-orange-500 text-xs sm:text-sm min-w-[32px] sm:min-w-[40px]'
                         >
                           {pageNum}
                         </PaginationLink>
                       </PaginationItem>
                     );
                   })}
-                  {pagination.totalPages > 5 && <PaginationEllipsis />}
+                  {pagination.totalPages > 3 && (
+                    <>
+                      <PaginationEllipsis className='hidden sm:flex' />
+                      <PaginationItem className='hidden sm:list-item'>
+                        <PaginationLink
+                          onClick={() => setPage(pagination.totalPages)}
+                          isActive={page === pagination.totalPages}
+                          className='cursor-pointer text-white hover:text-orange-500'
+                        >
+                          {pagination.totalPages}
+                        </PaginationLink>
+                      </PaginationItem>
+                    </>
+                  )}
                   <PaginationItem>
                     <PaginationNext
                       onClick={() => setPage(p => Math.min(pagination.totalPages, p + 1))}
                       className={
                         page === pagination.totalPages
                           ? 'pointer-events-none opacity-50'
-                          : 'cursor-pointer text-white hover:text-orange-500'
+                          : 'cursor-pointer text-white hover:text-orange-500 text-xs sm:text-sm'
                       }
                     />
                   </PaginationItem>

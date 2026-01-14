@@ -46,13 +46,13 @@ export function LeadFiltersComponent({ filters, onFiltersChange }: LeadFiltersPr
     (localFilters.dateRange !== 'all' ? 1 : 0);
 
   return (
-    <div className='flex flex-wrap items-center gap-4 p-4 bg-zinc-900/50 border border-zinc-800 rounded-lg'>
-      <div className='flex items-center gap-2'>
-        <span className='text-sm text-zinc-400'>Filtros:</span>
+    <div className='flex flex-wrap items-center gap-2 sm:gap-4 p-3 sm:p-4 bg-zinc-900/50 border border-zinc-800 rounded-lg'>
+      <div className='flex items-center gap-2 w-full sm:w-auto'>
+        <span className='text-xs sm:text-sm text-zinc-400'>Filtros:</span>
         {activeFiltersCount > 0 && (
           <Badge
             variant='secondary'
-            className='bg-orange-500/20 text-orange-400 border-orange-500/50'
+            className='bg-orange-500/20 text-orange-400 border-orange-500/50 text-xs'
           >
             {activeFiltersCount} ativo{activeFiltersCount > 1 ? 's' : ''}
           </Badge>
@@ -63,7 +63,7 @@ export function LeadFiltersComponent({ filters, onFiltersChange }: LeadFiltersPr
         value={localFilters.status}
         onValueChange={value => handleFilterChange('status', value)}
       >
-        <SelectTrigger className='w-[140px] bg-zinc-800 border-zinc-700 text-white'>
+        <SelectTrigger className='w-full sm:w-[140px] bg-zinc-800 border-zinc-700 text-white text-sm'>
           <SelectValue placeholder='Status' />
         </SelectTrigger>
         <SelectContent>
@@ -79,7 +79,7 @@ export function LeadFiltersComponent({ filters, onFiltersChange }: LeadFiltersPr
         value={localFilters.intent}
         onValueChange={value => handleFilterChange('intent', value)}
       >
-        <SelectTrigger className='w-[140px] bg-zinc-800 border-zinc-700 text-white'>
+        <SelectTrigger className='w-full sm:w-[140px] bg-zinc-800 border-zinc-700 text-white text-sm'>
           <SelectValue placeholder='Intenção' />
         </SelectTrigger>
         <SelectContent>
@@ -95,7 +95,7 @@ export function LeadFiltersComponent({ filters, onFiltersChange }: LeadFiltersPr
         value={localFilters.dateRange}
         onValueChange={value => handleFilterChange('dateRange', value)}
       >
-        <SelectTrigger className='w-[140px] bg-zinc-800 border-zinc-700 text-white'>
+        <SelectTrigger className='w-full sm:w-[140px] bg-zinc-800 border-zinc-700 text-white text-sm'>
           <SelectValue placeholder='Período' />
         </SelectTrigger>
         <SelectContent>
@@ -111,9 +111,9 @@ export function LeadFiltersComponent({ filters, onFiltersChange }: LeadFiltersPr
           variant='ghost'
           size='sm'
           onClick={clearFilters}
-          className='text-zinc-400 hover:text-white'
+          className='text-zinc-400 hover:text-white w-full sm:w-auto text-xs sm:text-sm'
         >
-          <X className='h-4 w-4 mr-1' />
+          <X className='h-3 w-3 sm:h-4 sm:w-4 mr-1' />
           Limpar
         </Button>
       )}
