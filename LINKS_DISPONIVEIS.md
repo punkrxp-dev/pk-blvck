@@ -155,6 +155,35 @@ curl -X POST https://pk-blvck-production.up.railway.app/api/mcp/ingest \
 
 ---
 
+## 🔧 **CONFIGURAÇÕES PENDENTES (BACKEND - RAILWAY)**
+
+### ❌ **CORS Issue - URGENTE**
+**Status:** 🔴 PENDENTE - Sistema quebrado até resolver
+
+**Problema:** Frontend não consegue acessar API devido a erro de CORS
+```
+Access to fetch at 'https://pk-blvck-production.up.railway.app/api/mcp/leads'
+from origin 'https://pk-blvck-three.vercel.app' has been blocked by CORS policy
+```
+
+**Solução:** Adicionar variável de ambiente no Railway Dashboard:
+
+1. Acesse: https://railway.app/project/pk-blvck-production
+2. **Variables** (aba lateral esquerda)
+3. **Add Variable:**
+   - Name: `FRONTEND_URL`
+   - Value: `https://pk-blvck-three.vercel.app`
+4. Clique em **"Add"**
+5. **IMPORTANTE:** Faça um redeploy do serviço Railway após adicionar a variável
+
+**Teste após correção:**
+```bash
+curl -s "https://pk-blvck-three.vercel.app/dashboard" | grep -o "pk-blvck-production.up.railway.app" | head -1
+# Deve retornar: pk-blvck-production.up.railway.app
+```
+
+---
+
 **🎸 SISTEMA PUNK BLVCK TOTALMENTE OPERACIONAL!**
 
 **Última atualização:** Janeiro 2026
