@@ -50,19 +50,37 @@ dev: ## Executa servidor completo em modo desenvolvimento
 	@echo "$(YELLOW)🌐 Frontend: http://localhost:$(PORT)$(NC)"
 	@echo "$(YELLOW)🔧 Backend: http://localhost:$(PORT)/api$(NC)"
 	@if lsof -i :$(PORT) >/dev/null 2>&1; then \
-		echo "$(RED)❌ Porta $(PORT) ocupada! Tentando liberar...$(NC)"; \
-		$(MAKE) free-port >/dev/null 2>&1; \
-		sleep 2; \
+		echo "$(RED)❌ Porta $(PORT) ocupada!$(NC)"; \
+		echo "$(YELLOW)💡 Opções disponíveis:$(NC)"; \
+		echo "$(CYAN)   1. make dev-alt$(NC) - Porta alternativa (5001)"; \
+		echo "$(CYAN)   2. make dev-docker$(NC) - Docker (isolado, sem conflitos)"; \
+		echo "$(CYAN)   3. make free-port$(NC) - Tentar liberar (cuidado com processos do sistema)"; \
+		exit 1; \
 	fi
-	NODE_ENV=development npm run dev
+	PORT=$(PORT) NODE_ENV=development npm run dev
 
 dev-server: ## Executa apenas o backend em desenvolvimento
 	@echo "$(GREEN)⚙️  Iniciando backend em desenvolvimento...$(NC)"
-	NODE_ENV=development npx tsx server/index.ts
+	PORT=$(PORT) NODE_ENV=development npx tsx server/index.ts
 
 dev-client: ## Executa apenas o frontend em desenvolvimento
 	@echo "$(GREEN)🎨 Iniciando frontend em desenvolvimento...$(NC)"
 	npm run dev:client
+
+dev-docker: ## Executa servidor em container Docker (evita conflitos de porta)
+	@echo "$(GREEN)🐳 Iniciando servidor em Docker...$(NC)"
+	@if lsof -i :5000 >/dev/null 2>&1; then \
+		echo "$(YELLOW)⚠️  Porta 5000 ocupada, usando porta 5001 no host$(NC)"; \
+		echo "$(YELLOW)🌐 Frontend: http://localhost:5001$(NC)"; \
+		echo "$(YELLOW)🔧 Backend: http://localhost:5001/api$(NC)"; \
+		echo "$(CYAN)💡 Isso isola o servidor e evita conflitos com processos do sistema$(NC)"; \
+		DOCKER_PORT=5001 docker-compose -f docker-compose.dev.yml up --build; \
+	else \
+		echo "$(YELLOW)🌐 Frontend: http://localhost:5000$(NC)"; \
+		echo "$(YELLOW)🔧 Backend: http://localhost:5000/api$(NC)"; \
+		echo "$(CYAN)💡 Isso isola o servidor e evita conflitos com processos do sistema$(NC)"; \
+		DOCKER_PORT=5000 docker-compose -f docker-compose.dev.yml up --build; \
+	fi
 
 # 🏗️ BUILD E DEPLOY
 build: ## Build para produção
@@ -160,6 +178,27 @@ deep-clean: ## Limpeza profunda (remove node_modules)
 	@read -p ""
 	rm -rf node_modules package-lock.json
 	@echo "$(GREEN)✅ Limpeza profunda concluída!$(NC)"
+
+clean-install: ## Limpa cache, node_modules e reinstala dependências atualizadas
+	@echo "$(BLUE)🧹 Limpando cache e dependências...$(NC)"
+	@echo "$(YELLOW)1. Limpando cache do npm...$(NC)"
+	npm cache clean --force
+	@echo "$(YELLOW)2. Removendo node_modules...$(NC)"
+	rm -rf node_modules
+	@echo "$(YELLOW)3. Removendo package-lock.json...$(NC)"
+	rm -f package-lock.json
+	@echo "$(YELLOW)4. Limpando cache do Docker (opcional)...$(NC)"
+	@echo "$(CYAN)💡 Para limpar cache do Docker também, use 'make clean-install-docker'$(NC)"
+	@echo "$(GREEN)✅ Limpeza concluída!$(NC)"
+	@echo "$(BLUE)📦 Instalando dependências atualizadas...$(NC)"
+	npm install
+	@echo "$(GREEN)✅ Instalação concluída!$(NC)"
+
+clean-install-docker: clean-install ## Limpa tudo incluindo cache do Docker
+	@echo "$(YELLOW)5. Limpando cache do Docker...$(NC)"
+	docker system prune -f
+	docker builder prune -f
+	@echo "$(GREEN)✅ Cache do Docker limpo!$(NC)"
 
 # 📊 MONITORAMENTO E LOGS
 logs: ## Mostra logs da aplicação (se em execução)
@@ -385,6 +424,9 @@ port: check-port ## Alias para check-port
 free: free-port ## Alias para free-port
 force-free: free-port-force ## Alias para free-port-force
 alt: dev-alt ## Alias para dev-alt
+docker-dev: dev-docker ## Alias para dev-docker
+fresh: clean-install ## Alias para clean-install
+fresh-docker: clean-install-docker ## Alias para clean-install-docker
 deploy: deploy-frontend ## Alias para deploy-frontend
 tunnel: tunnel-localtunnel ## Alias para tunnel-localtunnel
 ai: ai-config ## Alias para ai-config
@@ -425,26 +467,39 @@ check-port: ## Verifica se a porta 5000 está em uso
 		echo "$(GREEN)✅ Porta $(PORT) está livre!$(NC)"; \
 	fi
 
-free-port: ## Libera a porta 5000 matando processos do projeto (seguro)
+free-port: ## Libera a porta 5000 matando apenas processos do projeto (seguro)
 	@echo "$(RED)🛑 Liberando porta $(PORT)...$(NC)"
+	@echo "$(YELLOW)⚠️  ATENÇÃO: Isso matará apenas processos do projeto (node/vite)$(NC)"
+	@echo "$(YELLOW)⚠️  Processos do sistema NÃO serão afetados$(NC)"
 	@if lsof -i :$(PORT) >/dev/null 2>&1; then \
-		echo "$(YELLOW)Aguardando 2 segundos para tentativa de kill gracioso...$(NC)"; \
-		lsof -ti :$(PORT) | xargs kill 2>/dev/null || true; \
-		sleep 2; \
-		if lsof -i :$(PORT) >/dev/null 2>&1; then \
-			echo "$(RED)⚠️  Ainda ocupado. Tentando kill forçado em processos do projeto...$(NC)"; \
-			pgrep -f "node.*server/index.ts" | xargs kill -9 2>/dev/null || true; \
-			pgrep -f "vite.*dev" | xargs kill -9 2>/dev/null || true; \
-			sleep 1; \
+		echo "$(YELLOW)Verificando processos na porta $(PORT)...$(NC)"; \
+		lsof -i :$(PORT) | grep -E "(node|vite|tsx)" >/dev/null 2>&1; \
+		if [ $$? -eq 0 ]; then \
+			echo "$(YELLOW)Aguardando 2 segundos para tentativa de kill gracioso...$(NC)"; \
+			lsof -ti :$(PORT) | xargs -I {} sh -c 'ps -p {} -o comm= | grep -E "(node|vite|tsx)" >/dev/null && kill {} 2>/dev/null || true' || true; \
+			sleep 2; \
 			if lsof -i :$(PORT) >/dev/null 2>&1; then \
-				echo "$(RED)❌ Porta ainda ocupada por processo do sistema:$(NC)"; \
-				lsof -i :$(PORT); \
-				echo "$(YELLOW)💡 Use 'make dev-alt' para porta alternativa ou 'make free-port-force'$(NC)"; \
+				echo "$(RED)⚠️  Ainda ocupado. Tentando kill forçado em processos do projeto...$(NC)"; \
+				pgrep -f "node.*server/index.ts" | xargs kill -9 2>/dev/null || true; \
+				pgrep -f "vite.*dev" | xargs kill -9 2>/dev/null || true; \
+				pgrep -f "tsx.*server/index.ts" | xargs kill -9 2>/dev/null || true; \
+				sleep 1; \
+				if lsof -i :$(PORT) >/dev/null 2>&1; then \
+					echo "$(RED)❌ Porta ainda ocupada por processo do sistema:$(NC)"; \
+					lsof -i :$(PORT); \
+					echo "$(YELLOW)💡 Use 'make dev-alt' para porta alternativa (5001)$(NC)"; \
+					echo "$(YELLOW)💡 Ou 'make free-port-force' para forçar (CUIDADO!)$(NC)"; \
+				else \
+					echo "$(GREEN)✅ Porta $(PORT) liberada!$(NC)"; \
+				fi; \
 			else \
 				echo "$(GREEN)✅ Porta $(PORT) liberada!$(NC)"; \
 			fi; \
 		else \
-			echo "$(GREEN)✅ Porta $(PORT) liberada!$(NC)"; \
+			echo "$(RED)❌ Porta $(PORT) ocupada por processo do sistema (não será morto):$(NC)"; \
+			lsof -i :$(PORT); \
+			echo "$(YELLOW)💡 Use 'make dev-alt' para porta alternativa (5001)$(NC)"; \
+			echo "$(YELLOW)💡 Ou 'make free-port-force' para forçar (CUIDADO! Pode afetar sistema)$(NC)"; \
 		fi; \
 	else \
 		echo "$(YELLOW)ℹ️  Porta $(PORT) já está livre.$(NC)"; \
@@ -467,7 +522,7 @@ dev-alt: ## Executa desenvolvimento na porta 5001 (alternativa)
 	@echo "$(GREEN)🚀 Iniciando servidor alternativo na porta 5001...$(NC)"
 	@echo "$(YELLOW)🌐 Frontend: http://localhost:5001$(NC)"
 	@echo "$(YELLOW)🔧 Backend: http://localhost:5001/api$(NC)"
-	PORT=5001 $(MAKE) dev
+	PORT=5001 NODE_ENV=development npm run dev
 
 # 🆘 EMERGÊNCIA
 emergency-stop: ## Para todos os processos relacionados

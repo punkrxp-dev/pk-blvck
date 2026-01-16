@@ -7,6 +7,9 @@ build
 .next
 .nuxt
 
+# Documentation
+docs
+
 # Environment variables (CRITICAL - NEVER COMMIT!)
 .env
 .env.local

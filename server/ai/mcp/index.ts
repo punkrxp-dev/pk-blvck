@@ -11,6 +11,7 @@ import { vectorStore } from '../memory';
 import { IntentAgent } from '../agents/intent.agent';
 import { SentinelAgent } from '../agents/sentinel.agent';
 import { ObserverAgent } from '../agents/observer.agent';
+import { log } from '../../utils/logger';
 
 export class MCPCoordinator {
     private intentAgent: IntentAgent;
@@ -22,7 +23,7 @@ export class MCPCoordinator {
         this.sentinelAgent = new SentinelAgent();
         this.observerAgent = new ObserverAgent();
 
-        console.log('🚀 MCP: Cognitive Pipeline Initialized');
+        log('MCP: Cognitive Pipeline Initialized', 'mcp-coordinator');
     }
 
     /**
@@ -104,7 +105,11 @@ export class MCPCoordinator {
             return processedLead;
 
         } catch (error) {
-            console.error('🔥 MCP Pipeline Failed:', error);
+            log(
+                `MCP Pipeline Failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                'mcp-coordinator',
+                'error'
+            );
 
             // Return a basic failed state
             return {

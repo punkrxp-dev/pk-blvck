@@ -1,6 +1,7 @@
 
 import { embed } from 'ai';
 import { openai } from '@ai-sdk/openai';
+import { log } from '../../utils/logger';
 
 /**
  * Generates embeddings for a given text using OpenAI's text-embedding-3-small
@@ -18,7 +19,11 @@ export async function generateEmbedding(text: string): Promise<number[]> {
 
         return result.embedding;
     } catch (error) {
-        console.warn('⚠️ Embedding generation failed, returning empty vector', error);
+        log(
+            `Embedding generation failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+            'embeddings',
+            'warn'
+        );
         // Return zero vector or handle error appropriately in higher layers
         // For now, rethrow to let the caller decide
         throw error;

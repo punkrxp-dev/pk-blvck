@@ -19,7 +19,7 @@ type Result = {
   latencyMs: number;
 };
 
-const API = process.env.BENCH_API ?? "http://localhost:5000/api/mcp/benchmark";
+const API = process.env.BENCH_API ?? "http://127.0.0.1:5001/api/mcp/benchmark";
 const MODE = process.env.BENCH_MODE ?? "neo"; // "neo" | "legacy"
 const DATASET = process.env.BENCH_DATASET ?? path.join(process.cwd(), "bench/dataset.jsonl");
 
@@ -31,16 +31,37 @@ async function post(caseItem: Case): Promise<Result> {
   const t0 = now();
   const res = await fetch(API + `?mode=${MODE}`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      "Accept": "application/json",
+      "Accept-Language": "en-US,en;q=0.9",
+    },
     body: JSON.stringify(caseItem),
   });
 
   const latencyMs = now() - t0;
-  const json: any = await res.json().catch(() => ({}));
+
+  let json: any = {};
+  try {
+    json = await res.json();
+  } catch (e) {
+    console.error('JSON Parse Error:', e);
+    // Try to get text response instead
+    try {
+      const text = await res.text();
+      console.error('Raw Response Text:', text);
+    } catch (e2) {
+      console.error('Could not get response text either');
+    }
+    json = { error: 'json_parse_failed' };
+  }
 
   // Debug: log response for first request
   if (!globalThis.debugLogged) {
     console.error('DEBUG Response:', JSON.stringify(json, null, 2));
+    console.error('DEBUG Status:', res.status);
+    console.error('DEBUG Headers:', Object.fromEntries(res.headers.entries()));
     globalThis.debugLogged = true;
   }
 
@@ -50,18 +71,18 @@ async function post(caseItem: Case): Promise<Result> {
   let model = "unknown";
   let requiresHumanReview = false;
 
-  if (json?.success && json?.data) {
-    // Neo mode response structure
+  if (json?.intent?.intent) {
+    // Neo mode response structure (direct response)
+    intent = json.intent.intent;
+    mode = json.processing?.processingMode || "llm";
+    model = json.processing?.actualModel || json.intent?.model || "unknown";
+    requiresHumanReview = json.processing?.requiresHumanReview || false;
+  } else if (json?.success && json?.data) {
+    // Legacy mode response structure (wrapped)
     intent = json.data.intent || "unknown";
     mode = json.data.processing?.processingMode || "legacy";
     model = json.data.model || json.data.processing?.actualModel || "unknown";
     requiresHumanReview = json.data.processing?.requiresHumanReview || false;
-  } else if (json?.intent) {
-    // Legacy mode response structure
-    intent = json.intent;
-    mode = json.processing?.processingMode || "legacy";
-    model = json.model || json.processing?.actualModel || "unknown";
-    requiresHumanReview = json.processing?.requiresHumanReview || false;
   }
 
   return { expected: caseItem.expected_intent, got: String(intent), mode, model, requiresHumanReview, latencyMs };

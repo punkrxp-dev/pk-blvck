@@ -1,5 +1,6 @@
 import { openai } from '@ai-sdk/openai';
 import { google } from '@ai-sdk/google';
+import { log } from '../utils/logger';
 
 /**
  * AI Models Configuration
@@ -10,11 +11,11 @@ import { google } from '@ai-sdk/google';
 
 // Validate required API keys
 if (!process.env.OPENAI_API_KEY) {
-  console.warn('⚠️  OPENAI_API_KEY not found in environment variables');
+  log('OPENAI_API_KEY not found in environment variables', 'models', 'warn');
 }
 
 if (!process.env.GOOGLE_API_KEY) {
-  console.warn('⚠️  GOOGLE_API_KEY not found in environment variables');
+  log('GOOGLE_API_KEY not found in environment variables', 'models', 'warn');
 }
 
 /**

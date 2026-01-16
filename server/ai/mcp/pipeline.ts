@@ -8,6 +8,7 @@
 import { LeadInput, ProcessedLead } from './types';
 import { mcp } from './index';
 import { saveLead, notifyLead } from '../tools';
+import { log } from '../../utils/logger';
 
 /**
  * processLeadPipeline
@@ -16,17 +17,15 @@ import { saveLead, notifyLead } from '../tools';
  */
 export async function processLeadPipeline(input: LeadInput): Promise<ProcessedLead> {
     const startTimeMs = Date.now();
-    console.log('🎸 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log('🎸 NEO MCP PIPELINE - Processing Started');
-    console.log('🎸 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log(`📧 Email: ${input.email}`);
+    log('NEO MCP PIPELINE - Processing Started', 'mcp-pipeline');
+    log(`Email: ${input.email}`, 'mcp-pipeline');
 
     try {
         // 1. Core Cognitive Processing (Sentinel -> Observer -> Intent)
         const result = await mcp.processLead(input);
 
         // 2. Action Layer (Persistence)
-        console.log('⚡ ACTION LAYER: Saving to Database...');
+        log('ACTION LAYER: Saving to Database...', 'mcp-pipeline');
         const savedLead = await saveLead({
             email: result.email,
             rawMessage: input.message,
@@ -47,13 +46,12 @@ export async function processLeadPipeline(input: LeadInput): Promise<ProcessedLe
         // 3. Notification Layer
         let notified = false;
         if (result.status !== 'failed') {
-            console.log('⚡ ACTION LAYER: Notifying...');
+            log('ACTION LAYER: Notifying...', 'mcp-pipeline');
             notified = await notifyLead(result.email, result.intent.intent);
         }
 
-        console.log('🎸 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-        console.log(`🎉 NEO MCP PIPELINE - Completed in ${Date.now() - startTimeMs}ms`);
-        console.log('🎸 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
+        const processingTime = Date.now() - startTimeMs;
+        log(`NEO MCP PIPELINE - Completed in ${processingTime}ms`, 'mcp-pipeline');
 
         return {
             ...result,
@@ -62,7 +60,11 @@ export async function processLeadPipeline(input: LeadInput): Promise<ProcessedLe
         };
 
     } catch (error) {
-        console.error('❌ NEO MCP PIPELINE - Fatal Error:', error);
+        log(
+            `NEO MCP PIPELINE - Fatal Error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+            'mcp-pipeline',
+            'error'
+        );
         throw error;
     }
 }

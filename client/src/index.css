@@ -90,6 +90,21 @@ html {
   color: black;
 }
 
+/* Focus styles for accessibility */
+*:focus-visible {
+  outline: 2px solid hsl(25 100% 50%);
+  outline-offset: 2px;
+}
+
+/* Ensure focus is visible even when using custom focus styles */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+[role='button']:focus-visible {
+  outline: 2px solid hsl(25 100% 50%);
+  outline-offset: 2px;
+}
+
 .line-accent {
   background: hsl(25 100% 50%);
 }
@@ -160,12 +175,15 @@ html {
     min-width: 44px;
   }
 
-  /* Navigation dots - keep proportional on mobile */
+  /* Navigation dots - keep proportional on mobile but increase touch area */
   [data-testid^='nav-dot'] {
     min-height: 8px !important;
     min-width: 8px !important;
     max-width: 10px !important;
     max-height: 10px !important;
+    /* Increase touch target area with padding */
+    padding: 12px !important;
+    margin: -12px !important;
   }
 
   /* Optimize text rendering on mobile */
@@ -186,13 +204,12 @@ video[autoplay] {
 html,
 body {
   overscroll-behavior-y: none;
-  -webkit-overflow-scrolling: touch;
 }
 
 /* Ensure full height on mobile browsers */
 #root {
-  min-height: 100vh;
   min-height: -webkit-fill-available;
+  min-height: 100vh;
 }
 
 /* Touch optimization for navigation dots */

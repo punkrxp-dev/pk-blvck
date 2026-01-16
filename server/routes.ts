@@ -7,6 +7,7 @@ import { fromZodError } from 'zod-validation-error';
 import { processLeadPipeline } from './ai/mcp/pipeline';
 import { processLead as processLeadLegacy } from './ai/legacy/orchestrator';
 import { z } from 'zod';
+import { log } from './utils/logger';
 
 // ========================================
 // VALIDATION SCHEMAS
@@ -33,20 +34,24 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
       const user = await storage.createUser(validationResult.data);
       // Remove password from response
-      const { password, ...userWithoutPassword } = user;
+      const { password: _password, ...userWithoutPassword } = user;
       res.status(201).json(userWithoutPassword);
     } catch (error) {
       if (error instanceof Error && error.message === 'Username already exists') {
         return res.status(409).json({ message: 'Username already exists' });
       }
-      console.error('Registration error:', error);
+      log(
+        `Registration error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        'auth',
+        'error'
+      );
       res.status(500).json({ message: 'Internal server error' });
     }
   });
 
   app.post('/api/auth/login', passport.authenticate('local'), (req: Request, res: Response) => {
     // Remove password from response
-    const { password, ...userWithoutPassword } = req.user as User;
+    const { password: _password, ...userWithoutPassword } = req.user as User;
     res.json({
       message: 'Login successful',
       user: userWithoutPassword,
@@ -56,7 +61,11 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   app.post('/api/auth/logout', (req: Request, res: Response) => {
     req.logout(err => {
       if (err) {
-        console.error('Logout error:', err);
+        log(
+          `Logout error: ${err instanceof Error ? err.message : 'Unknown error'}`,
+          'auth',
+          'error'
+        );
         return res.status(500).json({ message: 'Logout failed' });
       }
       res.json({ message: 'Logout successful' });
@@ -67,7 +76,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
     if (!req.isAuthenticated()) {
       return res.status(401).json({ message: 'Not authenticated' });
     }
-    const { password, ...userWithoutPassword } = req.user as User;
+    const { password: _password, ...userWithoutPassword } = req.user as User;
     res.json(userWithoutPassword);
   });
 
@@ -88,7 +97,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
    * POST /api/mcp/ingest
    *
    * Main endpoint for lead ingestion and processing
-   * Orchestrates the entire Heavy Metal Flow:
+   * Orchestrates the entire NEO PROTOCOL:
    * 1. Enrich lead data
    * 2. Classify intent with AI
    * 3. Save to database
@@ -117,7 +126,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       let result;
       if (mode === 'legacy') {
         // Process lead through legacy pipeline
-        console.log('🔄 Using LEGACY mode');
+        log('Using LEGACY mode', 'mcp-ingest');
         result = await processLeadLegacy({
           email,
           message,
@@ -146,7 +155,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
         };
       } else {
         // Process lead through new MCP pipeline (Neo mode)
-        console.log('🔄 Using NEO mode');
+        log('Using NEO mode', 'mcp-ingest');
         result = await processLeadPipeline({
           email,
           message,
@@ -172,7 +181,11 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
         },
       });
     } catch (error) {
-      console.error('MCP Ingest error:', error);
+      log(
+        `MCP Ingest error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        'mcp-ingest',
+        'error'
+      );
 
       // Return error response
       res.status(500).json({
@@ -338,7 +351,11 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
         },
       });
     } catch (error) {
-      console.error('Error fetching leads:', error);
+      log(
+        `Error fetching leads: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        'leads',
+        'error'
+      );
       res.status(500).json({
         success: false,
         message: 'Failed to fetch leads',
@@ -386,7 +403,11 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
         data: updated[0],
       });
     } catch (error) {
-      console.error('Error updating lead status:', error);
+      log(
+        `Error updating lead status: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        'leads',
+        'error'
+      );
       res.status(500).json({
         success: false,
         message: 'Failed to update lead status',
@@ -437,7 +458,11 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
         data: updated[0],
       });
     } catch (error) {
-      console.error('Error marking lead as spam:', error);
+      log(
+        `Error marking lead as spam: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        'leads',
+        'error'
+      );
       res.status(500).json({
         success: false,
         message: 'Failed to mark lead as spam',
@@ -486,7 +511,11 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
         data: updated[0],
       });
     } catch (error) {
-      console.error('Error sending notification:', error);
+      log(
+        `Error sending notification: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        'notifications',
+        'error'
+      );
       res.status(500).json({
         success: false,
         message: 'Failed to send notification',
@@ -522,13 +551,26 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
         message: 'Lead deleted successfully',
       });
     } catch (error) {
-      console.error('Error deleting lead:', error);
+      log(
+        `Error deleting lead: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        'leads',
+        'error'
+      );
       res.status(500).json({
         success: false,
         message: 'Failed to delete lead',
         error: error instanceof Error ? error.message : 'Unknown error',
       });
     }
+  });
+
+  // Handle non-existent endpoints silently (scanners/bots)
+  app.all('/api/v0/swarm/peers', (req: Request, res: Response) => {
+    res.status(404).json({ message: 'Endpoint not found' });
+  });
+
+  app.all('/api/v0/swarm', (req: Request, res: Response) => {
+    res.status(404).json({ message: 'Endpoint not found' });
   });
 
   return httpServer;

@@ -8,6 +8,7 @@ import { db } from '../../db';
 import { leads, type Lead } from '@shared/schema';
 import { eq } from 'drizzle-orm';
 import { EnrichedLeadData } from './enrichment.tool';
+import { log } from '../../utils/logger';
 
 // Re-defining interface locally or importing could work, but using 'any' or flexible types 
 // for the JSONB columns is safer unless we strictly type them with schema.
@@ -41,7 +42,7 @@ export async function saveLead(data: {
                 .where(eq(leads.email, data.email))
                 .returning();
 
-            console.log(`✅ Lead updated: ${data.email}`);
+            log(`Lead updated: ${data.email}`, 'persistence');
             return updated[0];
         } else {
             // Insert new lead
@@ -58,11 +59,15 @@ export async function saveLead(data: {
                 })
                 .returning();
 
-            console.log(`✅ Lead created: ${data.email}`);
+            log(`Lead created: ${data.email}`, 'persistence');
             return inserted[0];
         }
     } catch (error) {
-        console.error('Error saving lead:', error);
+        log(
+            `Error saving lead: ${error instanceof Error ? error.message : 'Unknown error'}`,
+            'persistence',
+            'error'
+        );
         throw new Error(
             `Failed to save lead: ${error instanceof Error ? error.message : 'Unknown error'}`
         );

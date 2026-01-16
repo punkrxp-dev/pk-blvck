@@ -1,25 +1,25 @@
-# 🚀 PUNK BLVCK
+# PUNK BLVCK
 
 **Versão 2.0.0 - Security Hardened** | **Arquitetura NEØ Protected**
 
 Uma aplicação full-stack moderna com Express, React, TypeScript, PostgreSQL e segurança enterprise-grade.
 
-## 🛡️ Segurança Implementada
+## Segurança Implementada
 
-- ✅ **Hash bcrypt** com 12 rounds de salt
-- ✅ **Rate limiting** (100 req/15min + 5 auth/15min)
-- ✅ **Helmet security headers** (CSP, HSTS, XSS)
-- ✅ **Autenticação Passport.js** completa
-- ✅ **Validação Zod** com sanitização
-- ✅ **CORS configurado** para produção
+- **Hash bcrypt** com 12 rounds de salt
+- **Rate limiting** (100 req/15min + 5 auth/15min)
+- **Helmet security headers** (CSP, HSTS, XSS)
+- **Autenticação Passport.js** completa
+- **Validação Zod** com sanitização
+- **CORS configurado** para produção
 
-## 🏗️ Arquitetura
+## Arquitetura
 
 ```
 PUNK BLVCK
 ├── client/          # Frontend React + Vite
 ├── server/          # Backend Express + TypeScript
-│   ├── ai/          # 🤖 AI Infrastructure (GPT-4o + Gemini)
+│   ├── ai/          # AI Infrastructure (GPT-4o + Gemini)
 │   └── ...
 ├── shared/          # Schemas e tipos compartilhados
 ├── docs/            # Documentação e relatórios
@@ -34,7 +34,7 @@ PUNK BLVCK
 - **Segurança**: bcrypt, Helmet, Passport.js, Rate Limiting
 - **Ferramentas**: ESLint, TypeScript, Makefile
 
-## 🚨 Segurança
+## Segurança
 
 A aplicação implementa múltiplas camadas de segurança:
 
@@ -45,9 +45,9 @@ A aplicação implementa múltiplas camadas de segurança:
 - **Validação**: Sanitização de entrada com Zod
 - **Logs**: Logging estruturado para auditoria
 
-## 📚 Documentação
+## Documentação
 
-- **[🛠️ Guia de Setup & Técnico](./SETUPME.md)**: **Comece aqui para rodar o projeto**
+- **[Guia de Setup & Técnico](./SETUPME.md)**: **Comece aqui para rodar o projeto**
 - **[Links Disponíveis](./docs/links-disponiveis.md)**: URLs e acessos do projeto
 - **[Rotas da API](./docs/rotas-disponiveis.md)**: Documentação completa dos endpoints
 - **[Guia de Deploy (Railway)](./docs/railway-deploy.md)**: Instruções para deploy no Railway
@@ -55,13 +55,13 @@ A aplicação implementa múltiplas camadas de segurança:
 - **[Relatório de Integração AI](./docs/ai-integration-report.md)**: Stack de IA configurada
 - **[AI Module Guide](./server/ai/README.md)**: Como usar os modelos de IA
 
-## 📜 Padrões (Standards)
+## Padrões (Standards)
 
 - **[Workflow](./docs/standards/WORKFLOW.md)**: Protocolos de trabalho NEØ
 - **[Markdown Rules](./docs/standards/markdown.rules.md)**: Regras de formatação de documentação
 - **[Segurança](./SECURITY.md)**: Política de segurança e report de vulnerabilidades
 
-## 📄 Licença
+## Licença
 
 MIT License - ver arquivo LICENSE para detalhes.
 

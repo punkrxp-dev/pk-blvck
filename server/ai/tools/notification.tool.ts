@@ -4,6 +4,8 @@
  * Sends email notifications via Resend
  */
 
+import { log } from '../../utils/logger';
+
 export async function notifyLead(
     email: string,
     intent: 'high' | 'medium' | 'low' | 'spam'
@@ -13,19 +15,19 @@ export async function notifyLead(
     // Determine email template based on intent
     const templates = {
         high: {
-            subject: '🎯 High-Priority Lead Alert',
+            subject: 'High-Priority Lead Alert',
             body: `A high-priority lead has been identified: ${email}. Immediate follow-up recommended.`,
         },
         medium: {
-            subject: '📊 Medium-Priority Lead',
+            subject: 'Medium-Priority Lead',
             body: `A medium-priority lead has been captured: ${email}. Follow-up within 24 hours.`,
         },
         low: {
-            subject: '📝 New Lead Captured',
+            subject: 'New Lead Captured',
             body: `A new lead has been added: ${email}. Standard follow-up process.`,
         },
         spam: {
-            subject: '🚫 Spam Lead Detected',
+            subject: 'Spam Lead Detected',
             body: `Potential spam lead detected: ${email}. Review required.`,
         },
     };
@@ -50,22 +52,26 @@ export async function notifyLead(
             });
 
             if (!response.ok) {
-                console.warn(`Resend API error: ${response.status}, notification logged only`);
+                log(`Resend API error: ${response.status}, notification logged only`, 'notification', 'warn');
                 logNotification(email, intent, template);
                 return false;
             }
 
-            console.log(`📧 Email sent via Resend for ${email} (${intent})`);
+            log(`Email sent via Resend for ${email} (${intent})`, 'notification');
             return true;
         } catch (error) {
-            console.error('Error sending email via Resend:', error);
+            log(
+                `Error sending email via Resend: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                'notification',
+                'error'
+            );
             logNotification(email, intent, template);
             return false;
         }
     }
 
     // Mock notification for development
-    console.log('🔧 Mock notification (RESEND_API_KEY not configured)');
+    log('Mock notification (RESEND_API_KEY not configured)', 'notification');
     logNotification(email, intent, template);
     return true;
 }
@@ -78,12 +84,9 @@ function logNotification(
     intent: string,
     template: { subject: string; body: string }
 ) {
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log('📧 NOTIFICATION LOG');
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log(`To: ${email}`);
-    console.log(`Intent: ${intent.toUpperCase()}`);
-    console.log(`Subject: ${template.subject}`);
-    console.log(`Body: ${template.body}`);
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
+    log('NOTIFICATION LOG', 'notification');
+    log(`To: ${email}`, 'notification');
+    log(`Intent: ${intent.toUpperCase()}`, 'notification');
+    log(`Subject: ${template.subject}`, 'notification');
+    log(`Body: ${template.body}`, 'notification');
 }

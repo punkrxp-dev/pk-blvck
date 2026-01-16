@@ -1,0 +1,27 @@
+# 🚀 PUNK BLVCK - Dockerfile para Desenvolvimento
+# Container leve para desenvolvimento local
+
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Instalar dependências globais úteis
+RUN apk add --no-cache \
+    curl \
+    lsof \
+    netcat-openbsd
+
+# Copiar arquivos de dependências
+COPY package*.json ./
+
+# Instalar dependências
+RUN npm ci
+
+# Copiar código fonte (será sobrescrito por volume)
+COPY . .
+
+# Expor porta padrão
+EXPOSE 5000
+
+# Comando padrão (será sobrescrito pelo docker-compose)
+CMD ["npm", "run", "dev"]

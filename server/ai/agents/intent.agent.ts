@@ -13,6 +13,7 @@ import { primaryModel, fallbackModel } from '../models';
 import { IntentLayerOutput, MemoryContext } from '../mcp/types';
 import { getMemoryContext } from '../memory';
 import { loadPrompt } from '../prompts';
+import { log } from '../../utils/logger';
 
 // ========================================
 // INPUT/OUTPUT
@@ -76,7 +77,7 @@ export class IntentAgent extends BaseAgent<IntentInput, IntentLayerOutput> {
                 similarLeads: memoryContext.similarLeads.map(l => l.id),
             };
         } catch (primaryError) {
-            console.warn('⚠️ GPT-4o failed, trying Gemini...');
+            log('GPT-4o failed, trying Gemini...', 'IntentAgent', 'warn');
 
             // 4. Fallback para Gemini
             const result = await generateObject({
@@ -157,7 +158,7 @@ export class IntentAgent extends BaseAgent<IntentInput, IntentLayerOutput> {
         try {
             return await getMemoryContext(input.email, input.message || '');
         } catch (error) {
-            console.warn('⚠️ Memory unavailable, using empty context');
+            log('Memory unavailable, using empty context', 'IntentAgent', 'warn');
             return {
                 leadId: '',
                 embedding: [],

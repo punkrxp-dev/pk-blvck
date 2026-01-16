@@ -2,16 +2,16 @@
 /**
  * MCP Test Script
  *
- * Tests the Heavy Metal Flow (NΞØ Protocol) end-to-end using the new architecture.
+ * Tests the NEO PROTOCOL end-to-end using the new architecture.
  */
 
 import 'dotenv/config';
 import { processLeadPipeline } from './ai/mcp/pipeline';
 
 async function testMCP() {
-  console.log('🎸 ═══════════════════════════════════════════════════════');
-  console.log('🎸 MCP PIPELINE TEST - NΞØ Protocol');
-  console.log('🎸 ═══════════════════════════════════════════════════════\n');
+  console.log('═══════════════════════════════════════════════════════');
+  console.log('MCP PIPELINE TEST - NEO Protocol');
+  console.log('═══════════════════════════════════════════════════════\n');
 
   // Test cases
   const testCases = [
@@ -50,13 +50,13 @@ async function testMCP() {
   ];
 
   for (const testCase of testCases) {
-    console.log(`\n📋 TEST CASE: ${testCase.name}`);
+    console.log(`\nTEST CASE: ${testCase.name}`);
     console.log('─'.repeat(60));
 
     try {
       const result = await processLeadPipeline(testCase.input);
 
-      console.log('\n✅ TEST PASSED');
+      console.log('\nTEST PASSED');
       console.log(`   Lead ID: ${result.id}`);
       console.log(`   Intent: ${result.intent.intent.toUpperCase()}`);
       console.log(`   Confidence: ${Math.round(result.intent.confidence * 100)}%`);
@@ -64,7 +64,7 @@ async function testMCP() {
       console.log(`   Processing Time: ${result.processing.processingTimeMs}ms`);
       console.log('');
     } catch (error) {
-      console.error('\n❌ TEST FAILED');
+      console.error('\nTEST FAILED');
       console.error(`   Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
       console.log('');
     }
@@ -73,9 +73,9 @@ async function testMCP() {
     await new Promise(resolve => setTimeout(resolve, 1000));
   }
 
-  console.log('🎸 ═══════════════════════════════════════════════════════');
-  console.log('🎸 ALL TESTS COMPLETED');
-  console.log('🎸 ═══════════════════════════════════════════════════════\n');
+  console.log('═══════════════════════════════════════════════════════');
+  console.log('ALL TESTS COMPLETED');
+  console.log('═══════════════════════════════════════════════════════\n');
 }
 
 // Run tests

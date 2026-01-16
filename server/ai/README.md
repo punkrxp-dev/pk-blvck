@@ -1,8 +1,8 @@
-# 🤖 AI Module
+# AI Module
 
 Esta pasta contém toda a infraestrutura de Inteligência Artificial do projeto.
 
-## 📁 Estrutura
+## Estrutura
 
 ```
 server/ai/
@@ -11,7 +11,7 @@ server/ai/
 └── README.md         # Esta documentação
 ```
 
-## 🎯 Modelos Disponíveis
+## Modelos Disponíveis
 
 ### Primary Model: GPT-4o (OpenAI)
 - **Uso:** Tarefas complexas, raciocínio avançado, geração de código
@@ -23,7 +23,7 @@ server/ai/
 - **Variável:** `GOOGLE_API_KEY`
 - **Import:** `import { fallbackModel } from './ai'`
 
-## 🚀 Como Usar
+## Como Usar
 
 ### Exemplo Básico
 
@@ -63,7 +63,7 @@ console.log(config);
 // { openai: true, google: true, hasAnyModel: true }
 ```
 
-## 🔑 Variáveis de Ambiente Necessárias
+## Variáveis de Ambiente Necessárias
 
 Adicione ao seu arquivo `.env`:
 
@@ -72,7 +72,7 @@ OPENAI_API_KEY=sk-proj-your-openai-key-here
 GOOGLE_API_KEY=your-google-api-key-here
 ```
 
-## 📚 Próximos Passos
+## Próximos Passos
 
 Quando estiver pronto para criar rotas de IA:
 
@@ -80,7 +80,7 @@ Quando estiver pronto para criar rotas de IA:
 2. Criar `server/routes/chat.ts` - Endpoints de chat
 3. Criar `client/src/hooks/useChat.ts` - React hooks para UI
 
-## 🔗 Recursos
+## Recursos
 
 - [Vercel AI SDK Docs](https://sdk.vercel.ai/docs)
 - [LangChain Docs](https://js.langchain.com/docs/)

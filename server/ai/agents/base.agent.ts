@@ -11,6 +11,7 @@
  */
 
 import { ProcessingMode, ModelName, LayerMetadata } from '../mcp/types';
+import { log } from '../../utils/logger';
 
 export interface AgentConfig {
     name: string;
@@ -80,7 +81,7 @@ export abstract class BaseAgent<TInput, TOutput> {
                     const output = await this.processWithAI(input);
                     return this.buildResponse(output, 'llm', startTime);
                 } catch (aiError) {
-                    console.warn(`⚠️ AI failed in ${this.config.name}, using fallback`);
+                    log(`AI failed in ${this.config.name}, using fallback`, this.config.name, 'warn');
 
                     if (!this.config.fallbackEnabled) {
                         throw aiError;
@@ -93,7 +94,11 @@ export abstract class BaseAgent<TInput, TOutput> {
             return this.buildResponse(output, 'fallback', startTime);
 
         } catch (error) {
-            console.error(`❌ ${this.config.name} failed:`, error);
+            log(
+                `${this.config.name} failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                this.config.name,
+                'error'
+            );
             throw error;
         }
     }

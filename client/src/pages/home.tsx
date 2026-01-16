@@ -110,7 +110,7 @@ export default function Home() {
     <div className='min-h-screen bg-punk-base text-white overflow-x-hidden font-sans selection:bg-punk-neon selection:text-black'>
       <main>
         {/* Navigation Dots - Fixed */}
-        <nav className='fixed right-3 md:right-8 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-2 md:gap-3'>
+        <nav className='fixed right-3 md:right-8 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-2 md:gap-3' aria-label='Navegação por seções'>
           {sections.map((_, i) => (
             <button
               key={i}
@@ -119,11 +119,12 @@ export default function Home() {
                 setActiveSection(i);
                 document.getElementById(sections[i])?.scrollIntoView({ behavior: 'smooth' });
               }}
-              className={`w-2.5 h-2.5 md:w-1.5 md:h-1.5 rounded-full transition-all duration-300 touch-manipulation ${activeSection === i
+              className={`w-2.5 h-2.5 md:w-1.5 md:h-1.5 rounded-full transition-all duration-300 touch-manipulation p-2 -m-2 focus:outline-none focus:ring-2 focus:ring-punk-neon focus:ring-offset-2 focus:ring-offset-black ${activeSection === i
                 ? 'bg-punk-neon scale-125 md:scale-150'
                 : 'bg-white/20 hover:bg-white/50 active:bg-white/60'
                 }`}
-              aria-label={`Go to section ${i + 1}`}
+              aria-label={`Ir para seção ${i + 1}`}
+              aria-current={activeSection === i ? 'true' : 'false'}
             />
           ))}
         </nav>
@@ -132,23 +133,30 @@ export default function Home() {
         <button
           data-testid='menu-toggle'
           onClick={() => setNavOpen(!navOpen)}
-          className='fixed top-6 left-4 md:left-8 z-50 flex items-center gap-2 group'
+          aria-label={navOpen ? 'Fechar menu' : 'Abrir menu'}
+          aria-expanded={navOpen}
+          className='fixed top-6 left-4 md:left-8 z-50 flex items-center gap-2 group focus:outline-none focus:ring-2 focus:ring-punk-neon focus:ring-offset-2 focus:ring-offset-black rounded-sm'
         >
           <div className='flex flex-col gap-1'>
             <span
               className={`block w-5 h-px bg-white transition-all duration-300 ${navOpen ? 'rotate-45 translate-y-1' : ''}`}
+              aria-hidden='true'
             />
             <span
               className={`block w-5 h-px bg-white transition-all duration-300 ${navOpen ? '-rotate-45 -translate-y-0.5' : ''}`}
+              aria-hidden='true'
             />
           </div>
-          <span className='font-mono text-[10px] tracking-[0.2em] text-white/70 group-hover:text-white transition-colors hidden md:block'>
+          <span className='font-mono text-[10px] md:text-[10px] tracking-[0.2em] text-white/70 group-hover:text-white transition-colors'>
             {navOpen ? '[ CLOSE ]' : '[ MENU ]'}
           </span>
         </button>
 
         {/* Slide Menu */}
         <div
+          role='dialog'
+          aria-modal='true'
+          aria-label='Menu de navegação'
           className={`fixed inset-0 bg-black z-40 transition-transform duration-500 ${navOpen ? 'translate-x-0' : '-translate-x-full'
             }`}
         >
@@ -158,7 +166,7 @@ export default function Home() {
                 href='/dashboard'
                 data-testid='nav-link-dashboard'
                 onClick={() => setNavOpen(false)}
-                className='block font-mono text-xs tracking-[0.3em] text-white/50 hover:text-[hsl(25,100%,50%)] transition-colors'
+                className='block font-mono text-xs tracking-[0.3em] text-white/50 hover:text-[hsl(25,100%,50%)] focus:text-[hsl(25,100%,50%)] transition-colors focus:outline-none focus:ring-2 focus:ring-punk-neon focus:ring-offset-2 focus:ring-offset-black rounded-sm px-2 py-1'
               >
                 ⧖ dashboard
               </a>
@@ -166,7 +174,7 @@ export default function Home() {
                 href='#programs'
                 data-testid='nav-link-training'
                 onClick={() => setNavOpen(false)}
-                className='block font-mono text-xs tracking-[0.3em] text-white/50 hover:text-[hsl(25,100%,50%)] transition-colors'
+                className='block font-mono text-xs tracking-[0.3em] text-white/50 hover:text-[hsl(25,100%,50%)] focus:text-[hsl(25,100%,50%)] transition-colors focus:outline-none focus:ring-2 focus:ring-punk-neon focus:ring-offset-2 focus:ring-offset-black rounded-sm px-2 py-1'
               >
               // training
               </a>
@@ -174,7 +182,7 @@ export default function Home() {
                 href='#programs'
                 data-testid='nav-link-zone'
                 onClick={() => setNavOpen(false)}
-                className='block font-mono text-xs tracking-[0.3em] text-white/50 hover:text-[hsl(25,100%,50%)] transition-colors'
+                className='block font-mono text-xs tracking-[0.3em] text-white/50 hover:text-[hsl(25,100%,50%)] focus:text-[hsl(25,100%,50%)] transition-colors focus:outline-none focus:ring-2 focus:ring-punk-neon focus:ring-offset-2 focus:ring-offset-black rounded-sm px-2 py-1'
               >
                 [zone]
               </a>
@@ -182,7 +190,7 @@ export default function Home() {
                 href='#programs'
                 data-testid='nav-link-yoga'
                 onClick={() => setNavOpen(false)}
-                className='block font-mono text-xs tracking-[0.3em] text-white/50 hover:text-[hsl(25,100%,50%)] transition-colors'
+                className='block font-mono text-xs tracking-[0.3em] text-white/50 hover:text-[hsl(25,100%,50%)] focus:text-[hsl(25,100%,50%)] transition-colors focus:outline-none focus:ring-2 focus:ring-punk-neon focus:ring-offset-2 focus:ring-offset-black rounded-sm px-2 py-1'
               >
                 .yoga
               </a>
@@ -193,6 +201,7 @@ export default function Home() {
         {/* Hero Section */}
         <section
           id='hero'
+          aria-label='Seção principal'
           className='relative h-screen flex items-center justify-center overflow-hidden'
         >
           {/* Video Background */}
@@ -206,6 +215,7 @@ export default function Home() {
               disablePictureInPicture
               controls={false}
               preload='auto'
+              aria-label='Vídeo de fundo abstrato mostrando movimento corporal'
               className='w-full h-full object-cover opacity-30 grayscale'
               onError={e => {
                 console.warn('Video failed to load, using fallback');
@@ -263,7 +273,7 @@ export default function Home() {
         </section>
 
         {/* Programs Section */}
-        <section id='programs' className='min-h-screen py-24 md:py-32 px-4 md:px-8 lg:px-16'>
+        <section id='programs' aria-label='Programas e sistemas oferecidos' className='min-h-screen py-24 md:py-32 px-4 md:px-8 lg:px-16'>
           <div className='max-w-6xl mx-auto'>
             {/* Section Header */}
             <div className='flex items-center gap-4 mb-12 md:mb-24'>
@@ -276,7 +286,16 @@ export default function Home() {
               {/* Training */}
               <div
                 data-testid='program-training'
-                className='bg-black p-8 md:p-12 group cursor-pointer transition-colors hover:bg-white/[0.02]'
+                role='button'
+                tabIndex={0}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    // Adicionar ação se necessário
+                  }
+                }}
+                className='bg-black p-8 md:p-12 group cursor-pointer transition-colors hover:bg-white/[0.02] focus:outline-none focus:ring-2 focus:ring-punk-neon focus:ring-offset-2 focus:ring-offset-black'
+                aria-label='Programa de treinamento - Performance Optimization Protocol'
               >
                 <div className='flex items-start justify-between mb-8'>
                   <span className='font-mono text-xs text-white/50'>01</span>
@@ -295,7 +314,16 @@ export default function Home() {
               {/* Zone */}
               <div
                 data-testid='program-zone'
-                className='bg-black p-8 md:p-12 group cursor-pointer transition-colors hover:bg-white/[0.02]'
+                role='button'
+                tabIndex={0}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    // Adicionar ação se necessário
+                  }
+                }}
+                className='bg-black p-8 md:p-12 group cursor-pointer transition-colors hover:bg-white/[0.02] focus:outline-none focus:ring-2 focus:ring-punk-neon focus:ring-offset-2 focus:ring-offset-black'
+                aria-label='Programa Zone - High Intensity Framework'
               >
                 <div className='flex items-start justify-between mb-8'>
                   <span className='font-mono text-xs text-white/50'>02</span>
@@ -314,7 +342,16 @@ export default function Home() {
               {/* Yoga */}
               <div
                 data-testid='program-yoga'
-                className='bg-black p-8 md:p-12 group cursor-pointer transition-colors hover:bg-white/[0.02]'
+                role='button'
+                tabIndex={0}
+                onKeyDown={e => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    // Adicionar ação se necessário
+                  }
+                }}
+                className='bg-black p-8 md:p-12 group cursor-pointer transition-colors hover:bg-white/[0.02] focus:outline-none focus:ring-2 focus:ring-punk-neon focus:ring-offset-2 focus:ring-offset-black'
+                aria-label='Programa Yoga - Mobility Restoration Sequence'
               >
                 <div className='flex items-start justify-between mb-8'>
                   <span className='font-mono text-xs text-white/50'>03</span>
@@ -335,7 +372,7 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer id='footer' className='py-16 md:py-24 px-4 md:px-8 lg:px-16 border-t border-white/10'>
+      <footer id='footer' aria-label='Rodapé' className='py-16 md:py-24 px-4 md:px-8 lg:px-16 border-t border-white/10'>
         <div className='max-w-6xl mx-auto'>
           <div className='grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24'>
             {/* Brand */}
@@ -409,12 +446,17 @@ function WaitlistForm() {
       }}
       className={`transition-opacity duration-1000 ${mutation.isPending ? 'opacity-20 pointer-events-none' : 'opacity-100'}`}
     >
+      <label htmlFor='waitlist-email' className='sr-only'>
+        Email para aplicação de acesso
+      </label>
       <input
+        id='waitlist-email'
         type='email'
         value={email}
         onChange={e => setEmail(e.target.value)}
         placeholder='apply for access'
         required
+        aria-label='Email para aplicação de acesso'
         className='bg-transparent border-b border-white/20 focus:border-white/60 focus:outline-none py-3 md:py-2 w-full max-w-[280px] md:max-w-xs font-sans text-sm md:text-sm tracking-[0.15em] md:tracking-[0.2em] text-white/70 focus:text-white transition-all duration-500 placeholder:text-white/20 text-center uppercase'
       />
     </form>

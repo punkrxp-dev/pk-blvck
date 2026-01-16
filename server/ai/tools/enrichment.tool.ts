@@ -4,6 +4,8 @@
  * Uses Hunter.io to enrich lead data
  */
 
+import { log } from '../../utils/logger';
+
 export interface EnrichedLeadData {
     firstName?: string;
     lastName?: string;
@@ -25,7 +27,7 @@ export async function enrichLead(email: string): Promise<EnrichedLeadData> {
             );
 
             if (!response.ok) {
-                console.warn(`Hunter.io API error: ${response.status}, falling back to mock data`);
+                log(`Hunter.io API error: ${response.status}, falling back to mock data`, 'enrichment', 'warn');
                 return getMockEnrichedData(email);
             }
 
@@ -41,13 +43,17 @@ export async function enrichLead(email: string): Promise<EnrichedLeadData> {
                 verified: data.data?.result === 'deliverable',
             };
         } catch (error) {
-            console.error('Error calling Hunter.io API:', error);
+            log(
+                `Error calling Hunter.io API: ${error instanceof Error ? error.message : 'Unknown error'}`,
+                'enrichment',
+                'error'
+            );
             return getMockEnrichedData(email);
         }
     }
 
     // Mock data for development
-    console.log('🔧 Using mock enriched data (HUNTER_API_KEY not configured)');
+    log('Using mock enriched data (HUNTER_API_KEY not configured)', 'enrichment');
     return getMockEnrichedData(email);
 }
 

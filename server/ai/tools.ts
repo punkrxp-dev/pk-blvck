@@ -10,6 +10,7 @@
 import { db } from '../db';
 import { leads, type Lead } from '@shared/schema';
 import { eq } from 'drizzle-orm';
+import { log } from '../utils/logger';
 
 // ========================================
 // TYPES
@@ -67,7 +68,7 @@ export async function enrichLead(email: string): Promise<EnrichedLeadData> {
       );
 
       if (!response.ok) {
-        console.warn(`Hunter.io API error: ${response.status}, falling back to mock data`);
+        log(`Hunter.io API error: ${response.status}, falling back to mock data`, 'tools', 'warn');
         return getMockEnrichedData(email);
       }
 
@@ -83,13 +84,17 @@ export async function enrichLead(email: string): Promise<EnrichedLeadData> {
         verified: data.data?.result === 'deliverable',
       };
     } catch (error) {
-      console.error('Error calling Hunter.io API:', error);
+      log(
+        `Error calling Hunter.io API: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        'tools',
+        'error'
+      );
       return getMockEnrichedData(email);
     }
   }
 
   // Mock data for development
-  console.log('🔧 Using mock enriched data (HUNTER_API_KEY not configured)');
+  log('Using mock enriched data (HUNTER_API_KEY not configured)', 'tools');
   return getMockEnrichedData(email);
 }
 
@@ -157,7 +162,7 @@ export async function saveLead(data: {
         .where(eq(leads.email, data.email))
         .returning();
 
-      console.log(`✅ Lead updated: ${data.email}`);
+      log(`Lead updated: ${data.email}`, 'tools');
       return updated[0];
     } else {
       // Insert new lead
@@ -174,7 +179,7 @@ export async function saveLead(data: {
         })
         .returning();
 
-      console.log(`✅ Lead created: ${data.email}`);
+      log(`Lead created: ${data.email}`, 'tools');
       return inserted[0];
     }
   } catch (error) {
@@ -206,19 +211,19 @@ export async function notifyLead(
   // Determine email template based on intent
   const templates = {
     high: {
-      subject: '🎯 High-Priority Lead Alert',
+      subject: 'High-Priority Lead Alert',
       body: `A high-priority lead has been identified: ${email}. Immediate follow-up recommended.`,
     },
     medium: {
-      subject: '📊 Medium-Priority Lead',
+      subject: 'Medium-Priority Lead',
       body: `A medium-priority lead has been captured: ${email}. Follow-up within 24 hours.`,
     },
     low: {
-      subject: '📝 New Lead Captured',
+      subject: 'New Lead Captured',
       body: `A new lead has been added: ${email}. Standard follow-up process.`,
     },
     spam: {
-      subject: '🚫 Spam Lead Detected',
+      subject: 'Spam Lead Detected',
       body: `Potential spam lead detected: ${email}. Review required.`,
     },
   };
@@ -243,22 +248,26 @@ export async function notifyLead(
       });
 
       if (!response.ok) {
-        console.warn(`Resend API error: ${response.status}, notification logged only`);
+        log(`Resend API error: ${response.status}, notification logged only`, 'tools', 'warn');
         logNotification(email, intent, template);
         return false;
       }
 
-      console.log(`📧 Email sent via Resend for ${email} (${intent})`);
+      log(`Email sent via Resend for ${email} (${intent})`, 'tools');
       return true;
     } catch (error) {
-      console.error('Error sending email via Resend:', error);
+      log(
+        `Error sending email via Resend: ${error instanceof Error ? error.message : 'Unknown error'}`,
+        'tools',
+        'error'
+      );
       logNotification(email, intent, template);
       return false;
     }
   }
 
   // Mock notification for development
-  console.log('🔧 Mock notification (RESEND_API_KEY not configured)');
+  log('Mock notification (RESEND_API_KEY not configured)', 'tools');
   logNotification(email, intent, template);
   return true;
 }
@@ -271,12 +280,9 @@ function logNotification(
   intent: string,
   template: { subject: string; body: string }
 ) {
-  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log('📧 NOTIFICATION LOG');
-  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log(`To: ${email}`);
-  console.log(`Intent: ${intent.toUpperCase()}`);
-  console.log(`Subject: ${template.subject}`);
-  console.log(`Body: ${template.body}`);
-  console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
+  log('NOTIFICATION LOG', 'tools');
+  log(`To: ${email}`, 'tools');
+  log(`Intent: ${intent.toUpperCase()}`, 'tools');
+  log(`Subject: ${template.subject}`, 'tools');
+  log(`Body: ${template.body}`, 'tools');
 }

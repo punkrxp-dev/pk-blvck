@@ -1,6 +1,7 @@
 
 import fs from 'fs/promises';
 import path from 'path';
+import { log } from '../../utils/logger';
 
 const PROMPTS_DIR = path.join(process.cwd(), 'server/ai/prompts');
 
@@ -15,7 +16,11 @@ export async function loadPrompt(templateName: string): Promise<string> {
         const content = await fs.readFile(filePath, 'utf-8');
         return content;
     } catch (error) {
-        console.error(`❌ Failed to load prompt template: ${templateName}`, error);
+        log(
+            `Failed to load prompt template: ${templateName} - ${error instanceof Error ? error.message : 'Unknown error'}`,
+            'prompts',
+            'error'
+        );
         // Fallback to a generic prompt if file not found to prevent crash
         return `Analyze the following lead: {{EMAIL}} {{MESSAGE}}`;
     }
@@ -28,7 +33,11 @@ export async function loadPersona(personaName: string): Promise<any> {
         const personas = JSON.parse(content);
         return personas[personaName];
     } catch (error) {
-        console.error(`❌ Failed to load persona: ${personaName}`, error);
+        log(
+            `Failed to load persona: ${personaName} - ${error instanceof Error ? error.message : 'Unknown error'}`,
+            'prompts',
+            'error'
+        );
         return null;
     }
 }

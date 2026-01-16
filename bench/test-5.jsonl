@@ -1,0 +1,5 @@
+{"email":"ceo@acme.com","message":"Quero orçamento e condições de pagamento para implementação completa.","source":"web_waitlist","expected_intent":"high"}
+{"email":"hr@empresa.com","message":"Podemos conversar sobre parceria estratégica? Minha empresa tem interesse em soluções de alta performance.","source":"web_waitlist","expected_intent":"high"}
+{"email":"cto@startup.io","message":"Estamos procurando uma plataforma que possa escalar rapidamente. Qual é o preço mensal?","source":"web_waitlist","expected_intent":"high"}
+{"email":"gerente@corporation.com","message":"Olá, gostaria de saber mais sobre os recursos disponíveis e como funciona a implementação.","source":"web_waitlist","expected_intent":"high"}
+{"email":"diretor@bigcorp.com","message":"Nossa empresa precisa de uma solução robusta. Podemos agendar uma demonstração?","source":"web_waitlist","expected_intent":"high"}

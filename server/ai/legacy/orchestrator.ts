@@ -14,6 +14,7 @@ import { generateObject } from 'ai';
 import { primaryModel, fallbackModel } from '../models';
 import { enrichLead, saveLead, notifyLead, type LeadClassification } from '../tools';
 import { z } from 'zod';
+import { log } from '../../utils/logger';
 
 // ========================================
 // TYPES
@@ -71,41 +72,38 @@ const intentClassificationSchema = z.object({
 export async function processLead(input: LeadInput): Promise<ProcessedLead> {
   const startTime = Date.now();
 
-  console.log('🎸 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log('🎸 HEAVY METAL FLOW - Lead Processing Started');
-  console.log('🎸 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-  console.log(`📧 Email: ${input.email}`);
-  console.log(`📝 Message: ${input.message || 'N/A'}`);
-  console.log(`📍 Source: ${input.source}`);
-  console.log('');
+  log('NEO PROTOCOL - Lead Processing Started', 'legacy-orchestrator');
+  log(`Email: ${input.email}`, 'legacy-orchestrator');
+  log(`Message: ${input.message || 'N/A'}`, 'legacy-orchestrator');
+  log(`Source: ${input.source}`, 'legacy-orchestrator');
 
   try {
     // ========================================
     // STEP 1: ENRICH LEAD DATA
     // ========================================
-    console.log('⚡ STEP 1: Enriching lead data...');
+    log('STEP 1: Enriching lead data...', 'legacy-orchestrator');
     const enrichedData = await enrichLead(input.email);
-    console.log(
-      `✅ Enriched: ${enrichedData.firstName} ${enrichedData.lastName} @ ${enrichedData.company}`
+    log(
+      `Enriched: ${enrichedData.firstName} ${enrichedData.lastName} @ ${enrichedData.company}`,
+      'legacy-orchestrator'
     );
-    console.log('');
 
     // ========================================
     // STEP 2: CLASSIFY INTENT WITH AI (CRITICAL - WITH FALLBACK)
     // ========================================
-    console.log('⚡ STEP 2: Classifying intent with AI...');
+    log('STEP 2: Classifying intent with AI...', 'legacy-orchestrator');
     const classification = await classifyIntentWithFallback(input, enrichedData);
-    console.log(
-      `✅ Intent: ${classification.intent.toUpperCase()} (${Math.round(classification.confidence * 100)}% confidence)`
+    log(
+      `Intent: ${classification.intent.toUpperCase()} (${Math.round(classification.confidence * 100)}% confidence)`,
+      'legacy-orchestrator'
     );
-    console.log(`💭 Reasoning: ${classification.reasoning}`);
-    console.log(`🤖 Model: ${classification.model}`);
-    console.log('');
+    log(`Reasoning: ${classification.reasoning}`, 'legacy-orchestrator');
+    log(`Model: ${classification.model}`, 'legacy-orchestrator');
 
     // ========================================
     // STEP 3: SAVE TO DATABASE
     // ========================================
-    console.log('⚡ STEP 3: Saving lead to database...');
+    log('STEP 3: Saving lead to database...', 'legacy-orchestrator');
     const savedLead = await saveLead({
       email: input.email,
       rawMessage: input.message,
@@ -114,24 +112,20 @@ export async function processLead(input: LeadInput): Promise<ProcessedLead> {
       aiClassification: classification,
       status: 'processed',
     });
-    console.log(`✅ Saved to database: ${savedLead.id}`);
-    console.log('');
+    log(`Saved to database: ${savedLead.id}`, 'legacy-orchestrator');
 
     // ========================================
     // STEP 4: SEND NOTIFICATION
     // ========================================
-    console.log('⚡ STEP 4: Sending notification...');
+    log('STEP 4: Sending notification...', 'legacy-orchestrator');
     const notified = await notifyLead(input.email, classification.intent);
-    console.log(`✅ Notification ${notified ? 'sent' : 'logged'}`);
-    console.log('');
+    log(`Notification ${notified ? 'sent' : 'logged'}`, 'legacy-orchestrator');
 
     // ========================================
     // SUCCESS
     // ========================================
     const processingTime = Date.now() - startTime;
-    console.log('🎸 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-    console.log(`🎉 HEAVY METAL FLOW - Completed in ${processingTime}ms`);
-    console.log('🎸 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n');
+    log(`NEO PROTOCOL - Completed in ${processingTime}ms`, 'legacy-orchestrator');
 
     return {
       id: savedLead.id,
@@ -143,7 +137,11 @@ export async function processLead(input: LeadInput): Promise<ProcessedLead> {
       processingTime,
     };
   } catch (error) {
-    console.error('❌ HEAVY METAL FLOW - Fatal Error:', error);
+    log(
+      `NEO PROTOCOL - Fatal Error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      'legacy-orchestrator',
+      'error'
+    );
 
     // Save failed lead to database for manual review
     try {
@@ -154,7 +152,11 @@ export async function processLead(input: LeadInput): Promise<ProcessedLead> {
         status: 'failed',
       });
     } catch (dbError) {
-      console.error('❌ Failed to save error state to database:', dbError);
+      log(
+        `Failed to save error state to database: ${dbError instanceof Error ? dbError.message : 'Unknown error'}`,
+        'legacy-orchestrator',
+        'error'
+      );
     }
 
     throw error;
@@ -168,7 +170,7 @@ export async function processLead(input: LeadInput): Promise<ProcessedLead> {
 /**
  * Classifies lead intent using AI with automatic fallback
  *
- * CRITICAL: This implements the "Heavy Metal" robustness:
+ * CRITICAL: This implements the NEO PROTOCOL robustness:
  * 1. Try GPT-4o (primary model)
  * 2. If fails, immediately fallback to Gemini
  * 3. If both fail, use rule-based classification
@@ -188,7 +190,7 @@ async function classifyIntentWithFallback(
   // TRY PRIMARY MODEL (GPT-4o)
   // ========================================
   try {
-    console.log('🤖 Attempting classification with GPT-4o...');
+    log('Attempting classification with GPT-4o...', 'legacy-orchestrator');
 
     const result = await generateObject({
       model: primaryModel,
@@ -205,14 +207,18 @@ async function classifyIntentWithFallback(
       processedAt: new Date().toISOString(),
     };
   } catch (primaryError) {
-    console.warn('⚠️  GPT-4o failed, falling back to Gemini...');
-    console.error('Primary model error:', primaryError);
+    log('GPT-4o failed, falling back to Gemini...', 'legacy-orchestrator', 'warn');
+    log(
+      `Primary model error: ${primaryError instanceof Error ? primaryError.message : 'Unknown error'}`,
+      'legacy-orchestrator',
+      'error'
+    );
 
     // ========================================
     // FALLBACK TO GEMINI
     // ========================================
     try {
-      console.log('🤖 Attempting classification with Gemini...');
+      log('Attempting classification with Gemini...', 'legacy-orchestrator');
 
       const result = await generateObject({
         model: fallbackModel,
@@ -229,8 +235,12 @@ async function classifyIntentWithFallback(
         processedAt: new Date().toISOString(),
       };
     } catch (fallbackError) {
-      console.error('❌ Both AI models failed, using rule-based classification');
-      console.error('Fallback model error:', fallbackError);
+      log('Both AI models failed, using rule-based classification', 'legacy-orchestrator', 'error');
+      log(
+        `Fallback model error: ${fallbackError instanceof Error ? fallbackError.message : 'Unknown error'}`,
+        'legacy-orchestrator',
+        'error'
+      );
 
       // ========================================
       // LAST RESORT: RULE-BASED CLASSIFICATION

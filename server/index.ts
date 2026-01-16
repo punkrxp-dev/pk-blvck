@@ -59,7 +59,7 @@ app.post('/api/mcp/benchmark', express.json(), async (req: Request, res: Respons
 
     let result;
     if (mode === 'legacy') {
-      console.log('🔄 [BENCHMARK] Using LEGACY mode');
+      log('[BENCHMARK] Using LEGACY mode', 'benchmark');
       result = await processLeadLegacy({ email, message, source });
 
       // Transform legacy result
@@ -83,18 +83,25 @@ app.post('/api/mcp/benchmark', express.json(), async (req: Request, res: Respons
         status: result.status,
       };
     } else {
-      console.log('🔄 [BENCHMARK] Using NEO mode');
+      log('[BENCHMARK] Using NEO mode', 'benchmark');
       result = await processLeadPipeline({ email, message, source });
     }
 
     res.json(result);
   } catch (error) {
-    console.error('Benchmark error:', error);
+    log(
+      `Benchmark error: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      'benchmark',
+      'error'
+    );
     res.status(500).json({
       error: error instanceof Error ? error.message : 'Unknown error',
     });
   }
 });
+
+// Import structured logging utility
+import { log } from './utils/logger';
 
 // Security middleware
 app.use(
@@ -135,6 +142,8 @@ app.use(
   cors({
     origin: process.env.NODE_ENV === 'production' ? process.env.FRONTEND_URL || false : true,
     credentials: true,
+    // Permitir headers customizados para trackers
+    exposedHeaders: ['X-CSRF-Token'],
   })
 );
 
@@ -241,9 +250,25 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
 // Session configuration
 const MemoryStoreSession = MemoryStore(session);
+
+// Validate SESSION_SECRET - Critical security requirement
+const sessionSecret = process.env.SESSION_SECRET;
+if (!sessionSecret) {
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error(
+      'SESSION_SECRET is required in production. Set SESSION_SECRET environment variable.'
+    );
+  }
+  log(
+    'WARNING: SESSION_SECRET not set, using insecure default. Set SESSION_SECRET in production!',
+    'security',
+    'warn'
+  );
+}
+
 app.use(
   session({
-    secret: process.env.SESSION_SECRET || 'change-this-in-production',
+    secret: sessionSecret || 'change-this-in-production',
     resave: false,
     saveUninitialized: false,
     store: new MemoryStoreSession({
@@ -253,6 +278,11 @@ app.use(
       secure: process.env.NODE_ENV === 'production',
       httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+      // Permitir cookies em desenvolvimento (HTTP)
+      // Em produção, secure=true requer HTTPS
+      // Nota: Cookies de terceiros (trackers) podem falhar se muito grandes
+      // ou se SameSite for muito restritivo
     },
   })
 );
@@ -276,7 +306,11 @@ app.use((req, res, next) => {
   const token = req.headers['x-csrf-token'] || req.headers['csrf-token'] || req.body?._csrf;
 
   if (!token || token !== req.session.csrfToken) {
-    log(`CSRF token validation failed for ${req.method} ${req.path}`, 'security', 'warn');
+    // Silenciar warnings para endpoints conhecidos que não existem (scanners/bots)
+    const silentEndpoints = ['/api/v0/swarm/peers', '/api/v0/swarm'];
+    if (!silentEndpoints.includes(req.path)) {
+      log(`CSRF token validation failed for ${req.method} ${req.path}`, 'security', 'warn');
+    }
     return res.status(403).json({
       message: 'CSRF token validation failed',
       error: 'Invalid or missing CSRF token',
@@ -319,34 +353,6 @@ passport.deserializeUser(async (id: string, done) => {
 
 app.use(passport.initialize());
 app.use(passport.session());
-
-export function log(
-  message: string,
-  source = 'express',
-  level: 'info' | 'warn' | 'error' = 'info'
-) {
-  const timestamp = new Date().toISOString();
-  const _logEntry = {
-    timestamp,
-    level,
-    source,
-    message,
-    ...(level === 'error' && { stack: new Error().stack }),
-  };
-
-  const formattedMessage = `[${timestamp}] ${level.toUpperCase()} [${source}] ${message}`;
-
-  if (level === 'error') {
-    console.error(formattedMessage);
-  } else if (level === 'warn') {
-    console.warn(formattedMessage);
-  } else {
-    console.log(formattedMessage);
-  }
-
-  // In production, you would send this to a logging service
-  // logToExternalService(_logEntry);
-}
 
 app.use((req, res, next) => {
   const start = Date.now();
