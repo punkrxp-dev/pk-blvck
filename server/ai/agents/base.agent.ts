@@ -1,131 +1,166 @@
-import {
-    ProcessingMode,
-    ModelName,
-    ModelProvider,
-    PipelineStage,
-    ProcessingMetadata
-} from '../mcp/types';
+
+/**
+ * Base Agent Class
+ * 
+ * Classe abstrata que define o contrato de todos os agentes.
+ * Garante que cada agente tenha:
+ * - Estado (memória)
+ * - Ciclo de vida
+ * - Observabilidade
+ * - Fallback explícito
+ */
+
+import { ProcessingMode, ModelName, LayerMetadata } from '../mcp/types';
 
 export interface AgentConfig {
     name: string;
-    description: string;
-    primaryProvider: ModelProvider;
-    primaryModel: ModelName;
-    fallbackProvider?: ModelProvider;
-    fallbackModel?: ModelName;
+    requiresAI: boolean;
+    fallbackEnabled: boolean;
+    confidenceThreshold: number;
 }
 
-export interface AgentResult<T> {
-    data: T;
-    metadata: ProcessingMetadata;
-    stage: PipelineStage;
+export interface AgentContext {
+    mode: ProcessingMode;
+    model?: ModelName;
+    startTime: number;
+    metadata: Record<string, any>;
 }
 
-/**
- * BaseAgent: A fundação de todos os nós cognitivos.
- * Garante que nenhum agente rode sem rastreabilidade.
- */
 export abstract class BaseAgent<TInput, TOutput> {
     protected config: AgentConfig;
+    protected context: AgentContext;
 
     constructor(config: AgentConfig) {
         this.config = config;
+        this.context = this.initContext();
     }
 
+    // ========================================
+    // ABSTRACT METHODS (Cada agente implementa)
+    // ========================================
+
     /**
-     * O método público que o Pipeline chama.
-     * Envolve a lógica real em métricas e try/catch.
+     * Processamento com IA (LLM)
      */
-    async execute(input: TInput, context?: any): Promise<AgentResult<TOutput>> {
-        const startTimeMs = Date.now();
-        let mode: ProcessingMode = 'llm';
-        let activeModel = this.config.primaryModel;
-        let activeProvider = this.config.primaryProvider;
-        let fallbackUsed = false;
+    protected abstract processWithAI(input: TInput): Promise<TOutput>;
+
+    /**
+     * Fallback sem IA (regras/heurísticas)
+     */
+    protected abstract processWithFallback(input: TInput): Promise<TOutput>;
+
+    /**
+     * Validação do input
+     */
+    protected abstract validate(input: TInput): boolean;
+
+    // ========================================
+    // PUBLIC API
+    // ========================================
+
+    /**
+     * Método principal de processamento
+     * Orquestra IA → Fallback → Erro
+     */
+    async process(input: TInput): Promise<{
+        output: TOutput;
+        metadata: LayerMetadata;
+    }> {
+        const startTime = Date.now();
 
         try {
-            // Tentativa Principal
-            const result = await this.process(input, context);
+            // 1. Validar input
+            if (!this.validate(input)) {
+                throw new Error(`Invalid input for ${this.config.name}`);
+            }
 
-            return this.buildResult(result, startTimeMs, mode, activeProvider, activeModel, fallbackUsed);
-
-        } catch (error) {
-            console.warn(`[${this.config.name}] Primary model failed:`, error);
-
-            // Lógica de Fallback Automática
-            if (this.config.fallbackModel && this.config.fallbackProvider) {
+            // 2. Tentar com IA
+            if (this.config.requiresAI) {
                 try {
-                    console.info(`[${this.config.name}] Attempting fallback to ${this.config.fallbackModel}`);
-                    mode = 'fallback';
-                    activeModel = this.config.fallbackModel;
-                    activeProvider = this.config.fallbackProvider;
-                    fallbackUsed = true;
+                    const output = await this.processWithAI(input);
+                    return this.buildResponse(output, 'llm', startTime);
+                } catch (aiError) {
+                    console.warn(`⚠️ AI failed in ${this.config.name}, using fallback`);
 
-                    const result = await this.processFallback(input, context);
-                    return this.buildResult(result, startTimeMs, mode, activeProvider, activeModel, fallbackUsed);
-
-                } catch (fallbackError) {
-                    // Se o fallback falhar, tenta regras (se implementado)
-                    try {
-                        mode = 'rules';
-                        activeModel = 'rule-based';
-                        activeProvider = 'rules';
-                        const result = await this.processRules(input);
-                        return this.buildResult(result, startTimeMs, mode, activeProvider, activeModel, fallbackUsed);
-                    } catch (ruleError) {
-                        throw new Error(`Agent ${this.config.name} critical failure: All modes exhausted. Original: ${error instanceof Error ? error.message : 'Unknown'}`);
+                    if (!this.config.fallbackEnabled) {
+                        throw aiError;
                     }
                 }
             }
 
+            // 3. Fallback
+            const output = await this.processWithFallback(input);
+            return this.buildResponse(output, 'fallback', startTime);
+
+        } catch (error) {
+            console.error(`❌ ${this.config.name} failed:`, error);
             throw error;
         }
     }
 
-    // --- Métodos Abstratos (O que cada agente deve implementar) ---
+    // ========================================
+    // HELPER METHODS
+    // ========================================
 
-    protected abstract process(input: TInput, context?: any): Promise<TOutput>;
-
-    protected async processFallback(input: TInput, context?: any): Promise<TOutput> {
-        throw new Error("Fallback not implemented for this agent");
+    private initContext(): AgentContext {
+        return {
+            mode: 'llm',
+            startTime: Date.now(),
+            metadata: {},
+        };
     }
 
-    protected async processRules(input: TInput): Promise<TOutput> {
-        throw new Error("Rule-based processing not implemented for this agent");
-    }
-
-    // --- Helpers Privados ---
-
-    private buildResult(
-        data: TOutput,
-        startTimeMs: number,
+    private buildResponse(
+        output: TOutput,
         mode: ProcessingMode,
-        provider: ModelProvider,
-        model: ModelName,
-        fallback: boolean
-    ): AgentResult<TOutput> {
-        const endTimeMs = Date.now();
-        const durationMs = endTimeMs - startTimeMs;
+        startTime: number
+    ): {
+        output: TOutput;
+        metadata: LayerMetadata;
+    } {
+        const durationMs = Date.now() - startTime;
 
-        const stage: PipelineStage = {
+        return {
+            output,
+            metadata: {
+                agentName: this.config.name,
+                processingMode: mode,
+                modelProvider: 'openai', // Default, should be dynamic in improved version
+                modelName: 'gpt-4o', // Default
+                confidence: this.calculateConfidence(output, mode),
+                durationMs,
+            },
+        };
+    }
+
+    private calculateConfidence(output: TOutput, mode: ProcessingMode): number {
+        // Fallback sempre tem confiança baixa
+        if (mode === 'fallback' || mode === 'rules') {
+            return 0.3;
+        }
+
+        // Se output tem campo confidence, usar
+        if (typeof output === 'object' && output !== null && 'confidence' in output) {
+            return (output as any).confidence;
+        }
+
+        // Default para AI
+        return 0.8;
+    }
+
+    // ========================================
+    // OBSERVABILITY
+    // ========================================
+
+    getStatus(): {
+        name: string;
+        mode: ProcessingMode;
+        uptime: number;
+    } {
+        return {
             name: this.config.name,
-            startedAt: new Date(startTimeMs).toISOString(),
-            completedAt: new Date(endTimeMs).toISOString(),
-            durationMs: durationMs,
-            status: 'completed'
+            mode: this.context.mode,
+            uptime: Date.now() - this.context.startTime,
         };
-
-        const metadata: ProcessingMetadata = {
-            processingMode: mode,
-            modelProvider: provider,
-            actualModel: model,
-            fallbackUsed: fallback,
-            requiresHumanReview: mode === 'rules',
-            processingTimeMs: durationMs,
-            timestamp: new Date(endTimeMs).toISOString(),
-            layers: {} // Será populado pelo orquestrador
-        };
-
-        return { data, metadata, stage };
     }
 }
