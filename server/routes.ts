@@ -1,8 +1,8 @@
 import type { Express, Request, Response } from 'express';
-import { createServer, type Server } from 'http';
+import { type Server } from 'http';
 import passport from 'passport';
 import { storage } from './storage';
-import { insertUserSchema, loginSchema, type User } from '@shared/schema';
+import { insertUserSchema, type User } from '@shared/schema';
 import { fromZodError } from 'zod-validation-error';
 import { processLead } from './ai/orchestrator';
 import { z } from 'zod';
@@ -80,19 +80,19 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   });
 
   // ========================================
-  // MCP ROUTES - Heavy Metal Flow
+  // MCP ROUTES - Neo Mode Orchestrator
   // ========================================
 
   /**
    * POST /api/mcp/ingest
-   * 
+   *
    * Main endpoint for lead ingestion and processing
    * Orchestrates the entire Heavy Metal Flow:
    * 1. Enrich lead data
    * 2. Classify intent with AI
    * 3. Save to database
    * 4. Send notifications
-   * 
+   *
    * Body: { email, message?, source }
    * Returns: Processed lead with classification
    */
@@ -133,7 +133,6 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
           processingTime: result.processingTime,
         },
       });
-
     } catch (error) {
       console.error('MCP Ingest error:', error);
 
@@ -148,7 +147,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
   /**
    * GET /api/mcp/health
-   * 
+   *
    * Health check endpoint for MCP system
    * Returns status of AI models and database
    */
@@ -179,13 +178,13 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
   /**
    * GET /api/mcp/leads
-   * 
+   *
    * Retrieves leads from database with optional filtering
    * Query params:
    * - status: Filter by status (pending, processed, notified, failed)
    * - intent: Filter by AI classification intent (high, medium, low, spam)
    * - limit: Number of leads to return (default: 50, max: 100)
-   * 
+   *
    * Returns: Array of leads with statistics
    */
   app.get('/api/mcp/leads', async (req: Request, res: Response) => {
@@ -216,7 +215,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       if (dateRange && dateRange !== 'all') {
         const now = new Date();
         let startDate = new Date();
-        
+
         if (dateRange === 'today') {
           startDate.setHours(0, 0, 0, 0);
         } else if (dateRange === 'week') {
@@ -224,7 +223,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
         } else if (dateRange === 'month') {
           startDate.setMonth(now.getMonth() - 1);
         }
-        
+
         if (dateRange !== 'all') {
           conditions.push(sql`${leads.createdAt} >= ${startDate}`);
         }
@@ -235,7 +234,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
         .select({ count: count() })
         .from(leads)
         .where(conditions.length > 0 ? and(...conditions) : undefined);
-      
+
       const total = totalCountResult[0]?.count || 0;
       const totalPages = Math.ceil(total / pageSize);
       const offset = (page - 1) * pageSize;
@@ -247,9 +246,10 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
       } else if (sortBy === 'status') {
         orderByClause = sortOrder === 'asc' ? asc(leads.status) : desc(leads.status);
       } else if (sortBy === 'intent') {
-        orderByClause = sortOrder === 'asc' 
-          ? sql`${leads.aiClassification}->>'intent' ASC`
-          : sql`${leads.aiClassification}->>'intent' DESC`;
+        orderByClause =
+          sortOrder === 'asc'
+            ? sql`${leads.aiClassification}->>'intent' ASC`
+            : sql`${leads.aiClassification}->>'intent' DESC`;
       } else {
         // Default: createdAt
         orderByClause = sortOrder === 'asc' ? asc(leads.createdAt) : desc(leads.createdAt);
@@ -299,7 +299,6 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
           },
         },
       });
-
     } catch (error) {
       console.error('Error fetching leads:', error);
       res.status(500).json({
@@ -312,7 +311,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
   /**
    * PATCH /api/mcp/leads/:id/status
-   * 
+   *
    * Updates the status of a lead
    */
   app.patch('/api/mcp/leads/:id/status', async (req: Request, res: Response) => {
@@ -360,7 +359,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
   /**
    * PATCH /api/mcp/leads/:id/mark-spam
-   * 
+   *
    * Marks a lead as spam by updating its AI classification
    */
   app.patch('/api/mcp/leads/:id/mark-spam', async (req: Request, res: Response) => {
@@ -411,7 +410,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
   /**
    * POST /api/mcp/leads/:id/notify
-   * 
+   *
    * Sends a notification for a lead (triggers Resend email)
    */
   app.post('/api/mcp/leads/:id/notify', async (req: Request, res: Response) => {
@@ -460,7 +459,7 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
   /**
    * DELETE /api/mcp/leads/:id
-   * 
+   *
    * Deletes a lead from the database
    */
   app.delete('/api/mcp/leads/:id', async (req: Request, res: Response) => {
@@ -495,5 +494,4 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
   });
 
   return httpServer;
-
 }

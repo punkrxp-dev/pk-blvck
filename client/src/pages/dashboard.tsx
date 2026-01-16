@@ -1,8 +1,5 @@
 /**
- * Dashboard Page - Punk Black Aesthetic
- *
- * Lead management dashboard with real-time updates
- * Aesthetic: Dark background with neon orange accents
+ * Dashboard Page - Punk Black Aesthetic (Industrial/Underground)
  */
 
 import { useState } from 'react';
@@ -17,37 +14,26 @@ import {
   Pagination,
   PaginationContent,
   PaginationItem,
-  PaginationLink,
   PaginationNext,
   PaginationPrevious,
-  PaginationEllipsis,
 } from '../components/ui/pagination';
 import { Button } from '../components/ui/button';
 import { Download, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
+import { DashboardHeader } from '../components/dashboard-header';
 
 // ========================================
-// LOGO COMPONENT
+// LOGO COMPONENT (Footer version)
 // ========================================
 
-function PunkBlackLogo() {
+function PunkBlackLogoSmall() {
   return (
-    <div className='flex items-center gap-2 sm:gap-3'>
-      <div className='relative'>
-        <div className='w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center shadow-lg shadow-orange-500/25'>
-          <div className='text-black font-bold text-lg sm:text-xl font-mono'>PB</div>
-        </div>
-        <div className='absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-zinc-950 rounded-full border-2 border-orange-500 flex items-center justify-center'>
-          <span className='text-orange-500 text-[10px] sm:text-xs font-bold'>⦿</span>
-        </div>
+    <div className='flex items-center gap-2'>
+      <div className='w-8 h-8 bg-punk-plate rounded border border-punk-steel/20 flex items-center justify-center'>
+        <span className='text-punk-neon text-xs font-bold'>PB</span>
       </div>
-      <div>
-        <h1 className='text-lg sm:text-2xl font-bold text-white'>
-          <span className='text-orange-500'>PUNK</span> | BLVCK
-        </h1>
-        <p className='text-[10px] sm:text-xs text-zinc-400 hidden sm:block'>
-          High-end fitness system
-        </p>
-      </div>
+      <span className='text-lg font-industrial font-bold text-white tracking-widest'>
+        PUNK<span className='text-punk-neon'>|</span>BLVCK
+      </span>
     </div>
   );
 }
@@ -60,23 +46,21 @@ function DashboardFooter() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className='mt-8 sm:mt-16 py-4 sm:py-8 border-t border-zinc-800/50'>
-      <div className='max-w-7xl mx-auto px-4 sm:px-8'>
-        <div className='flex flex-col md:flex-row justify-between items-center gap-3 sm:gap-4'>
-          <div className='flex items-center gap-2 sm:gap-4'>
-            <PunkBlackLogo />
+    <footer className='mt-16 py-8 border-t border-punk-steel/10'>
+      <div className='max-w-7xl mx-auto px-8'>
+        <div className='flex flex-col md:flex-row justify-between items-center gap-4'>
+          <div className='flex items-center gap-4'>
+            <PunkBlackLogoSmall />
           </div>
-          <div className='flex flex-wrap items-center justify-center gap-2 sm:gap-6 text-xs sm:text-sm text-zinc-400'>
-            <span>© {currentYear} PUNK | BLVCK</span>
-            <span className='hidden sm:inline'>•</span>
-            <span className='hidden sm:inline'>Built with NEØ Protocol</span>
-            <span className='hidden sm:inline'>•</span>
-            <span>v2.0.0</span>
+          <div className='flex flex-wrap items-center justify-center gap-6 text-xs text-zinc-500 font-mono uppercase tracking-wider'>
+            <span>© {currentYear} INDUSTRIAL SYSTEMS</span>
+            <span>•</span>
+            <span>NEØ PROTOCOL v2.0</span>
           </div>
-          <div className='flex items-center gap-2 sm:gap-4'>
-            <div className='flex items-center gap-2 px-2 sm:px-3 py-1 bg-zinc-900/50 border border-zinc-800 rounded-full'>
-              <div className='w-2 h-2 bg-green-500 rounded-full animate-pulse'></div>
-              <span className='text-[10px] sm:text-xs text-zinc-400'>System Online</span>
+          <div className='flex items-center gap-4'>
+            <div className='flex items-center gap-2 px-3 py-1 bg-punk-plate border border-punk-steel/10 rounded-full'>
+              <div className='w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse'></div>
+              <span className='text-[10px] text-zinc-500 uppercase tracking-widest'>Online</span>
             </div>
           </div>
         </div>
@@ -102,56 +86,14 @@ function SortableHeader({ field, currentSort, onSort, children }: SortableHeader
 
   return (
     <th
-      className='px-3 sm:px-6 py-3 sm:py-4 text-left text-[10px] sm:text-xs font-medium text-zinc-400 uppercase tracking-wider cursor-pointer hover:text-zinc-300 transition-colors'
+      className='px-6 py-4 text-left text-xs font-bold text-zinc-500 uppercase tracking-widest font-mono cursor-pointer hover:text-punk-neon transition-colors'
       onClick={() => onSort(field)}
     >
-      <div className='flex items-center gap-1 sm:gap-2'>
+      <div className='flex items-center gap-2'>
         {children}
-        <Icon
-          className={`h-3 w-3 sm:h-4 sm:w-4 ${isActive ? 'text-orange-500' : 'text-zinc-500'}`}
-        />
+        <Icon className={`h-3 w-3 ${isActive ? 'text-punk-neon' : 'text-zinc-600'}`} />
       </div>
     </th>
-  );
-}
-
-// ========================================
-// KPI CARD COMPONENT
-// ========================================
-
-interface KPICardProps {
-  title: string;
-  value: number | string;
-  icon?: string;
-  trend?: 'up' | 'down' | 'neutral';
-  accentColor?: 'orange' | 'blue' | 'green' | 'red';
-}
-
-function KPICard({ title, value, icon, accentColor = 'orange' }: KPICardProps) {
-  const accentStyles = {
-    orange: 'border-orange-500/30 shadow-orange-500/10',
-    blue: 'border-blue-500/30 shadow-blue-500/10',
-    green: 'border-green-500/30 shadow-green-500/10',
-    red: 'border-red-500/30 shadow-red-500/10',
-  };
-
-  const textStyles = {
-    orange: 'text-orange-500',
-    blue: 'text-blue-400',
-    green: 'text-green-400',
-    red: 'text-red-400',
-  };
-
-  return (
-    <div
-      className={`bg-zinc-900/50 backdrop-blur-sm border rounded-lg p-4 sm:p-6 shadow-lg ${accentStyles[accentColor]}`}
-    >
-      <div className='flex items-center justify-between mb-2'>
-        <p className='text-xs sm:text-sm font-medium text-zinc-400'>{title}</p>
-        {icon && <span className='text-xl sm:text-2xl'>{icon}</span>}
-      </div>
-      <p className={`text-2xl sm:text-3xl font-bold ${textStyles[accentColor]}`}>{value}</p>
-    </div>
   );
 }
 
@@ -161,20 +103,19 @@ function KPICard({ title, value, icon, accentColor = 'orange' }: KPICardProps) {
 
 function DashboardSkeleton() {
   return (
-    <div className='space-y-6'>
-      {/* KPI Cards Skeleton */}
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
+    <div className='min-h-screen bg-punk-base space-y-8 p-8'>
+      <div className='h-40 w-full bg-punk-plate/50 animate-pulse rounded-lg border border-punk-steel/5' />
+
+      <div className='grid grid-cols-4 gap-4'>
         {[1, 2, 3, 4].map(i => (
-          <Skeleton key={i} className='h-32 bg-zinc-900/50' />
+          <Skeleton key={i} className='h-24 bg-punk-plate/50 border border-punk-steel/5' />
         ))}
       </div>
 
-      {/* Table Skeleton */}
-      <div className='bg-zinc-900/50 border border-zinc-800 rounded-lg p-6'>
-        <Skeleton className='h-8 w-48 mb-6 bg-zinc-800' />
-        <div className='space-y-3'>
+      <div className='bg-punk-plate border border-punk-steel/10 rounded-lg p-6'>
+        <div className='space-y-4'>
           {[1, 2, 3, 4, 5].map(i => (
-            <Skeleton key={i} className='h-16 bg-zinc-800' />
+            <Skeleton key={i} className='h-12 bg-zinc-900 border border-zinc-800' />
           ))}
         </div>
       </div>
@@ -210,7 +151,7 @@ export default function Dashboard() {
 
   const handleFiltersChange = (newFilters: LeadFilters) => {
     setFilters(newFilters);
-    setPage(1); // Reset to first page when filters change
+    setPage(1);
   };
 
   const { data, isLoading, error, isRefetching } = useLeads({
@@ -224,27 +165,14 @@ export default function Dashboard() {
 
   if (error) {
     return (
-      <div className='min-h-screen bg-zinc-950 text-white p-8'>
-        <div className='max-w-7xl mx-auto'>
-          <div className='bg-red-500/10 border border-red-500/50 rounded-lg p-6'>
-            <h2 className='text-xl font-bold text-red-400 mb-2'>❌ Erro ao carregar leads</h2>
-            <p className='text-red-300'>
-              {error instanceof Error ? error.message : 'Erro desconhecido'}
-            </p>
-          </div>
-        </div>
+      <div className='min-h-screen bg-punk-base flex items-center justify-center'>
+        <div className='text-red-500 font-mono'>SYSTEM ERROR: {error.message}</div>
       </div>
     );
   }
 
   if (isLoading) {
-    return (
-      <div className='min-h-screen bg-zinc-950 text-white p-8'>
-        <div className='max-w-7xl mx-auto'>
-          <DashboardSkeleton />
-        </div>
-      </div>
-    );
+    return <DashboardSkeleton />;
   }
 
   const stats = data?.stats || {
@@ -254,13 +182,14 @@ export default function Dashboard() {
     low: 0,
     spam: 0,
     processedToday: 0,
+    conversionRate: 26, // Hardcoded MOCK as per design request
   };
 
   const leads = data?.data || [];
   const pagination = data?.meta?.pagination;
 
   const handleExportCSV = () => {
-    exportLeadsToCSV(leads, `leads-${new Date().toISOString().split('T')[0]}.csv`);
+    exportLeadsToCSV(leads, `leads-industrial-${new Date().toISOString().split('T')[0]}.csv`);
   };
 
   const handleRowClick = (lead: Lead) => {
@@ -269,348 +198,189 @@ export default function Dashboard() {
   };
 
   return (
-    <div className='min-h-screen bg-zinc-950 text-white p-4 sm:p-6 lg:p-8'>
-      <div className='max-w-7xl mx-auto space-y-4 sm:space-y-6 lg:space-y-8'>
-        {/* Header */}
-        <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4'>
-          <PunkBlackLogo />
+    <div className='min-h-screen bg-punk-base text-white font-sans selection:bg-punk-neon selection:text-black'>
+      {/* INDUSTRIAL HEADER */}
+      <DashboardHeader
+        totalLeads={stats.total}
+        conversionRate={26} // Mock value requested
+        isLoading={isRefetching}
+      />
 
-          {/* Live Indicator */}
-          <div className='flex items-center gap-2 px-3 sm:px-4 py-2 bg-zinc-900/50 border border-zinc-800 rounded-lg w-full sm:w-auto'>
+      <div className='max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 space-y-8'>
+        {/* OPERATIONAL METRICS (Secondary Cards) */}
+        <div className='grid grid-cols-2 md:grid-cols-4 gap-4'>
+          {[
+            { label: 'High Intent', value: stats.high, color: 'text-punk-neon' },
+            { label: 'Medium', value: stats.medium, color: 'text-blue-400' },
+            { label: 'Low', value: stats.low, color: 'text-zinc-500' },
+            { label: 'Spam Blocked', value: stats.spam, color: 'text-red-500' },
+          ].map((stat, idx) => (
             <div
-              className={`w-2 h-2 rounded-full ${isRefetching ? 'bg-orange-500 animate-pulse' : 'bg-green-500'}`}
-            />
-            <span className='text-xs sm:text-sm text-zinc-400'>
-              {isRefetching ? 'Atualizando...' : 'Ao vivo'}
-            </span>
-          </div>
-        </div>
-
-        {/* KPI Cards */}
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4'>
-          <KPICard title='Total de Leads' value={stats.total} icon='⧉' accentColor='blue' />
-          <KPICard title='Alta Intenção' value={stats.high} icon='⍟' accentColor='orange' />
-          <KPICard
-            title='Processados Hoje'
-            value={stats.processedToday}
-            icon='⨀'
-            accentColor='green'
-          />
-          <KPICard title='Spam Detectado' value={stats.spam} icon='⨂' accentColor='red' />
-        </div>
-
-        {/* Integrations Status */}
-        <div className='bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-lg p-4 sm:p-6 shadow-lg'>
-          <h2 className='text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4'>
-            ⟁ Integrações Ativas
-          </h2>
-          <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4'>
-            <div className='flex items-start gap-3 p-4 bg-zinc-800/50 border border-zinc-700 rounded-lg hover:bg-zinc-800/70 transition-colors'>
-              <div className='w-10 h-10 bg-green-500/20 border border-green-500/50 rounded-full flex items-center justify-center flex-shrink-0'>
-                <span className='text-green-400 text-sm font-bold'>⨀</span>
-              </div>
-              <div className='min-w-0'>
-                <p className='text-sm font-medium text-white'>OpenAI GPT-4o</p>
-                <p className='text-xs text-zinc-400 leading-tight'>
-                  Classifica leads por intenção (alta/média/baixa/spam) usando IA avançada
-                </p>
-              </div>
-            </div>
-
-            <div className='flex items-start gap-3 p-4 bg-zinc-800/50 border border-zinc-700 rounded-lg hover:bg-zinc-800/70 transition-colors'>
-              <div className='w-10 h-10 bg-blue-500/20 border border-blue-500/50 rounded-full flex items-center justify-center flex-shrink-0'>
-                <span className='text-blue-400 text-sm font-bold'>G</span>
-              </div>
-              <div className='min-w-0'>
-                <p className='text-sm font-medium text-white'>Google Gemini</p>
-                <p className='text-xs text-zinc-400 leading-tight'>
-                  Backup automático quando OpenAI indisponível ou sem quota
-                </p>
-              </div>
-            </div>
-
-            <div className='flex items-start gap-3 p-4 bg-zinc-800/50 border border-zinc-700 rounded-lg hover:bg-zinc-800/70 transition-colors'>
-              <div className='w-10 h-10 bg-purple-500/20 border border-purple-500/50 rounded-full flex items-center justify-center flex-shrink-0'>
-                <span className='text-purple-400 text-sm font-bold'>H</span>
-              </div>
-              <div className='min-w-0'>
-                <p className='text-sm font-medium text-white'>Hunter.io</p>
-                <p className='text-xs text-zinc-400 leading-tight'>
-                  Enriquece dados: nome completo, empresa, cargo, domínio profissional
-                </p>
-              </div>
-            </div>
-
-            <div className='flex items-start gap-3 p-4 bg-zinc-800/50 border border-zinc-700 rounded-lg hover:bg-zinc-800/70 transition-colors'>
-              <div className='w-10 h-10 bg-orange-500/20 border border-orange-500/50 rounded-full flex items-center justify-center flex-shrink-0'>
-                <span className='text-orange-400 text-sm font-bold'>R</span>
-              </div>
-              <div className='min-w-0'>
-                <p className='text-sm font-medium text-white'>Resend</p>
-                <p className='text-xs text-zinc-400 leading-tight'>
-                  Envia notificações automáticas por email para leads qualificados
-                </p>
-              </div>
-            </div>
-
-            <div className='flex items-start gap-3 p-4 bg-zinc-800/50 border border-zinc-700 rounded-lg hover:bg-zinc-800/70 transition-colors'>
-              <div className='w-10 h-10 bg-cyan-500/20 border border-cyan-500/50 rounded-full flex items-center justify-center flex-shrink-0'>
-                <span className='text-cyan-400 text-sm font-bold'>N</span>
-              </div>
-              <div className='min-w-0'>
-                <p className='text-sm font-medium text-white'>Neon Postgres</p>
-                <p className='text-xs text-zinc-400 leading-tight'>
-                  Banco de dados PostgreSQL gerenciado na nuvem com Drizzle ORM
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Intent Distribution */}
-        <div className='bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-lg p-4 sm:p-6 shadow-lg'>
-          <h2 className='text-lg sm:text-xl font-bold text-white mb-3 sm:mb-4'>
-            Distribuição de Intenção
-          </h2>
-          <div className='grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4'>
-            <div className='text-center'>
-              <p className='text-2xl font-bold text-orange-500'>{stats.high}</p>
-              <p className='text-sm text-zinc-400'>Alta</p>
-            </div>
-            <div className='text-center'>
-              <p className='text-2xl font-bold text-blue-400'>{stats.medium}</p>
-              <p className='text-sm text-zinc-400'>Média</p>
-            </div>
-            <div className='text-center'>
-              <p className='text-2xl font-bold text-gray-400'>{stats.low}</p>
-              <p className='text-sm text-zinc-400'>Baixa</p>
-            </div>
-            <div className='text-center'>
-              <p className='text-2xl font-bold text-red-400'>{stats.spam}</p>
-              <p className='text-sm text-zinc-400'>Spam</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Filters */}
-        <LeadFiltersComponent filters={filters} onFiltersChange={handleFiltersChange} />
-
-        {/* Leads Table */}
-        <div className='bg-zinc-900/50 backdrop-blur-sm border border-zinc-800 rounded-lg shadow-lg overflow-hidden'>
-          <div className='p-4 sm:p-6 border-b border-zinc-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0'>
-            <div>
-              <h2 className='text-lg sm:text-xl font-bold text-white'>Leads</h2>
-              <p className='text-xs sm:text-sm text-zinc-400 mt-1'>
-                {pagination
-                  ? `Mostrando ${(pagination.page - 1) * pagination.pageSize + 1}-${Math.min(
-                      pagination.page * pagination.pageSize,
-                      pagination.total
-                    )} de ${pagination.total} leads`
-                  : `Últimos ${leads.length} leads capturados`}
+              key={idx}
+              className='bg-punk-plate border border-punk-steel/10 p-4 rounded-sm hover:border-punk-neon/30 transition-colors group'
+            >
+              <p className='text-[10px] text-zinc-500 uppercase tracking-widest font-mono mb-1'>
+                {stat.label}
               </p>
+              <p
+                className={`text-2xl font-industrial font-bold ${stat.color} group-hover:scale-105 transition-transform origin-left`}
+              >
+                {stat.value}
+              </p>
+            </div>
+          ))}
+        </div>
+
+        {/* FILTERS & ACTIONS */}
+        <div className='flex flex-col space-y-4'>
+          <LeadFiltersComponent filters={filters} onFiltersChange={handleFiltersChange} />
+        </div>
+
+        {/* DATA TABLE CONTAINER */}
+        <div className='bg-punk-plate border border-punk-steel/10 rounded-sm overflow-hidden shadow-2xl shadow-black/50'>
+          {/* Table Toolbar */}
+          <div className='p-4 border-b border-punk-steel/5 flex justify-between items-center bg-zinc-900/50'>
+            <div className='flex items-center gap-2'>
+              <div className='w-2 h-2 bg-punk-neon rounded-full' />
+              <span className='text-xs font-mono text-zinc-400 uppercase tracking-wider'>
+                Live Feed • {pagination?.total || 0} Records
+              </span>
             </div>
             <Button
               onClick={handleExportCSV}
               variant='outline'
               size='sm'
-              className='bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700 w-full sm:w-auto'
+              className='bg-transparent border-punk-steel/20 text-punk-steel/60 hover:text-punk-neon hover:border-punk-neon text-xs uppercase tracking-widest font-mono'
             >
-              <Download className='h-4 w-4 sm:mr-2' />
-              <span className='hidden sm:inline'>Exportar CSV</span>
-              <span className='sm:hidden'>CSV</span>
+              <Download className='h-3 w-3 mr-2' />
+              Export CSV
             </Button>
           </div>
 
-          {leads.length === 0 ? (
-            <div className='p-12 text-center'>
-              <p className='text-zinc-500 text-lg'>Nenhum lead encontrado</p>
-              <p className='text-zinc-600 text-sm mt-2'>
-                Leads aparecerão aqui quando forem processados
-              </p>
-            </div>
-          ) : (
-            <div className='overflow-x-auto -mx-4 sm:mx-0'>
-              <table className='w-full min-w-[640px]'>
-                <thead className='bg-zinc-900/80'>
-                  <tr className='border-b border-zinc-800'>
-                    <SortableHeader field='email' currentSort={sortState} onSort={handleSort}>
-                      Email
-                    </SortableHeader>
-                    <th className='px-3 sm:px-6 py-3 sm:py-4 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider hidden sm:table-cell'>
-                      Empresa
-                    </th>
-                    <th className='px-3 sm:px-6 py-3 sm:py-4 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider hidden md:table-cell'>
-                      Cargo
-                    </th>
-                    <SortableHeader field='intent' currentSort={sortState} onSort={handleSort}>
-                      Intenção
-                    </SortableHeader>
-                    <SortableHeader field='status' currentSort={sortState} onSort={handleSort}>
-                      Status
-                    </SortableHeader>
-                    <SortableHeader field='createdAt' currentSort={sortState} onSort={handleSort}>
-                      Data
-                    </SortableHeader>
-                    <th className='px-3 sm:px-6 py-3 sm:py-4 text-left text-xs font-medium text-zinc-400 uppercase tracking-wider w-12'>
-                      Ações
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className='divide-y divide-zinc-800'>
-                  {leads.map((lead: Lead) => (
-                    <tr
-                      key={lead.id}
-                      className='hover:bg-zinc-800/50 transition-colors cursor-pointer'
-                      onClick={() => handleRowClick(lead)}
-                    >
-                      <td className='px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap'>
+          <div className='overflow-x-auto'>
+            <table className='w-full'>
+              <thead className='bg-zinc-950/50'>
+                <tr>
+                  <SortableHeader field='email' currentSort={sortState} onSort={handleSort}>
+                    Email / ID
+                  </SortableHeader>
+                  <th className='px-6 py-4 text-left text-xs font-bold text-zinc-500 uppercase tracking-widest font-mono hidden sm:table-cell'>
+                    Company
+                  </th>
+                  <th className='px-6 py-4 text-left text-xs font-bold text-zinc-500 uppercase tracking-widest font-mono hidden md:table-cell'>
+                    Role
+                  </th>
+                  <SortableHeader field='intent' currentSort={sortState} onSort={handleSort}>
+                    Intent
+                  </SortableHeader>
+                  <SortableHeader field='status' currentSort={sortState} onSort={handleSort}>
+                    Status
+                  </SortableHeader>
+                  <SortableHeader field='createdAt' currentSort={sortState} onSort={handleSort}>
+                    Date
+                  </SortableHeader>
+                  <th className='w-12'></th>
+                </tr>
+              </thead>
+              <tbody className='divide-y divide-punk-steel/5'>
+                {leads.map((lead: Lead) => (
+                  <tr
+                    key={lead.id}
+                    className='group hover:bg-punk-neon/5 transition-colors cursor-pointer'
+                    onClick={() => handleRowClick(lead)}
+                  >
+                    <td className='px-6 py-4'>
+                      <div className='flex flex-col'>
                         <div className='flex items-center gap-2'>
-                          <span className='text-sm font-medium text-white'>{lead.email}</span>
+                          <span className='font-mono text-sm text-punk-steel group-hover:text-white transition-colors'>
+                            {lead.email}
+                          </span>
                           {lead.enrichedData?.verified && (
-                            <span className='text-green-500' title='Email verificado'>
-                              ⨀
+                            <span className='text-[10px] text-green-500' title='Verified'>
+                              ✓
                             </span>
                           )}
                         </div>
                         {lead.enrichedData?.firstName && (
-                          <p className='text-xs text-zinc-500 mt-1'>
+                          <span className='text-xs text-zinc-600 mt-1'>
                             {lead.enrichedData.firstName} {lead.enrichedData.lastName}
-                          </p>
+                          </span>
                         )}
-                        {lead.enrichedData?.company && (
-                          <p className='text-xs text-zinc-500 mt-1 sm:hidden'>
-                            {lead.enrichedData.company}
-                          </p>
-                        )}
-                      </td>
-                      <td className='px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap hidden sm:table-cell'>
-                        <span className='text-sm text-zinc-300'>
-                          {lead.enrichedData?.company || '-'}
-                        </span>
-                      </td>
-                      <td className='px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap hidden md:table-cell'>
-                        <span className='text-sm text-zinc-300'>
-                          {lead.enrichedData?.position || '-'}
-                        </span>
-                      </td>
-                      <td className='px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap'>
-                        {lead.aiClassification ? (
-                          <IntentBadge
-                            intent={lead.aiClassification.intent}
-                            confidence={lead.aiClassification.confidence}
-                          />
-                        ) : (
-                          <span className='text-sm text-zinc-500'>-</span>
-                        )}
-                      </td>
-                      <td className='px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap'>
-                        <span
-                          className={`inline-flex px-2 py-1 text-xs font-medium rounded ${
-                            lead.status === 'processed'
-                              ? 'bg-green-500/20 text-green-400'
-                              : lead.status === 'pending'
-                                ? 'bg-yellow-500/20 text-yellow-400'
-                                : lead.status === 'failed'
-                                  ? 'bg-red-500/20 text-red-400'
-                                  : 'bg-zinc-700 text-zinc-300'
+                      </div>
+                    </td>
+                    <td className='px-6 py-4 hidden sm:table-cell'>
+                      <span className='text-sm text-zinc-400 font-mono'>
+                        {lead.enrichedData?.company || '-'}
+                      </span>
+                    </td>
+                    <td className='px-6 py-4 hidden md:table-cell'>
+                      <span className='text-sm text-zinc-400'>
+                        {lead.enrichedData?.position || '-'}
+                      </span>
+                    </td>
+                    <td className='px-6 py-4'>
+                      {lead.aiClassification && (
+                        <IntentBadge
+                          intent={lead.aiClassification.intent}
+                          confidence={lead.aiClassification.confidence}
+                        />
+                      )}
+                    </td>
+                    <td className='px-6 py-4'>
+                      <span
+                        className={`text-[10px] uppercase tracking-widest font-bold px-2 py-1 rounded-sm ${lead.status === 'processed'
+                            ? 'bg-green-500/10 text-green-500'
+                            : lead.status === 'failed'
+                              ? 'bg-red-500/10 text-red-500'
+                              : 'bg-zinc-800 text-zinc-500'
                           }`}
-                        >
-                          {lead.status}
-                        </span>
-                      </td>
-                      <td className='px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-xs sm:text-sm text-zinc-400'>
-                        {new Date(lead.createdAt).toLocaleDateString('pt-BR', {
-                          day: '2-digit',
-                          month: '2-digit',
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}
-                      </td>
-                      <td
-                        className='px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap'
-                        onClick={e => e.stopPropagation()}
                       >
-                        <LeadActions lead={lead} onViewDetails={() => handleRowClick(lead)} />
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+                        {lead.status}
+                      </span>
+                    </td>
+                    <td className='px-6 py-4'>
+                      <span className='text-xs text-zinc-600 font-mono'>
+                        {new Date(lead.createdAt).toLocaleDateString()}
+                      </span>
+                    </td>
+                    <td
+                      className='px-6 py-4 text-right opacity-0 group-hover:opacity-100 transition-opacity'
+                      onClick={e => e.stopPropagation()}
+                    >
+                      <LeadActions lead={lead} onViewDetails={() => handleRowClick(lead)} />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-          {/* Pagination */}
+          {/* Pagination Footer */}
           {pagination && pagination.totalPages > 1 && (
-            <div className='p-4 sm:p-6 border-t border-zinc-800'>
+            <div className='bg-zinc-950/30 border-t border-punk-steel/5 p-4 flex justify-center'>
               <Pagination>
-                <PaginationContent className='flex-wrap gap-1 sm:gap-2'>
+                {/* Reuse existing pagination logic but simplified styling if needed */}
+                <PaginationContent>
+                  <PaginationPrevious
+                    onClick={() => setPage(p => Math.max(1, p - 1))}
+                    className='text-zinc-500 hover:text-punk-neon cursor-pointer'
+                  />
                   <PaginationItem>
-                    <PaginationPrevious
-                      onClick={() => setPage(p => Math.max(1, p - 1))}
-                      className={
-                        page === 1
-                          ? 'pointer-events-none opacity-50'
-                          : 'cursor-pointer text-white hover:text-orange-500 text-xs sm:text-sm'
-                      }
-                    />
+                    <span className='text-xs text-zinc-600 font-mono mx-4'>
+                      PAGE {page} / {pagination.totalPages}
+                    </span>
                   </PaginationItem>
-                  {Array.from({ length: Math.min(3, pagination.totalPages) }, (_, i) => {
-                    let pageNum: number;
-                    if (pagination.totalPages <= 3) {
-                      pageNum = i + 1;
-                    } else if (page <= 2) {
-                      pageNum = i + 1;
-                    } else if (page >= pagination.totalPages - 1) {
-                      pageNum = pagination.totalPages - 2 + i;
-                    } else {
-                      pageNum = page - 1 + i;
-                    }
-                    return (
-                      <PaginationItem key={pageNum}>
-                        <PaginationLink
-                          onClick={() => setPage(pageNum)}
-                          isActive={page === pageNum}
-                          className='cursor-pointer text-white hover:text-orange-500 text-xs sm:text-sm min-w-[32px] sm:min-w-[40px]'
-                        >
-                          {pageNum}
-                        </PaginationLink>
-                      </PaginationItem>
-                    );
-                  })}
-                  {pagination.totalPages > 3 && (
-                    <>
-                      <PaginationEllipsis className='hidden sm:flex' />
-                      <PaginationItem className='hidden sm:list-item'>
-                        <PaginationLink
-                          onClick={() => setPage(pagination.totalPages)}
-                          isActive={page === pagination.totalPages}
-                          className='cursor-pointer text-white hover:text-orange-500'
-                        >
-                          {pagination.totalPages}
-                        </PaginationLink>
-                      </PaginationItem>
-                    </>
-                  )}
-                  <PaginationItem>
-                    <PaginationNext
-                      onClick={() => setPage(p => Math.min(pagination.totalPages, p + 1))}
-                      className={
-                        page === pagination.totalPages
-                          ? 'pointer-events-none opacity-50'
-                          : 'cursor-pointer text-white hover:text-orange-500 text-xs sm:text-sm'
-                      }
-                    />
-                  </PaginationItem>
+                  <PaginationNext
+                    onClick={() => setPage(p => Math.min(pagination.totalPages, p + 1))}
+                    className='text-zinc-500 hover:text-punk-neon cursor-pointer'
+                  />
                 </PaginationContent>
               </Pagination>
             </div>
           )}
         </div>
 
-        {/* Lead Detail Modal */}
         <LeadDetailModal lead={selectedLead} open={modalOpen} onOpenChange={setModalOpen} />
-
-        {/* Footer */}
         <DashboardFooter />
       </div>
     </div>

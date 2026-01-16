@@ -226,7 +226,7 @@ app.use((req, res, next) => {
     log(`CSRF token validation failed for ${req.method} ${req.path}`, 'security', 'warn');
     return res.status(403).json({
       message: 'CSRF token validation failed',
-      error: 'Invalid or missing CSRF token'
+      error: 'Invalid or missing CSRF token',
     });
   }
 

@@ -1,6 +1,6 @@
 /**
  * Intent Badge Component
- * 
+ *
  * Reusable badge component for displaying lead intent
  */
 

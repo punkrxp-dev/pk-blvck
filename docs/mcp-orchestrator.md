@@ -1,4 +1,4 @@
-# 🎸 MCP Orchestrator - Heavy Metal Flow
+# MCP Orchestrator - NEØ MODE
 
 **Model Context Protocol** implementation for robust lead processing with AI classification and automatic fallback.
 
@@ -109,7 +109,7 @@ If API keys are not configured, the system automatically uses mock data:
 
 ---
 
-## 🎸 The Heavy Metal Flow
+## Orchestrator // Neo Mode 
 
 ### Step 1: Enrich Lead
 

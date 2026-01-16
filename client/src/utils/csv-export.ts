@@ -1,6 +1,6 @@
 /**
  * CSV Export Utility
- * 
+ *
  * Converts leads data to CSV format and triggers download
  */
 
@@ -84,7 +84,7 @@ export function exportLeadsToCSV(leads: Lead[], filename: string = 'leads.csv'):
   ];
 
   // Build CSV rows
-  const rows = leads.map((lead) => {
+  const rows = leads.map(lead => {
     const fullName = lead.enrichedData
       ? `${lead.enrichedData.firstName || ''} ${lead.enrichedData.lastName || ''}`.trim()
       : '';
@@ -107,7 +107,7 @@ export function exportLeadsToCSV(leads: Lead[], filename: string = 'leads.csv'):
   });
 
   // Combine headers and rows
-  const csvContent = [headers.join(','), ...rows.map((row) => row.join(','))].join('\n');
+  const csvContent = [headers.join(','), ...rows.map(row => row.join(','))].join('\n');
 
   // Add BOM for Excel compatibility
   const BOM = '\uFEFF';
