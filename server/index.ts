@@ -15,8 +15,6 @@ import cors from 'cors';
 import crypto from 'crypto';
 import DOMPurify from 'dompurify';
 import { JSDOM } from 'jsdom';
-import { body, validationResult } from 'express-validator';
-import isEmail from 'isemail';
 import { storage } from './storage';
 import { type User } from '@shared/schema';
 
@@ -47,6 +45,57 @@ declare module 'http' {
   }
 }
 
+// Benchmark endpoint (before all middleware)
+app.post('/api/mcp/benchmark', express.json(), async (req: Request, res: Response) => {
+  try {
+    // Simple validation
+    const { email, message, source, mode } = req.body;
+    if (!email || !source) {
+      return res.status(400).json({ error: 'Email and source are required' });
+    }
+
+    const { processLeadPipeline } = await import('./ai/mcp/pipeline');
+    const { processLead: processLeadLegacy } = await import('./ai/legacy/orchestrator');
+
+    let result;
+    if (mode === 'legacy') {
+      console.log('🔄 [BENCHMARK] Using LEGACY mode');
+      result = await processLeadLegacy({ email, message, source });
+
+      // Transform legacy result
+      result = {
+        id: result.id,
+        email: result.email,
+        intent: {
+          intent: result.classification.intent,
+          confidence: result.classification.confidence,
+          reasoning: result.classification.reasoning,
+          userReply: result.classification.userReply,
+        },
+        processing: {
+          processingMode: 'legacy',
+          actualModel: result.classification.model,
+          processingTimeMs: result.processingTime,
+          requiresHumanReview: false,
+        },
+        presence: result.enrichedData,
+        notified: result.notified,
+        status: result.status,
+      };
+    } else {
+      console.log('🔄 [BENCHMARK] Using NEO mode');
+      result = await processLeadPipeline({ email, message, source });
+    }
+
+    res.json(result);
+  } catch (error) {
+    console.error('Benchmark error:', error);
+    res.status(500).json({
+      error: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+});
+
 // Security middleware
 app.use(
   helmet({
@@ -57,7 +106,7 @@ app.use(
         scriptSrc: [
           "'self'",
           "'unsafe-inline'", // Required for Vite React Refresh Preamble
-          "'unsafe-eval'",   // Required for Vite
+          "'unsafe-eval'", // Required for Vite
         ],
         imgSrc: ["'self'", 'data:', 'https:'],
         fontSrc: ["'self'", 'https://fonts.gstatic.com', 'data:'],
@@ -127,7 +176,7 @@ const registerLimiter = rateLimit({
 });
 
 // Password reset limiter - Strict
-const passwordResetLimiter = rateLimit({
+const _passwordResetLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
   max: 2, // limit each IP to 2 password resets per hour
   message: 'Too many password reset attempts, please try again later.',
@@ -140,7 +189,7 @@ app.use(globalLimiter);
 // Apply specific limiters to routes
 app.use('/api/auth/login', authLimiter);
 app.use('/api/auth/register', registerLimiter);
-// app.use('/api/auth/reset-password', passwordResetLimiter); // When implemented
+// app.use('/api/auth/reset-password', _passwordResetLimiter); // When implemented
 app.use('/api', apiLimiter);
 
 // Body parsing with size limits
@@ -277,7 +326,7 @@ export function log(
   level: 'info' | 'warn' | 'error' = 'info'
 ) {
   const timestamp = new Date().toISOString();
-  const logEntry = {
+  const _logEntry = {
     timestamp,
     level,
     source,
@@ -296,7 +345,7 @@ export function log(
   }
 
   // In production, you would send this to a logging service
-  // logToExternalService(logEntry);
+  // logToExternalService(_logEntry);
 }
 
 app.use((req, res, next) => {

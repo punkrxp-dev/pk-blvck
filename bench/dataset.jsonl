@@ -1,0 +1,40 @@
+{"email":"ceo@acme.com","message":"Quero orçamento e condições de pagamento para implementação completa.","source":"web_waitlist","expected_intent":"high"}
+{"email":"hr@empresa.com","message":"Podemos conversar sobre parceria estratégica? Minha empresa tem interesse em soluções de alta performance.","source":"web_waitlist","expected_intent":"high"}
+{"email":"cto@startup.io","message":"Estamos procurando uma plataforma que possa escalar rapidamente. Qual é o preço mensal?","source":"web_waitlist","expected_intent":"high"}
+{"email":"gerente@corporation.com","message":"Olá, gostaria de saber mais sobre os recursos disponíveis e como funciona a implementação.","source":"web_waitlist","expected_intent":"high"}
+{"email":"diretor@bigcorp.com","message":"Nossa empresa precisa de uma solução robusta. Podemos agendar uma demonstração?","source":"web_waitlist","expected_intent":"high"}
+{"email":"vp@enterprise.com","message":"Interessado em adquirir a plataforma. Quais são os termos de licenciamento?","source":"web_waitlist","expected_intent":"high"}
+{"email":"founder@unicorn.tech","message":"Procurando solução para escalabilidade. Como funciona o processo de onboarding?","source":"web_waitlist","expected_intent":"high"}
+{"email":"head@scaleup.com","message":"Empresa crescendo rapidamente, precisamos de algo que suporte nosso volume. Orçamento por favor.","source":"web_waitlist","expected_intent":"high"}
+{"email":"lead@potential.com","message":"Vi o anúncio e fiquei interessado. Gostaria de mais informações sobre preços.","source":"web_waitlist","expected_intent":"high"}
+{"email":"exec@global.com","message":"Nossa corporação está avaliando soluções similares. Podemos discutir termos comerciais?","source":"web_waitlist","expected_intent":"high"}
+{"email":"marketing@company.com","message":"Olá, trabalho no marketing e gostaria de entender melhor o produto.","source":"web_waitlist","expected_intent":"medium"}
+{"email":"dev@startup.com","message":"Sou desenvolvedor e estou curioso sobre as capacidades técnicas da plataforma.","source":"web_waitlist","expected_intent":"medium"}
+{"email":"consultor@firm.com","message":"Como consultor, avalio soluções para meus clientes. Posso ter mais detalhes?","source":"web_waitlist","expected_intent":"medium"}
+{"email":"analyst@research.com","message":"Estou pesquisando soluções no mercado. Quais são os diferenciais competitivos?","source":"web_waitlist","expected_intent":"medium"}
+{"email":"manager@team.com","message":"Minha equipe está interessada em modernizar nossa infraestrutura. Mais informações por favor.","source":"web_waitlist","expected_intent":"medium"}
+{"email":"specialist@domain.com","message":"Especialista em tecnologia, gostaria de conhecer a arquitetura da solução.","source":"web_waitlist","expected_intent":"medium"}
+{"email":"coordinator@project.com","message":"Coordeno projetos e estou avaliando opções. Como funciona a integração?","source":"web_waitlist","expected_intent":"medium"}
+{"email":"supervisor@operations.com","message":"Na área de operações, procuro soluções para otimizar processos. Detalhes técnicos.","source":"web_waitlist","expected_intent":"medium"}
+{"email":"planner@strategy.com","message":"Planejo estratégias tecnológicas. Interessado nos benefícios de longo prazo.","source":"web_waitlist","expected_intent":"medium"}
+{"email":"reviewer@tech.com","message":"Avalio tecnologias para implementação. Qual é a curva de aprendizado?","source":"web_waitlist","expected_intent":"medium"}
+{"email":"user@personal.com","message":"Oi, vi no site e quis saber mais.","source":"web_waitlist","expected_intent":"low"}
+{"email":"curious@gmail.com","message":"Olá, o que vocês fazem exatamente?","source":"web_waitlist","expected_intent":"low"}
+{"email":"student@university.edu","message":"Sou estudante e estou aprendendo sobre essas tecnologias.","source":"web_waitlist","expected_intent":"low"}
+{"email":"visitor@random.com","message":"Passando por aqui e cliquei no link.","source":"web_waitlist","expected_intent":"low"}
+{"email":"browser@internet.com","message":"Navegando e encontrei o site.","source":"web_waitlist","expected_intent":"low"}
+{"email":"tester@test.com","message":"Testando o sistema.","source":"web_waitlist","expected_intent":"low"}
+{"email":"anonymous@user.com","message":"Queria dar uma olhada.","source":"web_waitlist","expected_intent":"low"}
+{"email":"casual@web.com","message":"Oi, tudo bem?","source":"web_waitlist","expected_intent":"low"}
+{"email":"minimal@msg.com","message":"Interessado.","source":"web_waitlist","expected_intent":"low"}
+{"email":"brief@short.com","message":"Mais info.","source":"web_waitlist","expected_intent":"low"}
+{"email":"spam@spam.com","message":"buy now cheap viagra","source":"web_waitlist","expected_intent":"spam"}
+{"email":"bot@automation.com","message":"FREE MONEY CLICK HERE!!!","source":"web_waitlist","expected_intent":"spam"}
+{"email":"scam@fraud.com","message":"Urgent business proposal - send money now","source":"web_waitlist","expected_intent":"spam"}
+{"email":"fake@invalid.com","message":"Congratulations you won 1 million dollars","source":"web_waitlist","expected_intent":"spam"}
+{"email":"phish@attack.com","message":"Your account has been compromised - click to verify","source":"web_waitlist","expected_intent":"spam"}
+{"email":"promo@bulk.com","message":"SPECIAL OFFER - 90% OFF TODAY ONLY","source":"web_waitlist","expected_intent":"spam"}
+{"email":"ads@marketing.com","message":"Earn money from home working 1 hour per day","source":"web_waitlist","expected_intent":"spam"}
+{"email":"junk@mail.com","message":"This is not spam I promise - great opportunity","source":"web_waitlist","expected_intent":"spam"}
+{"email":"bulk@sender.com","message":"Limited time offer - act now before it's gone","source":"web_waitlist","expected_intent":"spam"}
+{"email":"auto@reply.com","message":"This is an automated response to your inquiry","source":"web_waitlist","expected_intent":"spam"}

@@ -2,7 +2,7 @@
 # Versão: 2.0.0 - Security Hardened
 # Arquitetura: NEØ Protected
 
-.PHONY: help install dev dev-server dev-client build start check db-push db-generate db-studio clean lint test security-audit setup-production setup-dev logs backup restore ai-test ai-config ai-docs
+.PHONY: help install dev dev-server dev-client build start check db-push db-generate db-studio clean lint test security-audit setup-production setup-dev logs backup restore ai-test ai-config ai-docs bench-neo bench-legacy bench-compare bench-custom
 
 # 🎨 CORES PARA OUTPUT
 RED=\033[0;31m
@@ -371,6 +371,7 @@ info: ## Informações detalhadas do projeto
 	@echo "$(CYAN)Auth:$(NC) Passport.js + Sessions"
 	@echo ""
 	@echo "$(YELLOW)🤖 Comandos de IA:$(NC) make ai-config, make ai-test, make ai-docs"
+	@echo "$(YELLOW)🎯 Comandos de Benchmark:$(NC) make bench-neo, make bench-legacy, make bench-compare"
 	@echo ""
 
 # 🎯 ALIASES ÚTEIS
@@ -388,6 +389,30 @@ deploy: deploy-frontend ## Alias para deploy-frontend
 tunnel: tunnel-localtunnel ## Alias para tunnel-localtunnel
 ai: ai-config ## Alias para ai-config
 test-ai: ai-test ## Alias para ai-test
+
+# 🎯 BENCHMARK COMMANDS
+# ========================================
+
+bench-neo: ## Executa benchmark Neo (MCP Pipeline)
+	@echo "$(CYAN)🔬 Executando benchmark NEO...$(NC)"
+	@BENCH_MODE=neo npx tsx bench/run-benchmark.ts
+
+bench-legacy: ## Executa benchmark Legacy
+	@echo "$(CYAN)🔬 Executando benchmark LEGACY...$(NC)"
+	@BENCH_MODE=legacy npx tsx bench/run-benchmark.ts
+
+bench-compare: ## Executa benchmark comparativo Neo vs Legacy
+	@echo "$(CYAN)🔬 Executando benchmark comparativo...$(NC)"
+	@echo "$(YELLOW)📊 NEO MODE:$(NC)"
+	@BENCH_MODE=neo npx tsx bench/run-benchmark.ts
+	@echo ""
+	@echo "$(YELLOW)📊 LEGACY MODE:$(NC)"
+	@BENCH_MODE=legacy npx tsx bench/run-benchmark.ts
+
+bench-custom: ## Executa benchmark com configuração customizada
+	@echo "$(CYAN)🔬 Executando benchmark customizado...$(NC)"
+	@echo "$(WHITE)Uso: make bench-custom BENCH_MODE=neo BENCH_API=http://localhost:3000/api/mcp/ingest$(NC)"
+	@BENCH_MODE=$(BENCH_MODE) BENCH_API=$(BENCH_API) npx tsx bench/run-benchmark.ts
 
 # 🔍 DIAGNÓSTICO
 check-port: ## Verifica se a porta 5000 está em uso

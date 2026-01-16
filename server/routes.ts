@@ -5,6 +5,7 @@ import { storage } from './storage';
 import { insertUserSchema, type User } from '@shared/schema';
 import { fromZodError } from 'zod-validation-error';
 import { processLeadPipeline } from './ai/mcp/pipeline';
+import { processLead as processLeadLegacy } from './ai/legacy/orchestrator';
 import { z } from 'zod';
 
 // ========================================
@@ -110,12 +111,48 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
       const { email, message, source } = validationResult.data;
 
-      // Process lead through new MCP pipeline
-      const result = await processLeadPipeline({
-        email,
-        message,
-        source,
-      });
+      // Check mode parameter (neo or legacy)
+      const mode = (req.query.mode as string) || 'neo';
+
+      let result;
+      if (mode === 'legacy') {
+        // Process lead through legacy pipeline
+        console.log('🔄 Using LEGACY mode');
+        result = await processLeadLegacy({
+          email,
+          message,
+          source,
+        });
+
+        // Transform legacy result to match Neo response format
+        result = {
+          id: result.id,
+          email: result.email,
+          intent: {
+            intent: result.classification.intent,
+            confidence: result.classification.confidence,
+            reasoning: result.classification.reasoning,
+            userReply: result.classification.userReply,
+          },
+          processing: {
+            processingMode: 'legacy',
+            actualModel: result.classification.model,
+            processingTimeMs: result.processingTime,
+            requiresHumanReview: false,
+          },
+          presence: result.enrichedData,
+          notified: result.notified,
+          status: result.status,
+        };
+      } else {
+        // Process lead through new MCP pipeline (Neo mode)
+        console.log('🔄 Using NEO mode');
+        result = await processLeadPipeline({
+          email,
+          message,
+          source,
+        });
+      }
 
       // Return success response with structured data
       res.status(200).json({
