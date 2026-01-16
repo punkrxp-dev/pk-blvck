@@ -8,7 +8,7 @@ build
 .nuxt
 
 # Documentation
-docs
+docs 
 
 # Environment variables (CRITICAL - NEVER COMMIT!)
 .env

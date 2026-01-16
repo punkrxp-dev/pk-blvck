@@ -97,5 +97,5 @@ We appreciate the security research community's efforts to keep our projects sec
 
 **Author:** MELLØ // NEØ DEV
 
-This project follows NEØ development standards.
+This project follows NEØ Protocol development standards.
 Security is a priority, not an afterthought.
