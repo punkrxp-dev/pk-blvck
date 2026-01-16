@@ -129,12 +129,21 @@ export default function Home() {
           ))}
         </nav>
 
+        {/* Logo Header */}
+        <div className='fixed top-6 right-4 md:right-8 z-50'>
+          <img
+            src='/web-app-manifest-512x512.png'
+            alt='PUNK | BLVCK Logo'
+            className='w-12 h-12 md:w-16 md:h-16 object-cover'
+          />
+        </div>
+
         {/* Menu Toggle */}
         <button
           data-testid='menu-toggle'
           onClick={() => setNavOpen(!navOpen)}
           aria-label={navOpen ? 'Fechar menu' : 'Abrir menu'}
-          aria-expanded={navOpen}
+          aria-expanded={navOpen ? 'true' : 'false'}
           className='fixed top-6 left-4 md:left-8 z-50 flex items-center gap-2 group focus:outline-none focus:ring-2 focus:ring-punk-neon focus:ring-offset-2 focus:ring-offset-black rounded-sm'
         >
           <div className='flex flex-col gap-1'>

@@ -33,18 +33,13 @@ export function DashboardHeader({ totalLeads, conversionRate, isLoading }: Dashb
           )}
 
           {/* THE PLATE (Logo Container) */}
-          <div className='w-20 h-20 md:w-24 md:h-24 bg-punk-plate rounded-full border-4 border-punk-steel/20 flex items-center justify-center shadow-lg shadow-black/50 z-20'>
-            {/* SVG LOGO "A" */}
-            <svg
-              width='40'
-              height='40'
-              viewBox='0 0 100 100'
-              fill='none'
-              xmlns='http://www.w3.org/2000/svg'
-            >
-              <path d='M50 10L10 90H30L50 50L70 90H90L50 10Z' fill='#E5E7EB' />
-              <rect x='42' y='65' width='16' height='16' fill='#FF5F1F' />
-            </svg>
+          <div className='w-20 h-20 md:w-24 md:h-24 bg-punk-plate rounded-full border-4 border-punk-steel/20 flex items-center justify-center shadow-lg shadow-black/50 z-20 overflow-hidden'>
+            {/* Logo Image */}
+            <img
+              src='/web-app-manifest-512x512.png'
+              alt='PUNK | BLVCK Logo'
+              className='w-full h-full object-cover'
+            />
           </div>
 
           {/* HEARTBEAT EFFECT (Iron Heart) */}
