@@ -1,4 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
+import { useMutation } from '@tanstack/react-query';
+import { apiRequest } from '@/lib/queryClient';
+import { toast } from 'sonner';
 
 export default function Home() {
   const [activeSection, setActiveSection] = useState(0);
@@ -69,8 +72,42 @@ export default function Home() {
     };
   }, []);
 
+  // Intersection Observer for scroll-based navigation dots
+  useEffect(() => {
+    const observerOptions = {
+      root: null,
+      rootMargin: '-50% 0px -50% 0px', // Trigger when section is in middle of viewport
+      threshold: 0,
+    };
+
+    const handleIntersect = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const index = sections.indexOf(entry.target.id);
+          if (index !== -1) {
+            setActiveSection(index);
+          }
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(handleIntersect, observerOptions);
+
+    sections.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+
+    return () => {
+      sections.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) observer.unobserve(el);
+      });
+    };
+  }, []);
+
   return (
-    <div className='min-h-screen bg-black text-white overflow-x-hidden'>
+    <div className='min-h-screen bg-punk-base text-white overflow-x-hidden font-sans selection:bg-punk-neon selection:text-black'>
       {/* Navigation Dots - Fixed */}
       <nav className='fixed right-3 md:right-8 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-2 md:gap-3'>
         {sections.map((_, i) => (
@@ -81,11 +118,10 @@ export default function Home() {
               setActiveSection(i);
               document.getElementById(sections[i])?.scrollIntoView({ behavior: 'smooth' });
             }}
-            className={`w-2 h-2 md:w-1.5 md:h-1.5 rounded-full transition-all duration-300 touch-manipulation ${
-              activeSection === i
-                ? 'bg-[hsl(25,100%,50%)] scale-110 md:scale-150 w-2.5 h-2.5 md:w-2.5 md:h-2.5'
-                : 'bg-white/30 hover:bg-white/50 active:bg-white/60'
-            }`}
+            className={`w-2.5 h-2.5 md:w-1.5 md:h-1.5 rounded-full transition-all duration-300 touch-manipulation ${activeSection === i
+              ? 'bg-punk-neon scale-125 md:scale-150'
+              : 'bg-white/20 hover:bg-white/50 active:bg-white/60'
+              }`}
             aria-label={`Go to section ${i + 1}`}
           />
         ))}
@@ -105,16 +141,15 @@ export default function Home() {
             className={`block w-5 h-px bg-white transition-all duration-300 ${navOpen ? '-rotate-45 -translate-y-0.5' : ''}`}
           />
         </div>
-        <span className='font-mono text-[10px] tracking-[0.2em] text-white/40 group-hover:text-white/70 transition-colors hidden md:block'>
+        <span className='font-mono text-[10px] tracking-[0.2em] text-white/70 group-hover:text-white transition-colors hidden md:block'>
           {navOpen ? '[ CLOSE ]' : '[ MENU ]'}
         </span>
       </button>
 
       {/* Slide Menu */}
       <div
-        className={`fixed inset-0 bg-black z-40 transition-transform duration-500 ${
-          navOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}
+        className={`fixed inset-0 bg-black z-40 transition-transform duration-500 ${navOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
       >
         <div className='h-full flex flex-col justify-center px-8 md:px-16'>
           <div className='space-y-8'>
@@ -183,7 +218,7 @@ export default function Home() {
             }}
           >
             <source
-              src='https://res.cloudinary.com/de5jsf8pj/video/upload/v1767916979/pb_vjpgzc.mov'
+              src='https://res.cloudinary.com/de5jsf8pj/video/upload/q_auto,f_auto,v1767916979/pb_vjpgzc.mov'
               type='video/mp4'
             />
             {/* Fallback for browsers that don't support video */}
@@ -191,16 +226,27 @@ export default function Home() {
               <div className='text-white/20 font-mono text-sm'>VIDEO BACKGROUND</div>
             </div>
           </video>
-          <div className='absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black' />
+          {/* Spotlight overlay - Fixed gradient strategy to avoid 'onça' effect */}
+          <div className='absolute inset-0 bg-gradient-to-b from-black via-transparent to-black opacity-80' />
+          <div className='absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_0%,_black_90%)]' />
         </div>
 
-        {/* Technical Markers */}
-        <div className='relative z-10 flex flex-col items-center px-4'>
-          <div className='flex items-center gap-4 mt-8'>
-            <span className='w-8 h-px bg-white/20' />
-            <span className='font-mono text-[10px] tracking-[0.4em] text-white/30'>SYS.01</span>
-            <span className='w-8 h-px bg-white/20' />
+        {/* Center Content */}
+        <div className='relative z-10 flex flex-col items-center px-4 text-center'>
+          <div className='flex items-center gap-4 mb-12'>
+            <span className='w-8 h-px bg-white/40' />
+            <span className='font-mono text-[10px] tracking-[0.4em] text-white/70'>SYS.01</span>
+            <span className='w-8 h-px bg-white/40' />
           </div>
+
+          <h1 className='text-4xl md:text-7xl font-industrial tracking-tighter text-white font-bold uppercase mb-2 md:mb-4 leading-[0.9] md:leading-none'>
+            IT'S NOT JUST <br className='md:hidden' /> FITNESS.
+          </h1>
+          <h2 className='text-lg md:text-2xl font-industrial tracking-[0.2em] md:tracking-[0.3em] text-punk-neon font-light uppercase mb-12 md:mb-16'>
+            IT'S LIFE.
+          </h2>
+
+          <WaitlistForm />
         </div>
 
         {/* Scroll Indicator */}
@@ -219,9 +265,9 @@ export default function Home() {
       <section id='programs' className='min-h-screen py-24 md:py-32 px-4 md:px-8 lg:px-16'>
         <div className='max-w-6xl mx-auto'>
           {/* Section Header */}
-          <div className='flex items-center gap-4 mb-16 md:mb-24'>
-            <span className='w-12 h-px bg-[hsl(25,100%,50%)]' />
-            <span className='font-mono text-[10px] tracking-[0.3em] text-white/40'>SYSTEMS</span>
+          <div className='flex items-center gap-4 mb-12 md:mb-24'>
+            <span className='w-8 md:w-12 h-px bg-punk-neon' />
+            <span className='font-mono text-[10px] md:text-xs tracking-[0.3em] text-white/70 italic'>SYSTEMS</span>
           </div>
 
           {/* Programs Grid */}
@@ -232,11 +278,11 @@ export default function Home() {
               className='bg-black p-8 md:p-12 group cursor-pointer transition-colors hover:bg-white/[0.02]'
             >
               <div className='flex items-start justify-between mb-8'>
-                <span className='font-mono text-[10px] text-white/30'>01</span>
-                <span className='w-1.5 h-1.5 rounded-full bg-white/20 group-hover:bg-[hsl(25,100%,50%)] transition-colors' />
+                <span className='font-mono text-xs text-white/50'>01</span>
+                <span className='w-1.5 h-1.5 rounded-full bg-white/40 group-hover:bg-punk-neon transition-colors' />
               </div>
-              <h3 className='font-mono text-sm tracking-[0.2em] text-white/70 mb-4'>// training</h3>
-              <p className='font-mono text-[10px] tracking-wider text-white/30 leading-relaxed'>
+              <h3 className='font-industrial text-xl tracking-[0.1em] text-white mb-4 uppercase'>// training</h3>
+              <p className='font-sans text-xs tracking-wider text-white/60 leading-relaxed uppercase'>
                 PERFORMANCE
                 <br />
                 OPTIMIZATION
@@ -251,11 +297,11 @@ export default function Home() {
               className='bg-black p-8 md:p-12 group cursor-pointer transition-colors hover:bg-white/[0.02]'
             >
               <div className='flex items-start justify-between mb-8'>
-                <span className='font-mono text-[10px] text-white/30'>02</span>
-                <span className='w-1.5 h-1.5 rounded-full bg-white/20 group-hover:bg-[hsl(25,100%,50%)] transition-colors' />
+                <span className='font-mono text-xs text-white/50'>02</span>
+                <span className='w-1.5 h-1.5 rounded-full bg-white/40 group-hover:bg-punk-neon transition-colors' />
               </div>
-              <h3 className='font-mono text-sm tracking-[0.2em] text-white/70 mb-4'>[zone]</h3>
-              <p className='font-mono text-[10px] tracking-wider text-white/30 leading-relaxed'>
+              <h3 className='font-industrial text-xl tracking-[0.1em] text-white mb-4 uppercase'>[zone]</h3>
+              <p className='font-sans text-xs tracking-wider text-white/60 leading-relaxed uppercase'>
                 HIGH
                 <br />
                 INTENSITY
@@ -270,11 +316,11 @@ export default function Home() {
               className='bg-black p-8 md:p-12 group cursor-pointer transition-colors hover:bg-white/[0.02]'
             >
               <div className='flex items-start justify-between mb-8'>
-                <span className='font-mono text-[10px] text-white/30'>03</span>
-                <span className='w-1.5 h-1.5 rounded-full bg-white/20 group-hover:bg-[hsl(25,100%,50%)] transition-colors' />
+                <span className='font-mono text-xs text-white/50'>03</span>
+                <span className='w-1.5 h-1.5 rounded-full bg-white/40 group-hover:bg-punk-neon transition-colors' />
               </div>
-              <h3 className='font-mono text-sm tracking-[0.2em] text-white/70 mb-4'>.yoga</h3>
-              <p className='font-mono text-[10px] tracking-wider text-white/30 leading-relaxed'>
+              <h3 className='font-industrial text-xl tracking-[0.1em] text-white mb-4 uppercase'>.yoga</h3>
+              <p className='font-sans text-xs tracking-wider text-white/60 leading-relaxed uppercase'>
                 MOBILITY
                 <br />
                 RESTORATION
@@ -293,7 +339,7 @@ export default function Home() {
             {/* Brand */}
             <div>
               <span
-                className='font-mono text-xs tracking-[0.2em] text-white/70'
+                className='font-mono text-xs tracking-[0.2em] text-white/70 block'
                 data-testid='footer-brand'
               >
                 PUNK | BLVCK ©
@@ -322,5 +368,51 @@ export default function Home() {
         </div>
       </footer>
     </div>
+  );
+}
+function WaitlistForm() {
+  const [email, setEmail] = useState('');
+
+  const mutation = useMutation({
+    mutationFn: async (email: string) => {
+      await apiRequest('POST', '/api/mcp/ingest', {
+        email,
+        message: 'Membership Application',
+        source: 'web_waitlist',
+      });
+    },
+    onSuccess: () => {
+      setEmail('');
+    },
+    onError: () => {
+      toast.error('Application failed. Try again.');
+    },
+  });
+
+  if (mutation.isSuccess) {
+    return (
+      <div className='animate-in fade-in duration-1000'>
+        <span className='font-sans text-[10px] tracking-[0.1em] text-white/40'>registered.</span>
+      </div>
+    );
+  }
+
+  return (
+    <form
+      onSubmit={e => {
+        e.preventDefault();
+        if (email) mutation.mutate(email);
+      }}
+      className={`transition-opacity duration-1000 ${mutation.isPending ? 'opacity-20 pointer-events-none' : 'opacity-100'}`}
+    >
+      <input
+        type='email'
+        value={email}
+        onChange={e => setEmail(e.target.value)}
+        placeholder='apply for access'
+        required
+        className='bg-transparent border-b border-white/20 focus:border-white/60 focus:outline-none py-3 md:py-2 w-full max-w-[280px] md:max-w-xs font-sans text-sm md:text-sm tracking-[0.15em] md:tracking-[0.2em] text-white/70 focus:text-white transition-all duration-500 placeholder:text-white/20 text-center uppercase'
+      />
+    </form>
   );
 }

@@ -41,37 +41,43 @@
 
 :root {
   /* Dark Industrial Theme */
-  --background: 0 0% 2%;    /* #050505 */
+  --background: 0 0% 2%;
+  /* #050505 */
   --foreground: 0 0% 100%;
   --border: 0 0% 15%;
-  --card: 0 0% 7%;          /* #121212 */
+  --card: 0 0% 7%;
+  /* #121212 */
   --card-foreground: 0 0% 90%;
   --card-border: 0 0% 15%;
   --popover: 0 0% 7%;
   --popover-foreground: 0 0% 100%;
-  --primary: 17 100% 56%;   /* #FF5F1F Neon Orange */
+  --primary: 17 100% 56%;
+  /* #FF5F1F Neon Orange */
   --primary-foreground: 0 0% 100%;
   --secondary: 0 0% 15%;
   --secondary-foreground: 0 0% 100%;
   --muted: 0 0% 10%;
   --muted-foreground: 0 0% 50%;
-  --accent: 17 100% 56%;    /* Same as Primary */
+  --accent: 17 100% 56%;
+  /* Same as Primary */
   --accent-foreground: 0 0% 100%;
   --destructive: 0 62% 30%;
   --destructive-foreground: 0 0% 100%;
   --input: 0 0% 15%;
   --ring: 17 100% 56%;
 
-  --radius: 0; /* Industrial sharp edges */
+  --radius: 0;
+  /* Industrial sharp edges */
 }
 
 @layer base {
   * {
     @apply border-border;
   }
+
   body {
     @apply font-sans antialiased bg-punk-base text-white;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.02'/%3E%3C/svg%3E");
   }
 }
 
@@ -110,10 +116,12 @@ html {
 }
 
 @keyframes subtle-pulse {
+
   0%,
   100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.7;
   }
@@ -125,10 +133,12 @@ html {
 
 /* Mobile-first optimizations */
 @media (max-width: 768px) {
+
   /* Ensure video covers full viewport on mobile */
   video {
     object-fit: cover !important;
-    transform: scale(1.01); /* Prevent tiny gaps on some devices */
+    transform: scale(1.01);
+    /* Prevent tiny gaps on some devices */
   }
 
   /* Improve touch targets - but keep navigation dots small */

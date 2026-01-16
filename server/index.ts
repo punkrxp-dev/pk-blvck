@@ -53,12 +53,16 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        styleSrc: ["'self'", "'unsafe-inline'"],
-        scriptSrc: ["'self'"],
+        styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com'],
+        scriptSrc: [
+          "'self'",
+          "'unsafe-inline'", // Required for Vite React Refresh Preamble
+          "'unsafe-eval'",   // Required for Vite
+        ],
         imgSrc: ["'self'", 'data:', 'https:'],
-        fontSrc: ["'self'", 'https:', 'data:'],
-        connectSrc: ["'self'"],
-        mediaSrc: ["'self'", 'https:'],
+        fontSrc: ["'self'", 'https://fonts.gstatic.com', 'data:'],
+        connectSrc: ["'self'", 'ws:', 'wss:'], // Allow HMR WebSockets
+        mediaSrc: ["'self'", 'https:', 'data:'],
         objectSrc: ["'none'"],
         frameSrc: ["'none'"],
         baseUri: ["'self'"],
@@ -88,7 +92,7 @@ app.use(
 // Rate limiting - Global limiter
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
+  max: process.env.NODE_ENV === 'development' ? 1000 : 100, // Higher limit for dev polling
   message: 'Too many requests from this IP, please try again later.',
   standardHeaders: true,
   legacyHeaders: false,
@@ -97,7 +101,7 @@ const globalLimiter = rateLimit({
 // API specific limiter
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 200, // Higher limit for API calls
+  max: process.env.NODE_ENV === 'development' ? 2000 : 200, // Higher limit for dev API calls
   message: 'Too many API requests, please try again later.',
   standardHeaders: true,
   legacyHeaders: false,
