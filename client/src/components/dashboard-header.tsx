@@ -36,9 +36,9 @@ export function DashboardHeader({ totalLeads, conversionRate, isLoading }: Dashb
           <div className='w-20 h-20 md:w-24 md:h-24 bg-punk-plate rounded-full border-4 border-punk-steel/20 flex items-center justify-center shadow-lg shadow-black/50 z-20 overflow-hidden'>
             {/* Logo Image */}
             <img
-              src='/web-app-manifest-512x512.png'
+              src='/favicon.svg'
               alt='PUNK | BLVCK Logo'
-              className='w-full h-full object-cover'
+              className='w-full h-full object-contain p-2'
             />
           </div>
 

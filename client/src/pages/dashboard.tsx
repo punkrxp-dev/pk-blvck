@@ -28,8 +28,12 @@ import { DashboardHeader } from '../components/dashboard-header';
 function PunkBlackLogoSmall() {
   return (
     <div className='flex items-center gap-2'>
-      <div className='w-8 h-8 bg-punk-plate rounded border border-punk-steel/20 flex items-center justify-center'>
-        <span className='text-punk-neon text-xs font-bold'>PB</span>
+      <div className='w-8 h-8 bg-punk-plate rounded border border-punk-steel/20 flex items-center justify-center overflow-hidden'>
+        <img
+          src='/favicon.svg'
+          alt='PUNK | BLVCK Logo'
+          className='w-full h-full object-contain p-1'
+        />
       </div>
       <span className='text-lg font-industrial font-bold text-white tracking-widest'>
         PUNK<span className='text-punk-neon'>|</span>BLVCK

@@ -119,8 +119,8 @@ export default function Home() {
                 setActiveSection(i);
                 document.getElementById(sections[i])?.scrollIntoView({ behavior: 'smooth' });
               }}
-              className={`w-2.5 h-2.5 md:w-1.5 md:h-1.5 rounded-full transition-all duration-300 touch-manipulation p-2 -m-2 focus:outline-none focus:ring-2 focus:ring-punk-neon focus:ring-offset-2 focus:ring-offset-black ${activeSection === i
-                ? 'bg-punk-neon scale-125 md:scale-150'
+              className={`w-1.5 h-1.5 md:w-1.5 md:h-1.5 rounded-full transition-all duration-300 touch-manipulation p-2 -m-2 focus:outline-none focus:ring-2 focus:ring-punk-neon focus:ring-offset-2 focus:ring-offset-black ${activeSection === i
+                ? 'bg-punk-neon scale-110 md:scale-150'
                 : 'bg-white/20 hover:bg-white/50 active:bg-white/60'
                 }`}
               aria-label={`Ir para seção ${i + 1}`}
@@ -132,9 +132,9 @@ export default function Home() {
         {/* Logo Header */}
         <div className='fixed top-6 right-4 md:right-8 z-50'>
           <img
-            src='/web-app-manifest-512x512.png'
+            src='/favicon.svg'
             alt='PUNK | BLVCK Logo'
-            className='w-12 h-12 md:w-16 md:h-16 object-cover'
+            className='w-12 h-12 md:w-16 md:h-16 object-contain'
           />
         </div>
 

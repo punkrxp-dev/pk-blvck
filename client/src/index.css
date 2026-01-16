@@ -177,10 +177,10 @@ input:focus-visible,
 
   /* Navigation dots - keep proportional on mobile but increase touch area */
   [data-testid^='nav-dot'] {
-    min-height: 8px !important;
-    min-width: 8px !important;
-    max-width: 10px !important;
-    max-height: 10px !important;
+    min-height: 6px !important;
+    min-width: 6px !important;
+    max-width: 8px !important;
+    max-height: 8px !important;
     /* Increase touch target area with padding */
     padding: 12px !important;
     margin: -12px !important;
