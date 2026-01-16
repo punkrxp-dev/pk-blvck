@@ -7,8 +7,9 @@
 // Models
 export { primaryModel, fallbackModel, selectModel, checkAIConfig } from './models';
 
-// Orchestrator (Heavy Metal Flow)
-export { processLead, type LeadInput, type ProcessedLead } from './orchestrator';
+// MCP Pipeline (NΞØ Protocol)
+export { processLeadPipeline } from './mcp/pipeline';
+export * from './mcp/types';
 
 // Tools
 export {

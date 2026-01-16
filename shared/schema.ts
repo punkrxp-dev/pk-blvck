@@ -80,8 +80,21 @@ export const leads = pgTable('leads', {
     intent: 'high' | 'medium' | 'low' | 'spam';
     confidence: number;
     reasoning?: string;
-    model: 'gpt-4o' | 'gemini-2.0-flash';
+    userReply?: string;
+    model: 'gpt-4o' | 'gemini-2.0-flash-exp' | 'rule-based';
     processedAt: string;
+  }>(),
+
+  // MCP Processing Metadata (Full Transparency)
+  processingMetadata: jsonb('processing_metadata').$type<{
+    processingMode: 'llm' | 'fallback' | 'rules';
+    modelProvider: 'openai' | 'google' | 'rules';
+    actualModel: string;
+    fallbackUsed: boolean;
+    requiresHumanReview: boolean;
+    processingTimeMs: number;
+    timestamp: string;
+    layers: Record<string, any>;
   }>(),
 
   // Metadata

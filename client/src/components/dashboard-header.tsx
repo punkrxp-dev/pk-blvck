@@ -11,6 +11,7 @@ export function DashboardHeader({ totalLeads, conversionRate, isLoading }: Dashb
     <div className='relative w-full py-8 md:py-12 mb-8 flex flex-col md:flex-row items-center justify-between border-b border-punk-steel/10 bg-punk-base'>
       {/* LEFT KPI (LEADS) */}
       <div className='flex-1 flex flex-col items-center md:items-start pl-0 md:pl-12 mb-6 md:mb-0'>
+        <h1 className='sr-only'>Dashboard de Gestão PUNK | BLVCK</h1>
         <span className='text-punk-steel/40 text-xs font-mono tracking-widest uppercase mb-1'>
           Total Leads
         </span>

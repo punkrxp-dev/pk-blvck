@@ -2,16 +2,15 @@
 /**
  * MCP Test Script
  *
- * Tests the Heavy Metal Flow end-to-end without requiring API keys
- * Uses mock data for Hunter.io and Resend
+ * Tests the Heavy Metal Flow (NΞØ Protocol) end-to-end using the new architecture.
  */
 
 import 'dotenv/config';
-import { processLead } from './ai/orchestrator';
+import { processLeadPipeline } from './ai/mcp/pipeline';
 
 async function testMCP() {
   console.log('🎸 ═══════════════════════════════════════════════════════');
-  console.log('🎸 MCP ORCHESTRATOR TEST - Heavy Metal Flow');
+  console.log('🎸 MCP PIPELINE TEST - NΞØ Protocol');
   console.log('🎸 ═══════════════════════════════════════════════════════\n');
 
   // Test cases
@@ -55,14 +54,14 @@ async function testMCP() {
     console.log('─'.repeat(60));
 
     try {
-      const result = await processLead(testCase.input);
+      const result = await processLeadPipeline(testCase.input);
 
       console.log('\n✅ TEST PASSED');
       console.log(`   Lead ID: ${result.id}`);
-      console.log(`   Intent: ${result.classification.intent.toUpperCase()}`);
-      console.log(`   Confidence: ${Math.round(result.classification.confidence * 100)}%`);
-      console.log(`   Model: ${result.classification.model}`);
-      console.log(`   Processing Time: ${result.processingTime}ms`);
+      console.log(`   Intent: ${result.intent.intent.toUpperCase()}`);
+      console.log(`   Confidence: ${Math.round(result.intent.confidence * 100)}%`);
+      console.log(`   Model: ${result.processing.actualModel}`);
+      console.log(`   Processing Time: ${result.processing.processingTimeMs}ms`);
       console.log('');
     } catch (error) {
       console.error('\n❌ TEST FAILED');

@@ -108,229 +108,231 @@ export default function Home() {
 
   return (
     <div className='min-h-screen bg-punk-base text-white overflow-x-hidden font-sans selection:bg-punk-neon selection:text-black'>
-      {/* Navigation Dots - Fixed */}
-      <nav className='fixed right-3 md:right-8 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-2 md:gap-3'>
-        {sections.map((_, i) => (
-          <button
-            key={i}
-            data-testid={`nav-dot-${i}`}
-            onClick={() => {
-              setActiveSection(i);
-              document.getElementById(sections[i])?.scrollIntoView({ behavior: 'smooth' });
-            }}
-            className={`w-2.5 h-2.5 md:w-1.5 md:h-1.5 rounded-full transition-all duration-300 touch-manipulation ${activeSection === i
-              ? 'bg-punk-neon scale-125 md:scale-150'
-              : 'bg-white/20 hover:bg-white/50 active:bg-white/60'
-              }`}
-            aria-label={`Go to section ${i + 1}`}
-          />
-        ))}
-      </nav>
-
-      {/* Menu Toggle */}
-      <button
-        data-testid='menu-toggle'
-        onClick={() => setNavOpen(!navOpen)}
-        className='fixed top-6 left-4 md:left-8 z-50 flex items-center gap-2 group'
-      >
-        <div className='flex flex-col gap-1'>
-          <span
-            className={`block w-5 h-px bg-white transition-all duration-300 ${navOpen ? 'rotate-45 translate-y-1' : ''}`}
-          />
-          <span
-            className={`block w-5 h-px bg-white transition-all duration-300 ${navOpen ? '-rotate-45 -translate-y-0.5' : ''}`}
-          />
-        </div>
-        <span className='font-mono text-[10px] tracking-[0.2em] text-white/70 group-hover:text-white transition-colors hidden md:block'>
-          {navOpen ? '[ CLOSE ]' : '[ MENU ]'}
-        </span>
-      </button>
-
-      {/* Slide Menu */}
-      <div
-        className={`fixed inset-0 bg-black z-40 transition-transform duration-500 ${navOpen ? 'translate-x-0' : '-translate-x-full'
-          }`}
-      >
-        <div className='h-full flex flex-col justify-center px-8 md:px-16'>
-          <div className='space-y-8'>
-            <a
-              href='/dashboard'
-              data-testid='nav-link-dashboard'
-              onClick={() => setNavOpen(false)}
-              className='block font-mono text-xs tracking-[0.3em] text-white/50 hover:text-[hsl(25,100%,50%)] transition-colors'
-            >
-              ⧖ dashboard
-            </a>
-            <a
-              href='#programs'
-              data-testid='nav-link-training'
-              onClick={() => setNavOpen(false)}
-              className='block font-mono text-xs tracking-[0.3em] text-white/50 hover:text-[hsl(25,100%,50%)] transition-colors'
-            >
-              // training
-            </a>
-            <a
-              href='#programs'
-              data-testid='nav-link-zone'
-              onClick={() => setNavOpen(false)}
-              className='block font-mono text-xs tracking-[0.3em] text-white/50 hover:text-[hsl(25,100%,50%)] transition-colors'
-            >
-              [zone]
-            </a>
-            <a
-              href='#programs'
-              data-testid='nav-link-yoga'
-              onClick={() => setNavOpen(false)}
-              className='block font-mono text-xs tracking-[0.3em] text-white/50 hover:text-[hsl(25,100%,50%)] transition-colors'
-            >
-              .yoga
-            </a>
-          </div>
-        </div>
-      </div>
-
-      {/* Hero Section */}
-      <section
-        id='hero'
-        className='relative h-screen flex items-center justify-center overflow-hidden'
-      >
-        {/* Video Background */}
-        <div className='absolute inset-0 z-0'>
-          <video
-            ref={videoRef}
-            autoPlay
-            muted
-            loop
-            playsInline
-            disablePictureInPicture
-            controls={false}
-            preload='auto'
-            className='w-full h-full object-cover opacity-30 grayscale'
-            onError={e => {
-              console.warn('Video failed to load, using fallback');
-              e.currentTarget.style.display = 'none';
-            }}
-            onLoadedData={() => {
-              // Ensure video plays after loading
-              if (videoRef.current && videoRef.current.paused) {
-                videoRef.current.play().catch(console.log);
-              }
-            }}
-          >
-            <source
-              src='https://res.cloudinary.com/de5jsf8pj/video/upload/q_auto,f_auto,v1767916979/pb_vjpgzc.mov'
-              type='video/mp4'
+      <main>
+        {/* Navigation Dots - Fixed */}
+        <nav className='fixed right-3 md:right-8 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-2 md:gap-3'>
+          {sections.map((_, i) => (
+            <button
+              key={i}
+              data-testid={`nav-dot-${i}`}
+              onClick={() => {
+                setActiveSection(i);
+                document.getElementById(sections[i])?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className={`w-2.5 h-2.5 md:w-1.5 md:h-1.5 rounded-full transition-all duration-300 touch-manipulation ${activeSection === i
+                ? 'bg-punk-neon scale-125 md:scale-150'
+                : 'bg-white/20 hover:bg-white/50 active:bg-white/60'
+                }`}
+              aria-label={`Go to section ${i + 1}`}
             />
-            {/* Fallback for browsers that don't support video */}
-            <div className='absolute inset-0 bg-gradient-to-br from-gray-900 to-black flex items-center justify-center'>
-              <div className='text-white/20 font-mono text-sm'>VIDEO BACKGROUND</div>
+          ))}
+        </nav>
+
+        {/* Menu Toggle */}
+        <button
+          data-testid='menu-toggle'
+          onClick={() => setNavOpen(!navOpen)}
+          className='fixed top-6 left-4 md:left-8 z-50 flex items-center gap-2 group'
+        >
+          <div className='flex flex-col gap-1'>
+            <span
+              className={`block w-5 h-px bg-white transition-all duration-300 ${navOpen ? 'rotate-45 translate-y-1' : ''}`}
+            />
+            <span
+              className={`block w-5 h-px bg-white transition-all duration-300 ${navOpen ? '-rotate-45 -translate-y-0.5' : ''}`}
+            />
+          </div>
+          <span className='font-mono text-[10px] tracking-[0.2em] text-white/70 group-hover:text-white transition-colors hidden md:block'>
+            {navOpen ? '[ CLOSE ]' : '[ MENU ]'}
+          </span>
+        </button>
+
+        {/* Slide Menu */}
+        <div
+          className={`fixed inset-0 bg-black z-40 transition-transform duration-500 ${navOpen ? 'translate-x-0' : '-translate-x-full'
+            }`}
+        >
+          <div className='h-full flex flex-col justify-center px-8 md:px-16'>
+            <div className='space-y-8'>
+              <a
+                href='/dashboard'
+                data-testid='nav-link-dashboard'
+                onClick={() => setNavOpen(false)}
+                className='block font-mono text-xs tracking-[0.3em] text-white/50 hover:text-[hsl(25,100%,50%)] transition-colors'
+              >
+                ⧖ dashboard
+              </a>
+              <a
+                href='#programs'
+                data-testid='nav-link-training'
+                onClick={() => setNavOpen(false)}
+                className='block font-mono text-xs tracking-[0.3em] text-white/50 hover:text-[hsl(25,100%,50%)] transition-colors'
+              >
+              // training
+              </a>
+              <a
+                href='#programs'
+                data-testid='nav-link-zone'
+                onClick={() => setNavOpen(false)}
+                className='block font-mono text-xs tracking-[0.3em] text-white/50 hover:text-[hsl(25,100%,50%)] transition-colors'
+              >
+                [zone]
+              </a>
+              <a
+                href='#programs'
+                data-testid='nav-link-yoga'
+                onClick={() => setNavOpen(false)}
+                className='block font-mono text-xs tracking-[0.3em] text-white/50 hover:text-[hsl(25,100%,50%)] transition-colors'
+              >
+                .yoga
+              </a>
             </div>
-          </video>
-          {/* Spotlight overlay - Fixed gradient strategy to avoid 'onça' effect */}
-          <div className='absolute inset-0 bg-gradient-to-b from-black via-transparent to-black opacity-80' />
-          <div className='absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_0%,_black_90%)]' />
+          </div>
         </div>
 
-        {/* Center Content */}
-        <div className='relative z-10 flex flex-col items-center px-4 text-center'>
-          <div className='flex items-center gap-4 mb-12'>
-            <span className='w-8 h-px bg-white/40' />
-            <span className='font-mono text-[10px] tracking-[0.4em] text-white/70'>SYS.01</span>
-            <span className='w-8 h-px bg-white/40' />
+        {/* Hero Section */}
+        <section
+          id='hero'
+          className='relative h-screen flex items-center justify-center overflow-hidden'
+        >
+          {/* Video Background */}
+          <div className='absolute inset-0 z-0'>
+            <video
+              ref={videoRef}
+              autoPlay
+              muted
+              loop
+              playsInline
+              disablePictureInPicture
+              controls={false}
+              preload='auto'
+              className='w-full h-full object-cover opacity-30 grayscale'
+              onError={e => {
+                console.warn('Video failed to load, using fallback');
+                e.currentTarget.style.display = 'none';
+              }}
+              onLoadedData={() => {
+                // Ensure video plays after loading
+                if (videoRef.current && videoRef.current.paused) {
+                  videoRef.current.play().catch(console.log);
+                }
+              }}
+            >
+              <source
+                src='https://res.cloudinary.com/de5jsf8pj/video/upload/v1767916979/pb_vjpgzc.mp4'
+                type='video/mp4'
+              />
+              {/* Fallback for browsers that don't support video */}
+              <div className='absolute inset-0 bg-gradient-to-br from-gray-900 to-black flex items-center justify-center'>
+                <div className='text-white/20 font-mono text-sm'>VIDEO BACKGROUND</div>
+              </div>
+            </video>
+            {/* Spotlight overlay - Fixed gradient strategy to avoid 'onça' effect */}
+            <div className='absolute inset-0 bg-gradient-to-b from-black via-transparent to-black opacity-80' />
+            <div className='absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_0%,_black_90%)]' />
           </div>
 
-          <h1 className='text-4xl md:text-7xl font-industrial tracking-tighter text-white font-bold uppercase mb-2 md:mb-4 leading-[0.9] md:leading-none'>
-            IT'S NOT JUST <br className='md:hidden' /> FITNESS.
-          </h1>
-          <h2 className='text-lg md:text-2xl font-industrial tracking-[0.2em] md:tracking-[0.3em] text-punk-neon font-light uppercase mb-12 md:mb-16'>
-            IT'S LIFE.
-          </h2>
+          {/* Center Content */}
+          <div className='relative z-10 flex flex-col items-center px-4 text-center'>
+            <div className='flex items-center gap-4 mb-12'>
+              <span className='w-8 h-px bg-white/40' />
+              <span className='font-mono text-[10px] tracking-[0.4em] text-white/70'>SYS.01</span>
+              <span className='w-8 h-px bg-white/40' />
+            </div>
 
-          <WaitlistForm />
-        </div>
+            <h1 className='text-4xl md:text-7xl font-industrial tracking-tighter text-white font-bold uppercase mb-2 md:mb-4 leading-[0.9] md:leading-none'>
+              IT'S NOT JUST <br className='md:hidden' /> FITNESS.
+            </h1>
+            <h2 className='text-lg md:text-2xl font-industrial tracking-[0.2em] md:tracking-[0.3em] text-punk-neon font-light uppercase mb-12 md:mb-16'>
+              IT'S LIFE.
+            </h2>
 
-        {/* Scroll Indicator */}
-        <div className='absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2'>
-          <span className='font-mono text-[9px] tracking-[0.3em] text-white/30'>SCROLL</span>
-          <div className='w-px h-8 bg-gradient-to-b from-white/30 to-transparent pulse-subtle' />
-        </div>
+            <WaitlistForm />
+          </div>
 
-        {/* Corner Markers */}
-        <div className='absolute top-6 right-4 md:right-8 font-mono text-[9px] tracking-[0.2em] text-white/20'>
+          {/* Scroll Indicator */}
+          <div className='absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2'>
+            <span className='font-mono text-[9px] tracking-[0.3em] text-white/30'>SCROLL</span>
+            <div className='w-px h-8 bg-gradient-to-b from-white/30 to-transparent pulse-subtle' />
+          </div>
+
+          {/* Corner Markers */}
+          <div className='absolute top-6 right-4 md:right-8 font-mono text-[9px] tracking-[0.2em] text-white/20'>
           ///
-        </div>
-      </section>
-
-      {/* Programs Section */}
-      <section id='programs' className='min-h-screen py-24 md:py-32 px-4 md:px-8 lg:px-16'>
-        <div className='max-w-6xl mx-auto'>
-          {/* Section Header */}
-          <div className='flex items-center gap-4 mb-12 md:mb-24'>
-            <span className='w-8 md:w-12 h-px bg-punk-neon' />
-            <span className='font-mono text-[10px] md:text-xs tracking-[0.3em] text-white/70 italic'>SYSTEMS</span>
           </div>
+        </section>
 
-          {/* Programs Grid */}
-          <div className='grid grid-cols-1 md:grid-cols-3 gap-px bg-white/10'>
-            {/* Training */}
-            <div
-              data-testid='program-training'
-              className='bg-black p-8 md:p-12 group cursor-pointer transition-colors hover:bg-white/[0.02]'
-            >
-              <div className='flex items-start justify-between mb-8'>
-                <span className='font-mono text-xs text-white/50'>01</span>
-                <span className='w-1.5 h-1.5 rounded-full bg-white/40 group-hover:bg-punk-neon transition-colors' />
-              </div>
-              <h3 className='font-industrial text-xl tracking-[0.1em] text-white mb-4 uppercase'>// training</h3>
-              <p className='font-sans text-xs tracking-wider text-white/60 leading-relaxed uppercase'>
-                PERFORMANCE
-                <br />
-                OPTIMIZATION
-                <br />
-                PROTOCOL
-              </p>
+        {/* Programs Section */}
+        <section id='programs' className='min-h-screen py-24 md:py-32 px-4 md:px-8 lg:px-16'>
+          <div className='max-w-6xl mx-auto'>
+            {/* Section Header */}
+            <div className='flex items-center gap-4 mb-12 md:mb-24'>
+              <span className='w-8 md:w-12 h-px bg-punk-neon' />
+              <span className='font-mono text-[10px] md:text-xs tracking-[0.3em] text-white/70 italic'>SYSTEMS</span>
             </div>
 
-            {/* Zone */}
-            <div
-              data-testid='program-zone'
-              className='bg-black p-8 md:p-12 group cursor-pointer transition-colors hover:bg-white/[0.02]'
-            >
-              <div className='flex items-start justify-between mb-8'>
-                <span className='font-mono text-xs text-white/50'>02</span>
-                <span className='w-1.5 h-1.5 rounded-full bg-white/40 group-hover:bg-punk-neon transition-colors' />
+            {/* Programs Grid */}
+            <div className='grid grid-cols-1 md:grid-cols-3 gap-px bg-white/10'>
+              {/* Training */}
+              <div
+                data-testid='program-training'
+                className='bg-black p-8 md:p-12 group cursor-pointer transition-colors hover:bg-white/[0.02]'
+              >
+                <div className='flex items-start justify-between mb-8'>
+                  <span className='font-mono text-xs text-white/50'>01</span>
+                  <span className='w-1.5 h-1.5 rounded-full bg-white/40 group-hover:bg-punk-neon transition-colors' />
+                </div>
+                <h3 className='font-industrial text-xl tracking-[0.1em] text-white mb-4 uppercase'>// training</h3>
+                <p className='font-sans text-xs tracking-wider text-white/60 leading-relaxed uppercase'>
+                  PERFORMANCE
+                  <br />
+                  OPTIMIZATION
+                  <br />
+                  PROTOCOL
+                </p>
               </div>
-              <h3 className='font-industrial text-xl tracking-[0.1em] text-white mb-4 uppercase'>[zone]</h3>
-              <p className='font-sans text-xs tracking-wider text-white/60 leading-relaxed uppercase'>
-                HIGH
-                <br />
-                INTENSITY
-                <br />
-                FRAMEWORK
-              </p>
-            </div>
 
-            {/* Yoga */}
-            <div
-              data-testid='program-yoga'
-              className='bg-black p-8 md:p-12 group cursor-pointer transition-colors hover:bg-white/[0.02]'
-            >
-              <div className='flex items-start justify-between mb-8'>
-                <span className='font-mono text-xs text-white/50'>03</span>
-                <span className='w-1.5 h-1.5 rounded-full bg-white/40 group-hover:bg-punk-neon transition-colors' />
+              {/* Zone */}
+              <div
+                data-testid='program-zone'
+                className='bg-black p-8 md:p-12 group cursor-pointer transition-colors hover:bg-white/[0.02]'
+              >
+                <div className='flex items-start justify-between mb-8'>
+                  <span className='font-mono text-xs text-white/50'>02</span>
+                  <span className='w-1.5 h-1.5 rounded-full bg-white/40 group-hover:bg-punk-neon transition-colors' />
+                </div>
+                <h3 className='font-industrial text-xl tracking-[0.1em] text-white mb-4 uppercase'>[zone]</h3>
+                <p className='font-sans text-xs tracking-wider text-white/60 leading-relaxed uppercase'>
+                  HIGH
+                  <br />
+                  INTENSITY
+                  <br />
+                  FRAMEWORK
+                </p>
               </div>
-              <h3 className='font-industrial text-xl tracking-[0.1em] text-white mb-4 uppercase'>.yoga</h3>
-              <p className='font-sans text-xs tracking-wider text-white/60 leading-relaxed uppercase'>
-                MOBILITY
-                <br />
-                RESTORATION
-                <br />
-                SEQUENCE
-              </p>
+
+              {/* Yoga */}
+              <div
+                data-testid='program-yoga'
+                className='bg-black p-8 md:p-12 group cursor-pointer transition-colors hover:bg-white/[0.02]'
+              >
+                <div className='flex items-start justify-between mb-8'>
+                  <span className='font-mono text-xs text-white/50'>03</span>
+                  <span className='w-1.5 h-1.5 rounded-full bg-white/40 group-hover:bg-punk-neon transition-colors' />
+                </div>
+                <h3 className='font-industrial text-xl tracking-[0.1em] text-white mb-4 uppercase'>.yoga</h3>
+                <p className='font-sans text-xs tracking-wider text-white/60 leading-relaxed uppercase'>
+                  MOBILITY
+                  <br />
+                  RESTORATION
+                  <br />
+                  SEQUENCE
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      </main>
 
       {/* Footer */}
       <footer id='footer' className='py-16 md:py-24 px-4 md:px-8 lg:px-16 border-t border-white/10'>
@@ -375,11 +377,12 @@ function WaitlistForm() {
 
   const mutation = useMutation({
     mutationFn: async (email: string) => {
-      await apiRequest('POST', '/api/mcp/ingest', {
+      const res = await apiRequest('POST', '/api/mcp/ingest', {
         email,
         message: 'Membership Application',
         source: 'web_waitlist',
       });
+      return res.json();
     },
     onSuccess: () => {
       setEmail('');
@@ -390,9 +393,10 @@ function WaitlistForm() {
   });
 
   if (mutation.isSuccess) {
+    const reply = mutation.data?.data?.reply || 'Registered.';
     return (
-      <div className='animate-in fade-in duration-1000'>
-        <span className='font-sans text-[10px] tracking-[0.1em] text-white/40'>registered.</span>
+      <div className='animate-in fade-in duration-500 max-w-sm text-center'>
+        <Typewriter text={reply} />
       </div>
     );
   }
@@ -414,5 +418,26 @@ function WaitlistForm() {
         className='bg-transparent border-b border-white/20 focus:border-white/60 focus:outline-none py-3 md:py-2 w-full max-w-[280px] md:max-w-xs font-sans text-sm md:text-sm tracking-[0.15em] md:tracking-[0.2em] text-white/70 focus:text-white transition-all duration-500 placeholder:text-white/20 text-center uppercase'
       />
     </form>
+  );
+}
+function Typewriter({ text }: { text: string }) {
+  const [displayText, setDisplayText] = useState('');
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    if (index < text.length) {
+      const timeout = setTimeout(() => {
+        setDisplayText(prev => prev + text[index]);
+        setIndex(prev => prev + 1);
+      }, 40); // Standard typewriter speed
+      return () => clearTimeout(timeout);
+    }
+  }, [index, text]);
+
+  return (
+    <span className='font-mono text-xs md:text-sm tracking-wider text-punk-neon/80 italic leading-relaxed'>
+      &gt; {displayText}
+      <span className='animate-pulse ml-1 inline-block w-2 h-4 bg-punk-neon/40 align-middle' />
+    </span>
   );
 }

@@ -1,23 +1,20 @@
-# Robots.txt for PUNK BLVCK
+# Robots.txt for PUNK | BLVCK
 # https://pk-blvck.vercel.app/robots.txt
 
 User-agent: *
 Allow: /
 
-# Allow crawling of main pages
-Allow: /
-Allow: /dashboard
+# Allow crawling of main public sections
+Allow: /#hero
+Allow: /#programs
 
-# Disallow API routes (internal use only)
+# Disallow Management Tools & API
+Disallow: /dashboard
 Disallow: /api/
-Disallow: /api/*
-
-# Disallow development/admin routes
 Disallow: /admin
 Disallow: /debug
-Disallow: /test
 
-# Crawl delay (be nice to our servers)
+# Crawl delay
 Crawl-delay: 1
 
 # Sitemap

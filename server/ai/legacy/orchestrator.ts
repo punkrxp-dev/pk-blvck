@@ -11,8 +11,8 @@
  */
 
 import { generateObject } from 'ai';
-import { primaryModel, fallbackModel } from './models';
-import { enrichLead, saveLead, notifyLead, type LeadClassification } from './tools';
+import { primaryModel, fallbackModel } from '../models';
+import { enrichLead, saveLead, notifyLead, type LeadClassification } from '../tools';
 import { z } from 'zod';
 
 // ========================================
@@ -47,6 +47,9 @@ const intentClassificationSchema = z.object({
     ),
   confidence: z.number().min(0).max(1).describe('Confidence score between 0 and 1'),
   reasoning: z.string().describe('Brief explanation of why this classification was chosen'),
+  userReply: z
+    .string()
+    .describe('A brief, cold, enigmatic message to the user from the Sentinel AI (max 15 words)'),
 });
 
 // ========================================
@@ -197,6 +200,7 @@ async function classifyIntentWithFallback(
       intent: result.object.intent,
       confidence: result.object.confidence,
       reasoning: result.object.reasoning,
+      userReply: result.object.userReply,
       model: 'gpt-4o',
       processedAt: new Date().toISOString(),
     };
@@ -220,7 +224,8 @@ async function classifyIntentWithFallback(
         intent: result.object.intent,
         confidence: result.object.confidence,
         reasoning: result.object.reasoning,
-        model: 'gemini-2.0-flash',
+        userReply: result.object.userReply,
+        model: 'gemini-2.0-flash-exp' as any,
         processedAt: new Date().toISOString(),
       };
     } catch (fallbackError) {
@@ -263,7 +268,16 @@ CLASSIFICATION CRITERIA:
 - LOW: Casual inquiry, unverified email, unclear intent
 - SPAM: Suspicious patterns, generic message, invalid email
 
-Classify this lead's intent and provide your reasoning.
+Classify this lead's intent and provide your reasoning. 
+
+Finally, generate a response for the user (userReply). 
+PERSONA: You are the Sentinel, an AI from an elite, obscure, and exclusive high-performance facility. 
+GUIDELINES:
+- Language: Strictly Portuguese (PT-BR).
+- Respond in 1 short sentence (max 15 words).
+- Tone: Enigmatic, motivating but cold. 
+- Rules: Never use emojis. 
+- If SPAM: Be ironic/dry.
 `.trim();
 }
 
@@ -317,10 +331,15 @@ function getRuleBasedClassification(input: LeadInput, enrichedData: any): LeadCl
     reasoning = 'Unverified lead with generic message';
   }
 
+  let userReply = 'Registro recebido. O sistema avaliará sua elegibilidade.';
+  if (intent === 'high') userReply = 'Sua ambição foi notada. Estamos observando.';
+  if (intent === 'spam') userReply = 'Ruído detectado. Acesso negado.';
+
   return {
     intent,
     confidence,
     reasoning,
+    userReply,
     model: 'gpt-4o', // Mock model name for schema compatibility
     processedAt: new Date().toISOString(),
   };

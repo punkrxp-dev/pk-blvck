@@ -29,8 +29,20 @@ export interface LeadClassification {
   intent: 'high' | 'medium' | 'low' | 'spam';
   confidence: number;
   reasoning?: string;
-  model: 'gpt-4o' | 'gemini-2.0-flash';
+  userReply?: string; // Sentinel's response to the user
+  model: 'gpt-4o' | 'gemini-2.0-flash-exp' | 'rule-based';
   processedAt: string;
+}
+
+export interface ProcessingMetadata {
+  processingMode: 'llm' | 'fallback' | 'rules';
+  modelProvider: 'openai' | 'google' | 'rules';
+  actualModel: string;
+  fallbackUsed: boolean;
+  requiresHumanReview: boolean;
+  processingTimeMs: number;
+  timestamp: string;
+  layers: Record<string, any>;
 }
 
 // ========================================
@@ -123,6 +135,7 @@ export async function saveLead(data: {
   source: string;
   enrichedData?: EnrichedLeadData;
   aiClassification?: LeadClassification;
+  processingMetadata?: ProcessingMetadata;
   status?: string;
 }): Promise<Lead> {
   try {
@@ -137,6 +150,7 @@ export async function saveLead(data: {
           rawMessage: data.rawMessage || existing[0].rawMessage,
           enrichedData: data.enrichedData || existing[0].enrichedData,
           aiClassification: data.aiClassification || existing[0].aiClassification,
+          processingMetadata: data.processingMetadata || existing[0].processingMetadata,
           status: data.status || existing[0].status,
           updatedAt: new Date(),
         })
@@ -155,6 +169,7 @@ export async function saveLead(data: {
           source: data.source,
           enrichedData: data.enrichedData,
           aiClassification: data.aiClassification,
+          processingMetadata: data.processingMetadata,
           status: data.status || 'pending',
         })
         .returning();

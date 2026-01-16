@@ -4,7 +4,7 @@ import passport from 'passport';
 import { storage } from './storage';
 import { insertUserSchema, type User } from '@shared/schema';
 import { fromZodError } from 'zod-validation-error';
-import { processLead } from './ai/orchestrator';
+import { processLeadPipeline } from './ai/mcp/pipeline';
 import { z } from 'zod';
 
 // ========================================
@@ -110,27 +110,28 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
       const { email, message, source } = validationResult.data;
 
-      // Process lead through orchestrator
-      const result = await processLead({
+      // Process lead through new MCP pipeline
+      const result = await processLeadPipeline({
         email,
         message,
         source,
       });
 
-      // Return success response
+      // Return success response with structured data
       res.status(200).json({
         success: true,
         message: 'Lead processed successfully',
         data: {
           id: result.id,
           email: result.email,
-          intent: result.classification.intent,
-          confidence: result.classification.confidence,
-          reasoning: result.classification.reasoning,
-          model: result.classification.model,
-          enrichedData: result.enrichedData,
+          intent: result.intent.intent,
+          confidence: result.intent.confidence,
+          reasoning: result.intent.reasoning,
+          model: result.processing.actualModel,
+          enrichedData: result.presence,
           notified: result.notified,
-          processingTime: result.processingTime,
+          reply: result.intent.userReply,
+          processingTime: result.processing.processingTimeMs,
         },
       });
     } catch (error) {
