@@ -39,8 +39,9 @@ server/ai/
 
 ## 🚀 Quick Start
 
-### 1. API Endpoint
+### 1. API Endpoints
 
+#### Ingest Lead
 ```bash
 POST /api/mcp/ingest
 Content-Type: application/json
@@ -52,8 +53,24 @@ Content-Type: application/json
 }
 ```
 
-### 2. Response
+#### List Leads
+```bash
+GET /api/mcp/leads?intent=high&limit=10
+```
 
+#### Update Status
+```bash
+PATCH /api/mcp/leads/:id
+Content-Type: application/json
+
+{
+  "status": "processed"
+}
+```
+
+### 2. Response Examples
+
+#### Success Ingest
 ```json
 {
   "success": true,
@@ -77,6 +94,20 @@ Content-Type: application/json
   }
 }
 ```
+
+---
+
+## 🎨 Dashboard (Front-to-Back)
+
+The system provides a built-in dashboard for real-time monitoring:
+
+- **URL**: `/dashboard`
+- **Frontend**: React + Vite + Framer Motion
+- **Features**:
+  - 📊 Real-time Lead Monitoring
+  - 🎯 AI Intent Breakdown
+  - 📋 Enriched Data View
+  - 🔄 Auto-refresh (5s polling)
 
 ---
 
@@ -362,6 +393,39 @@ Ingest and process a new lead.
   };
   error?: string;
 }
+```
+
+### GET /api/mcp/leads
+
+List leads with filtering and statistics.
+
+**Query Parameters:**
+- `status`: `pending | processed | notified | failed`
+- `intent`: `high | medium | low | spam`
+- `limit`: `1-100` (default: 50)
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": [...leads],
+  "stats": {
+    "total": 100,
+    "high": 20,
+    "medium": 30,
+    "low": 40,
+    "spam": 10
+  }
+}
+```
+
+### PATCH /api/mcp/leads/:id
+
+Update a lead's status.
+
+**Body:**
+```json
+{ "status": "processed" }
 ```
 
 ### GET /api/mcp/health

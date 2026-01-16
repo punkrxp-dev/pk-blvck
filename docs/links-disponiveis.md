@@ -67,14 +67,14 @@
 ## 📚 **DOCUMENTAÇÃO**
 
 ### **Documentos Internos**
-- **Setup API Keys:** `docs/setup-api-keys.md`
-- **Dashboard Guide:** `docs/dashboard-guide.md`
-- **Security Audit:** `docs/security-audit-report.md`
-- **MCP Orchestrator:** `docs/mcp-orchestrator.md`
-- **AI Integration:** `docs/ai-integration-report.md`
+- **Setup API Keys:** `setup-api-keys.md`
+- **Dashboard Guide:** `dashboard-guide.md`
+- **Security Audit:** `security-audit-report.md`
+- **MCP Orchestrator:** `mcp-orchestrator.md`
+- **AI Integration:** `ai-integration-report.md`
 
 ### **Deploy Guides**
-- **Railway Deploy:** `RAILWAY_DEPLOY.md`
+- **Railway Deploy:** `railway-deploy.md`
 - **Frontend Deploy:** Vercel automático via GitHub
 
 ---
