@@ -129,6 +129,20 @@ export default function Landing() {
           </div>
         </section>
 
+
+
+        {/* Context */}
+        <section className='py-16 md:py-20 px-4 md:px-8 lg:px-16'>
+          <div className='max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6'>
+            <span className='font-mono text-[10px] tracking-[0.2em] text-white/50 uppercase'>
+              Plaza D&apos;Oro Shopping // Goiânia - GO
+            </span>
+            <span className='font-mono text-[10px] tracking-[0.2em] text-white/30 uppercase'>
+              Presence is The New Power
+            </span>
+          </div>
+        </section>
+
         {/* Philosophy */}
         <section className='py-20 md:py-28 px-4 md:px-8 lg:px-16'>
           <div className='max-w-4xl mx-auto text-center'>
@@ -144,18 +158,6 @@ export default function Landing() {
               Cada detalhe do design, da energia e dos programas foi pensado para transformar
               presença em resultado palpável.
             </p>
-          </div>
-        </section>
-
-        {/* Context */}
-        <section className='py-16 md:py-20 px-4 md:px-8 lg:px-16'>
-          <div className='max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6'>
-            <span className='font-mono text-[10px] tracking-[0.2em] text-white/50 uppercase'>
-              Plaza D&apos;Oro Shopping // Goiânia - GO
-            </span>
-            <span className='font-mono text-[10px] tracking-[0.2em] text-white/30 uppercase'>
-              Presence is The New Power
-            </span>
           </div>
         </section>
       </main>
