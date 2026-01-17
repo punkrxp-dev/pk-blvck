@@ -119,6 +119,37 @@ check: ## Verifica tipos TypeScript
 	npm run check
 	@echo "$(GREEN)✅ Verificação de tipos concluída!$(NC)"
 
+seo-check: ## Verifica status dos arquivos SEO/PWA
+	@echo "$(BLUE)🔍 Verificando arquivos SEO/PWA...$(NC)"
+	@if [ -f "client/public/sitemap.xml" ]; then \
+		echo "$(GREEN)✅ sitemap.xml existe$(NC)"; \
+		TODAY=$$(date +%Y-%m-%d); \
+		SITEMAP_DATE=$$(grep "<lastmod>" client/public/sitemap.xml | sed 's/.*<lastmod>\(.*\)<\/lastmod>.*/\1/'); \
+		if [ "$$SITEMAP_DATE" = "$$TODAY" ]; then \
+			echo "$(GREEN)✅ sitemap.xml atualizado ($$SITEMAP_DATE)$(NC)"; \
+		else \
+			echo "$(YELLOW)⚠️  sitemap.xml desatualizado: $$SITEMAP_DATE (deve ser $$TODAY)$(NC)"; \
+		fi; \
+	else \
+		echo "$(RED)❌ sitemap.xml não encontrado$(NC)"; \
+	fi
+	@if [ -f "client/public/robots.txt" ]; then \
+		echo "$(GREEN)✅ robots.txt existe$(NC)"; \
+	else \
+		echo "$(RED)❌ robots.txt não encontrado$(NC)"; \
+	fi
+	@if [ -f "client/site.webmanifest" ]; then \
+		echo "$(GREEN)✅ site.webmanifest existe$(NC)"; \
+		if grep -q "PUNK | BLVCK" client/site.webmanifest; then \
+			echo "$(GREEN)✅ manifest com nome correto$(NC)"; \
+		else \
+			echo "$(RED)❌ manifest sem nome correto$(NC)"; \
+		fi; \
+	else \
+		echo "$(RED)❌ site.webmanifest não encontrado$(NC)"; \
+	fi
+	@echo "$(GREEN)✅ Verificação SEO concluída!$(NC)"
+
 lint: ## Executa linting e formatação
 	@echo "$(BLUE)🧹 Executando linting e formatação...$(NC)"
 	npx eslint . --ext .ts,.tsx --fix
@@ -239,6 +270,7 @@ deploy-check: ## Verificações pré-deployment
 	@echo "$(BLUE)🔍 Executando verificações pré-deployment...$(NC)"
 	$(MAKE) check
 	$(MAKE) security-audit
+	$(MAKE) seo-check
 	$(MAKE) test
 	@echo "$(GREEN)✅ Verificações concluídas!$(NC)"
 
