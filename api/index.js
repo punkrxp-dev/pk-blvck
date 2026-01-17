@@ -1,7 +1,7 @@
 /* global console */
 import { createServer } from 'http';
 import serverBundle from '../dist/index.cjs';
-const { registerRoutes } = serverBundle;
+const { app, registerRoutes } = serverBundle;
 
 let server;
 
@@ -11,24 +11,22 @@ export default async function handler(req, res) {
     if (!server) {
       console.log('🚀 Initializing PUNK BLVCK Vercel server...');
 
-      // Create Express app
-      const express = (await import('express')).default;
-      const app = express();
+      // Note: 'app' IS THE PRE-CONFIGURED INSTANCE from server/index.ts
+      // It already has CORS, Helmet, RateLimiting, etc.
 
-      // Register all routes with error handling
+      server = createServer(app);
+
+      // We explicitly register routes again to ensure they are attached to this specific httpServer instance
+      // and to guarantee they are ready before serving requests.
+      // This is safe because Express router stack handles additions fine.
       try {
-        await registerRoutes(createServer(app), app);
+        await registerRoutes(server, app);
         console.log('✅ All routes registered successfully');
       } catch (routeError) {
         console.error('❌ Failed to register routes:', routeError);
-        res.status(500).json({
-          error: 'Server initialization failed',
-          message: 'Unable to register routes'
-        });
-        return;
+        throw routeError;
       }
 
-      server = createServer(app);
       console.log('🎯 PUNK BLVCK server ready for requests');
     }
 
