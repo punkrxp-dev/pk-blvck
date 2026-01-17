@@ -10,7 +10,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from './ui/dropdown-menu';
+} from '../ui/dropdown-menu';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -20,12 +20,12 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from './ui/alert-dialog';
-import { Button } from './ui/button';
+} from '../ui/alert-dialog';
+import { Button } from '../ui/button';
 import { MoreVertical, Trash2, Mail, CheckCircle, XCircle, Eye } from 'lucide-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import type { Lead } from '../hooks/use-leads';
+import type { Lead } from '../../hooks/use-leads';
 
 interface LeadActionsProps {
   lead: Lead;

@@ -5,11 +5,11 @@
 import { useState } from 'react';
 import { useLeads, type Lead } from '../hooks/use-leads';
 import { Skeleton } from '../components/ui/skeleton';
-import { LeadFiltersComponent, type LeadFilters } from '../components/lead-filters';
-import { LeadDetailModal } from '../components/lead-detail-modal';
-import { LeadActions } from '../components/lead-actions';
-import { IntentBadge } from '../components/intent-badge';
-import { exportLeadsToCSV } from '../utils/csv-export';
+import { LeadFiltersComponent, type LeadFilters } from '../components/dashboard/lead-filters';
+import { LeadDetailModal } from '../components/dashboard/lead-detail-modal';
+import { LeadActions } from '../components/dashboard/lead-actions';
+import { IntentBadge } from '../components/dashboard/intent-badge';
+import { exportLeadsToCSV } from '../lib/csv-export';
 import {
   Pagination,
   PaginationContent,
@@ -19,7 +19,7 @@ import {
 } from '../components/ui/pagination';
 import { Button } from '../components/ui/button';
 import { Download, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
-import { DashboardHeader } from '../components/dashboard-header';
+import { DashboardHeader } from '../components/dashboard/dashboard-header';
 
 // ========================================
 // LOGO COMPONENT (Footer version)

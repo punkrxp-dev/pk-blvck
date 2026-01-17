@@ -4,10 +4,10 @@
  * Shows complete information about a lead in a modal dialog
  */
 
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog';
-import { Badge } from './ui/badge';
-import { Separator } from './ui/separator';
-import type { Lead } from '../hooks/use-leads';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../ui/dialog';
+import { Badge } from '../ui/badge';
+import { Separator } from '../ui/separator';
+import type { Lead } from '../../hooks/use-leads';
 import { IntentBadge } from './intent-badge';
 
 interface LeadDetailModalProps {
