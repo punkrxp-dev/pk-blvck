@@ -4,9 +4,18 @@ Este diretório contém ferramentas para benchmark comparativo entre as implemen
 
 ## Estrutura
 
--  `dataset.jsonl` - Dataset de teste com 40 casos reais + sintéticos
--  `run-benchmark.ts` - Runner do benchmark em Node.js
--  `README.md` - Esta documentação
+```
+bench/
+├── configs/
+│   └── default.json          # Configurações padrão do benchmark
+├── datasets/
+│   ├── dataset.jsonl         # Dataset completo (40 casos)
+│   └── test-5.jsonl          # Dataset reduzido para testes rápidos
+├── results/                  # Diretório para salvar resultados
+├── run-benchmark.ts          # Runner principal do benchmark
+├── validate-dataset.ts       # Validador de datasets
+└── README.md                 # Esta documentação
+```
 
 ## Dataset
 
@@ -36,6 +45,25 @@ O dataset contém casos balanceados:
 
 -  **Conversão por faixa**: Taxa de sucesso por intenção (high/medium/low)
 -  **Tempo até ação**: Latência para email/notify
+
+## Validação de Datasets
+
+Antes de executar benchmarks, valide seus datasets:
+
+```bash
+# Validar dataset completo
+npx tsx bench/validate-dataset.ts datasets/dataset.jsonl
+
+# Validar dataset de teste
+npx tsx bench/validate-dataset.ts datasets/test-5.jsonl
+```
+
+### Métricas de Validação
+
+- **Distribuição balanceada**: 10 casos por categoria (high/medium/low/spam)
+- **Campos obrigatórios**: email, source, expected_intent
+- **Formato de email**: Validação básica de formato
+- **JSON válido**: Cada linha deve ser JSON válido
 
 ## Como Executar
 

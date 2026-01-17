@@ -21,7 +21,7 @@ type Result = {
 
 const API = process.env.BENCH_API ?? "http://127.0.0.1:5001/api/mcp/benchmark";
 const MODE = process.env.BENCH_MODE ?? "neo"; // "neo" | "legacy"
-const DATASET = process.env.BENCH_DATASET ?? path.join(process.cwd(), "bench/dataset.jsonl");
+const DATASET = process.env.BENCH_DATASET ?? path.join(process.cwd(), "bench", "datasets", "dataset.jsonl");
 
 // No CSRF needed for benchmark endpoint
 

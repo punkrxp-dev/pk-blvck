@@ -1,0 +1,25 @@
+{
+  "api": {
+    "default": "http://127.0.0.1:5001/api/mcp/benchmark",
+    "production": "https://your-api.com/api/mcp/benchmark"
+  },
+  "datasets": {
+    "default": "datasets/dataset.jsonl",
+    "small": "datasets/test-5.jsonl"
+  },
+  "modes": ["neo", "legacy"],
+  "metrics": {
+    "accuracy": true,
+    "macroF1": true,
+    "latency": {
+      "percentiles": [50, 95, 99]
+    },
+    "processingModeDist": true,
+    "sampleSize": 8
+  },
+  "validation": {
+    "requireExpectedIntent": true,
+    "requireEmail": true,
+    "requireSource": true
+  }
+}
