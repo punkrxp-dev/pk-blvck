@@ -125,7 +125,9 @@ export async function processLeadPipeline(input: LeadInput) {
 }
 ```
 
-#### **🕶️ ACTION ROUTER - Fluxo Fantasma (Decisão Inteligente)**
+#### **🕶️ DECISION LAYER - Fluxo Fantasma (Camada de Decisão)**
+
+> **Nome interno:** Action Router | **Nome conceitual:** Decision Layer
 
 ```typescript
 // Responsabilidades:
@@ -137,6 +139,16 @@ export async function processLeadPipeline(input: LeadInput) {
 ✅ Registrar decisões para telemetria
 
 // Regras de Decisão:
+
+// REGRA CRÍTICA: Múltiplos leads do mesmo domínio (B2B Signal)
+if (intent === 'high' && accountContext.totalLeads >= 2) {
+  action = 'notify_immediate';
+  channel = 'email';
+  priority = 'urgent';
+  executeNow = true; // Conta corporativa ativa!
+  reasoning = 'Múltiplos sinais do mesmo domínio - B2B detectado';
+}
+
 if (intent === 'high' && position.includes('CEO') && source.includes('ad')) {
   action = 'prepare_whatsapp';
   channel = 'whatsapp';
@@ -931,6 +943,86 @@ await circuitBreaker.execute(async () => {
 
 ---
 
+## ✅ **CHECKLIST DE PRODUÇÃO (PRÉ-LANÇAMENTO)**
+
+### **Validações Obrigatórias Antes de Ir ao Ar:**
+
+-  [ ] **Resend API com domínio verificado**
+  -  Domínio `punkclub.com.br` verificado no Resend
+  -  Registros DNS configurados (MX, TXT, DKIM)
+  -  Email de teste enviado e recebido com sucesso
+
+-  [ ] **Hunter.io funcionando com dados reais**
+  -  API Key configurada
+  -  Teste com email real retornou dados enriquecidos
+  -  Mock data desativado em produção
+
+-  [ ] **Email padrão de reconhecimento funcionando**
+  -  Template HIGH priority testado
+  -  Template MEDIUM priority testado
+  -  Template LOW priority testado
+  -  Variáveis dinâmicas populando corretamente
+
+-  [ ] **Decision Layer (Action Router) registrando decisões**
+  -  `actionDecision` aparecendo no response da API
+  -  Log de telemetria ativo
+  -  Decisões sendo salvas no banco para análise
+
+-  [ ] **Teste end-to-end com email real**
+  -  Submeter lead de teste via formulário
+  -  Verificar email recebido em `bruno@punkcrossfit.com.br`
+  -  Confirmar dados enriquecidos corretos
+  -  Validar actionDecision apropriada
+
+-  [ ] **Dashboard mostrando actionDecision**
+  -  Campo `actionDecision` visível na interface
+  -  Prioridade (urgent/high/medium/low) destacada
+  -  Canal recomendado (email/whatsapp) visível
+
+-  [ ] **Performance validada**
+  -  Tempo de processamento < 2s
+  -  Circuit breaker funcionando
+  -  Rate limiting testado
+
+### **⚠️ Bloqueadores Críticos:**
+
+Se qualquer item acima falhar, **NÃO ir para produção** até resolver.
+
+---
+
+## 🎯 **FRAMING PARA APRESENTAÇÃO AO CLIENTE**
+
+### **O que dizer:**
+
+> "O sistema observa, interpreta e decide o melhor momento e canal de contato.  
+> Nem todo contato vira mensagem. Nem toda mensagem vira ação.  
+> A inteligência está em saber quando agir e quando observar."
+
+### **O que NÃO mencionar:**
+
+-  ❌ "Action Router"
+-  ❌ "Regras de decisão"
+-  ❌ "Tabelas"
+-  ❌ "GPT-4o" ou "Gemini"
+-  ❌ "Hunter.io"
+-  ❌ "Pipeline MCP"
+
+### **Termos premium para usar:**
+
+-  ✅ **"Sistema de decisão inteligente"**
+-  ✅ **"Observação progressiva"**
+-  ✅ **"Fluxo Fantasma"** (se explicar o conceito)
+-  ✅ **"Camada de inteligência"**
+-  ✅ **"Decisão contextual"**
+
+### **Foco da apresentação:**
+
+1.  **Valor:** Tempo economizado + conversão aumentada
+2.  **Diferencial:** Sistema age sem pedir atenção
+3.  **Resultado:** Leads qualificados chegam prontos para ação
+
+---
+
 ## 🚀 PRÓXIMOS PASSOS CRÍTICOS
 
 ### **🔴 ALTA PRIORIDADE (45 minutos total)**
@@ -946,7 +1038,7 @@ await circuitBreaker.execute(async () => {
 
 ```bash
 RESEND_API_KEY=re_xxxxxxxxxxxxxxxx
-RESEND_FROM_EMAIL=leads@punkblvck.com.br 
+RESEND_FROM_EMAIL=team@punkclub.com.br 
 NOTIFICATION_EMAIL=bruno@punkcrossfit.com.br
 ```
 

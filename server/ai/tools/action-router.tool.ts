@@ -20,7 +20,7 @@ export type ActionType =
   | 'prepare_instagram_dm'  // Preparar DM Instagram
   | 'silent_queue'          // Guardar para follow-up manual
   | 'archive'               // Arquivar (spam/low)
-  | 'nurture_sequence';     // Adicionar a sequência de nutrição
+  | 'nurture_sequence';     // Observação progressiva (silent_followup)
 
 export type RecommendedChannel = 
   | 'email' 
@@ -59,6 +59,12 @@ export interface ActionRouterInput {
   };
   source: string;
   userReply: string;
+  accountContext?: {
+    domain: string;
+    totalLeads: number;
+    avgIntent: string;
+    lastInteraction: string;
+  };
 }
 
 // ========================================
@@ -69,7 +75,7 @@ export interface ActionRouterInput {
  * Decide a ação apropriada baseada em regras + contexto
  */
 export function routeAction(input: ActionRouterInput): ActionDecision {
-  const { intent, confidence, enrichedData, source, userReply } = input;
+  const { intent, confidence, enrichedData, source, userReply, accountContext } = input;
   
   log(`🕶️ ACTION ROUTER - Analyzing: intent=${intent}, confidence=${confidence}, source=${source}`, 'action-router');
 
@@ -107,6 +113,24 @@ export function routeAction(input: ActionRouterInput): ActionDecision {
   // REGRA 2: HIGH INTENT → AÇÃO IMEDIATA
   // ========================================
   if (intent === 'high') {
+    // REGRA CRÍTICA: Múltiplos leads do mesmo domínio (B2B Signal)
+    // Indica conta corporativa ativa - prioridade máxima
+    if (accountContext && accountContext.totalLeads >= 2) {
+      return {
+        action: 'notify_immediate',
+        recommendedChannel: 'email',
+        priority: 'urgent',
+        suggestedMessage: userReply,
+        executeNow: true,
+        reasoning: `Conta com múltiplos sinais ativos (${accountContext.totalLeads} leads de ${accountContext.domain}). B2B detectado - atenção imediata necessária.`,
+        metadata: {
+          estimatedResponseTime: 'imediato (15min)',
+          bestTimeToContact: 'agora',
+          alternativeChannels: ['phone', 'whatsapp']
+        }
+      };
+    }
+
     const isCLevel = enrichedData.position && (
       enrichedData.position.toLowerCase().includes('ceo') ||
       enrichedData.position.toLowerCase().includes('founder') ||
