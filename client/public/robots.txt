@@ -1,5 +1,5 @@
 # Robots.txt for PUNK | BLVCK
-# https://pk-blvck.vercel.app/robots.txt
+# https://punkblvck.com.br/robots.txt
 
 User-agent: *
 Allow: /
@@ -18,4 +18,4 @@ Disallow: /debug
 Crawl-delay: 1
 
 # Sitemap
-Sitemap: https://pk-blvck.vercel.app/sitemap.xml
+Sitemap: https://punkblvck.com.br/sitemap.xml
