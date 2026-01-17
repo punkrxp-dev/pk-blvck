@@ -196,7 +196,7 @@ function WaitlistForm() {
             type='email'
             value={email}
             onChange={e => setEmail(e.target.value)}
-            placeholder='Só o essencial para você entrar no nível certo.'
+            placeholder='Email'
             required
             aria-label='Email para aplicação de acesso'
             className='bg-transparent border-b border-white/30 focus:border-white/80 focus:outline-none py-3 md:py-2 w-full font-sans text-sm md:text-base tracking-[0.15em] text-white/90 focus:text-white transition-all duration-500 placeholder:text-white/50 placeholder:opacity-100 text-center uppercase'
@@ -230,10 +230,6 @@ function WaitlistForm() {
           <span className='absolute inset-0 bg-punk-neon scale-x-0 group-hover:scale-x-100 group-focus:scale-x-100 group-active:scale-x-100 origin-left transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] z-0' />
         </button>
       </div>
-
-      <p className='mt-3 text-xs md:text-sm tracking-[0.2em] text-white/60 text-center uppercase'>
-        Nem mais. Nem menos.
-      </p>
     </form>
   );
 }
