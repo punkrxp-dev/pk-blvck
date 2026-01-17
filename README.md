@@ -2,7 +2,7 @@
 
 **Versão 2.0.0 - Security Hardened** | **Arquitetura NEØ Protected**
 
-Uma aplicação full-stack moderna com Express, React, TypeScript, PostgreSQL e segurança enterprise-grade.
+Sistema web premium para PUNK | BLVCK - Academia localizada no Plaza D'Oro Shopping, Goiânia. Plataforma full-stack moderna com Express, React, TypeScript, PostgreSQL e segurança enterprise-grade.
 
 ## Segurança Implementada
 
