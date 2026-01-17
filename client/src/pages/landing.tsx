@@ -21,25 +21,13 @@ export default function Landing() {
               <span className='w-8 h-px bg-white/40' />
             </div>
 
-            <h1 className='text-3xl md:text-6xl font-industrial tracking-tighter text-white font-bold uppercase mb-6 leading-tight'>
+            <h1 className='text-3xl md:text-6xl font-industrial tracking-tighter text-white font-bold uppercase mb-10 leading-tight'>
               O treino não é objetivo.
               <br />
               É presença.
               <br />
               É transformação.
             </h1>
-
-            <p className='text-sm md:text-base text-white/80 leading-relaxed mb-5'>
-              Mais que um espaço de treino.
-              <br />
-              Um ecossistema de performance premium e convivência.
-            </p>
-
-            <p className='text-xs md:text-sm text-white/60 leading-relaxed mb-10'>
-              Experiência além da repetição.
-              <br />
-              Cada detalhe do design, da energia e dos programas foi pensado para transformar presença em resultado palpável.
-            </p>
 
             <div className='text-[10px] md:text-xs tracking-[0.3em] text-white/50 uppercase mb-4'>
               Registro necessário para acesso.
@@ -103,6 +91,23 @@ export default function Landing() {
                 </p>
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* Philosophy */}
+        <section className='py-20 md:py-28 px-4 md:px-8 lg:px-16'>
+          <div className='max-w-4xl mx-auto text-center'>
+            <p className='text-base md:text-lg text-white/80 leading-relaxed mb-6'>
+              Mais que um espaço de treino.
+              <br />
+              Um ecossistema de performance premium e convivência.
+            </p>
+
+            <p className='text-sm md:text-base text-white/60 leading-relaxed'>
+              Experiência além da repetição.
+              <br />
+              Cada detalhe do design, da energia e dos programas foi pensado para transformar presença em resultado palpável.
+            </p>
           </div>
         </section>
 
