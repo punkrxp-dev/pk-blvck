@@ -7,7 +7,8 @@
 
 import { LeadInput, ProcessedLead } from './types';
 import { mcp } from './index';
-import { saveLead, notifyLead, routeAction, logActionDecision } from '../tools';
+import { saveLead, notifyLead } from '../tools';
+import { routeAction, logActionDecision } from '../tools/action-router.tool';
 import { log } from '../../utils/logger';
 
 /**

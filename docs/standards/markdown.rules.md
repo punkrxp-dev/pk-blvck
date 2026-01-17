@@ -52,8 +52,8 @@
 
 **Solução:**
 
-1.  **Identificar o erro:** Procure por linhas que começam com `- ` (1 espaço) ou `1. ` (1 espaço)
-2.  **Corrigir:** Adicione um espaço extra após o marcador: `-  ` (2 espaços) ou `1.  ` (2 espaços)
+1.  **Identificar o erro:** Procure por linhas que começam com `-` (1 espaço) ou `1.` (1 espaço)
+2.  **Corrigir:** Adicione um espaço extra após o marcador: `-` (2 espaços) ou `1.` (2 espaços)
 3.  **Verificar:** Execute `markdownlint` ou verifique no editor
 
 **Exemplos:**
@@ -93,11 +93,11 @@ Se estiver usando VS Code com extensão Markdownlint, você pode:
 
 Substitua todos os padrões:
 
--  `- ` → `-  ` (adicionar um espaço)
--  `* ` → `*  ` (adicionar um espaço)
--  `+ ` → `+  ` (adicionar um espaço)
--  `1. ` → `1.  ` (adicionar um espaço)
--  `2. ` → `2.  ` (adicionar um espaço)
+-  `-` → `-` (adicionar um espaço)
+-  `*` → `*` (adicionar um espaço)
+-  `+` → `+` (adicionar um espaço)
+-  `1.` → `1.` (adicionar um espaço)
+-  `2.` → `2.` (adicionar um espaço)
 -  E assim por diante para todos os números
 
 ##### ✅ Correto (MD032)
@@ -140,17 +140,22 @@ Estrutura de diretórios
 ```json
 {"key": "value"}
 ```
+
 ```
 
 ##### ❌ Incorreto (MD040)
 
 ```markdown
 ```
+
 echo "Hello World"
+
 ```
 
 ```
+
 Estrutura de diretórios
+
 ```
 ```
 
@@ -176,7 +181,7 @@ Use caracteres Unicode quando necessário para simbolismo visual:
 
 -  **Erro:** `MD030/list-marker-space: Spaces after list markers [Expected: 2; Actual: 1]`
 -  **Causa:** Marcador de lista seguido por apenas 1 espaço em vez de 2
--  **Solução:** Adicione um espaço extra após o marcador (`- ` → `-  `)
+-  **Solução:** Adicione um espaço extra após o marcador (`-` → `-`)
 -  **Exemplo de correção:**
 
   ```markdown

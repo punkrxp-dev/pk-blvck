@@ -184,7 +184,7 @@ function WaitlistForm() {
       <div className='space-y-4'>
         <div>
           <label htmlFor='landing-email' className='sr-only'>
-            Email para aplicação de acesso
+            Email para garantir seu ticket de acesso
           </label>
           <input
             id='landing-email'
