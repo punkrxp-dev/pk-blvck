@@ -50,7 +50,8 @@ export async function processLeadPipeline(input: LeadInput) {
   // 1. ENTRY LAYER (Sentinel) - Validação + Spam Detection
   // 2. PRESENCE LAYER (Observer) - Enriquecimento Hunter.io
   // 3. INTENT LAYER (Intent) - Classificação IA GPT-4o/Gemini
-  // 4. ACTION LAYER - Salvamento + Notificação
+  // 4. 🕶️ ACTION ROUTER (Fluxo Fantasma) - Decisão Inteligente
+  // 5. ACTION LAYER - Salvamento + Notificação Baseada em Decisão
 }
 ```
 
@@ -123,6 +124,102 @@ export async function processLeadPipeline(input: LeadInput) {
   similarLeads: ["lead-id-1", "lead-id-2"]
 }
 ```
+
+#### **🕶️ ACTION ROUTER - Fluxo Fantasma (Decisão Inteligente)**
+
+```typescript
+// Responsabilidades:
+✅ Decidir QUANDO, COMO e SE alguém deve agir
+✅ Analisar contexto: intent + confidence + position + source
+✅ Rotear para canal apropriado (email/whatsapp/instagram)
+✅ Definir prioridade (urgent/high/medium/low/none)
+✅ Preparar ações sem executar imediatamente
+✅ Registrar decisões para telemetria
+
+// Regras de Decisão:
+if (intent === 'high' && position.includes('CEO') && source.includes('ad')) {
+  action = 'prepare_whatsapp';
+  channel = 'whatsapp';
+  priority = 'urgent';
+  executeNow = false; // Preparar, não executar
+}
+
+if (intent === 'high' && !source.includes('ad')) {
+  action = 'notify_immediate';
+  channel = 'email';
+  priority = 'high';
+  executeNow = true; // Executar agora
+}
+
+if (intent === 'medium' && hasPhone) {
+  action = 'prepare_whatsapp';
+  channel = 'whatsapp';
+  priority = 'medium';
+  executeNow = false;
+}
+
+if (intent === 'low') {
+  action = 'silent_queue';
+  channel = 'dashboard_only';
+  priority = 'low';
+  executeNow = false;
+}
+
+if (intent === 'spam') {
+  action = 'archive';
+  channel = 'dashboard_only';
+  priority = 'none';
+  executeNow = true;
+}
+
+// Output:
+{
+  action: "prepare_whatsapp",
+  recommendedChannel: "whatsapp",
+  priority: "urgent",
+  suggestedMessage: "Olá João! Vi que você é CEO...",
+  executeNow: false,
+  reasoning: "CEO via tráfego pago - alta chance de conversão",
+  metadata: {
+    estimatedResponseTime: "imediato (30min)",
+    bestTimeToContact: "manhã (09h-11h)",
+    alternativeChannels: ["email", "phone"]
+  }
+}
+```
+
+**🎯 Tipos de Ação:**
+
+-  `notify_immediate` - Email imediato ao gestor
+-  `prepare_whatsapp` - Preparar mensagem WhatsApp (não envia)
+-  `prepare_instagram_dm` - Preparar DM Instagram
+-  `silent_queue` - Guardar para follow-up manual
+-  `archive` - Arquivar (spam/low)
+-  `nurture_sequence` - Adicionar a sequência de nutrição
+
+**📱 Canais Recomendados:**
+
+-  `email` - Email tradicional
+-  `whatsapp` - WhatsApp Business
+-  `instagram` - DM Instagram
+-  `phone` - Ligação telefônica
+-  `dashboard_only` - Apenas dashboard (sem notificação)
+
+**⚡ Prioridades:**
+
+-  `urgent` - Responder em 30 minutos (CEO + tráfego pago)
+-  `high` - Responder em 1-2 horas (high intent orgânico)
+-  `medium` - Responder em 24 horas (medium intent)
+-  `low` - Responder em 3-5 dias (low intent)
+-  `none` - Sem ação (spam/arquivado)
+
+**🔍 Diferencial:**
+
+-  **Sistema não executa tudo automaticamente**
+-  **Decide e registra** o que deve ser feito
+-  **Gestor vê recomendações** no dashboard
+-  **Ações preparadas** podem ser executadas com 1 clique
+-  **Telemetria completa** de decisões para análise
 
 ---
 
@@ -292,12 +389,12 @@ NOTIFICATION_EMAIL=gestor@punkblvck.com.br  # Email do gestor (recebe alertas)
 
 ### **Status Atual**
 
-| Componente       | Status              | Ação Necessária             |
-|------------------|---------------------|-----------------------------|
-| **Código**       | ✅ Implementado     | Nenhuma                     |
-| **API Key**      | ⚠️ Não configurada  | Criar conta Resend          |
-| **Domínio**      | ⚠️ Não verificado   | Adicionar registros DNS     |
-| **Email Gestor** | ⚠️ Fallback ativo   | Configurar email produção   |
+| Componente       | Status            | Ação Necessária                |
+|------------------|-------------------|--------------------------------|
+| **Código**       | ✅ Implementado   | Nenhuma                        |
+| **API Key**      | ✅ Configurada    | Nenhuma                        |
+| **Domínio**      | ⚠️ Não verificado | Verificar DNS punkblvck.com.br |
+| **Email Gestor** | ✅ Configurado    | Nenhuma                        |
 
 ### **Fluxo de Notificação**
 
@@ -429,7 +526,7 @@ Standard follow-up process.
 HUNTER_API_KEY=your_hunter_api_key_here
 ```
 
-**Status:** ⚠️ Não configurada (usando mock data em desenvolvimento)
+**Status:** ✅ Configurada (dados reais via Hunter.io API)
 
 ### **Como Funciona**
 
@@ -716,50 +813,78 @@ await circuitBreaker.execute(async () => {
         └──────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────────┐
-│      4. PERSISTENCE LAYER (server/ai/tools/persistence.tool)   │
+│   4. 🕶️ ACTION ROUTER (Fluxo Fantasma - NOVA CAMADA)           │
+│  • Analisa: intent + confidence + position + source            │
+│  • Decide: QUANDO, COMO e SE alguém deve agir                  │
+│  • Roteia para canal apropriado (email/whatsapp/instagram)     │
+│  • Define prioridade (urgent/high/medium/low)                  │
+│  • Prepara ações sem executar imediatamente                    │
+│                                                                 │
+│  Output: actionDecision {                                       │
+│    action: "prepare_whatsapp",                                  │
+│    recommendedChannel: "whatsapp",                              │
+│    priority: "urgent",                                          │
+│    executeNow: false,                                           │
+│    reasoning: "CEO via tráfego pago - alta conversão"          │
+│  }                                                              │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│      5. PERSISTENCE LAYER (server/ai/tools/persistence.tool)   │
 │  • Salva lead completo no PostgreSQL                           │
 │  • Inclui: dados originais + enrichedData + aiClassification   │
+│  • Inclui: actionDecision para telemetria                      │
 │  • Status: processed/failed                                    │
 │  • Retorna UUID do lead                                         │
 └─────────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────────┐
-│   5. NOTIFICATION LAYER (server/ai/tools/notification.tool)    │
-│  • Verifica: status !== 'failed'                               │
-│  • Seleciona template por intent (high/medium/low)             │
-│  • Envia email via Resend API para GESTOR                      │
-│  • Destinatário: NOTIFICATION_EMAIL                            │
+│   6. NOTIFICATION LAYER (Baseado em Action Router)             │
+│  • Verifica: actionDecision.executeNow === true                │
+│  • Se email: Envia via Resend API para GESTOR                  │
+│  • Se whatsapp/instagram: Prepara mas NÃO executa              │
+│  • Registra ação no dashboard para execução manual             │
 │  • Atualiza: notified = true/false                             │
 └─────────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────────┐
-│            6. MEMORY STORAGE (Assíncrono)                       │
+│            7. MEMORY STORAGE (Assíncrono)                       │
 │  • Adiciona embedding ao vector store                          │
 │  • Armazena para contexto futuro                               │
 │  • Não bloqueia resposta ao usuário                             │
 └─────────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────────┐
-│              7. RESPOSTA API (200 OK)                           │
+│              8. RESPOSTA API (200 OK)                           │
 │  {                                                              │
 │    "success": true,                                             │
 │    "data": {                                                    │
 │      "id": "uuid",                                              │
 │      "intent": "high",                                          │
 │      "enrichedData": {...},                                     │
-│      "notified": true                                           │
+│      "notified": true,                                          │
+│      "actionDecision": {                                        │
+│        "action": "prepare_whatsapp",                            │
+│        "recommendedChannel": "whatsapp",                        │
+│        "priority": "urgent",                                    │
+│        "executeNow": false,                                     │
+│        "reasoning": "CEO via tráfego pago"                      │
+│      }                                                          │
 │    }                                                            │
 │  }                                                              │
 └─────────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────────┐
-│         8. AÇÃO DO GESTOR (Workflow Comercial)                 │
-│  • Gestor recebe email de notificação                          │
+│         9. AÇÃO DO GESTOR (Workflow Comercial)                 │
+│  • Gestor recebe email de notificação (se executeNow = true)  │
 │  • Acessa dashboard /dashboard                                  │
-│  • Vê lead completo + sugestão de resposta da IA              │
-│  • Copia/adapta resposta                                        │
-│  • Envia follow-up manual (email/WhatsApp)                     │
-│  • Marca como "contacted" no sistema                           │
+│  • Vê lead completo + actionDecision + sugestão de resposta    │
+│  • Dashboard mostra: "Ação recomendada: WhatsApp (urgente)"   │
+│  • Copia mensagem preparada com 1 clique                       │
+│  • Envia via canal recomendado (email/WhatsApp/Instagram)      │
+│  • Sistema registra: "contacted via whatsapp"                  │
+│                                                                 │
+│  🕶️ FLUXO FANTASMA: Sistema decidiu, gestor executa           │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -795,14 +920,14 @@ await circuitBreaker.execute(async () => {
 
 ### 📊 **Status das Integrações**
 
-| Integração       | Status             | Próxima Ação                    |
-|------------------|--------------------|---------------------------------|
-| **OpenAI API**   | ✅ Configurada     | Nenhuma                         |
-| **Google AI**    | ✅ Configurada     | Nenhuma                         |
-| **PostgreSQL**   | ✅ Funcionando     | Nenhuma                         |
-| **Hunter.io**    | ⚠️ Não configurada | Adicionar `HUNTER_API_KEY`      |
-| **Resend API**   | ⚠️ Não configurada | Adicionar `RESEND_API_KEY`      |
-| **Domínio DNS**  | ⚠️ Não verificado  | Verificar `punkblvck.com.br`    |
+| Integração      | Status            | Próxima Ação                 |
+|-----------------|-------------------|------------------------------|
+| **OpenAI API**  | ✅ Configurada    | Nenhuma                      |
+| **Google AI**   | ✅ Configurada    | Nenhuma                      |
+| **PostgreSQL**  | ✅ Funcionando    | Nenhuma                      |
+| **Hunter.io**   | ✅ Configurada    | Nenhuma                      |
+| **Resend API**  | ✅ Configurada    | Nenhuma                      |
+| **Domínio DNS** | ⚠️ Não verificado | Verificar `punkblvck.com.br` |
 
 ---
 
@@ -821,8 +946,8 @@ await circuitBreaker.execute(async () => {
 
 ```bash
 RESEND_API_KEY=re_xxxxxxxxxxxxxxxx
-RESEND_FROM_EMAIL=leads@punkblvck.com.br
-NOTIFICATION_EMAIL=gestor@punkblvck.com.br
+RESEND_FROM_EMAIL=leads@punkblvck.com.br 
+NOTIFICATION_EMAIL=bruno@punkcrossfit.com.br
 ```
 
 **Benefício:** Notificações em tempo real para o gestor
