@@ -142,21 +142,23 @@ export default function Landing() {
 
 function WaitlistForm() {
   const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
 
   const mutation = useMutation({
-    mutationFn: async (email: string) => {
+    mutationFn: async (data: { email: string; message?: string }) => {
       const res = await apiRequest('POST', '/api/mcp/ingest', {
-        email,
-        message: 'Membership Application',
+        email: data.email,
+        message: data.message?.trim() || undefined, // Envia apenas se preenchido
         source: 'web_waitlist',
       });
       return res.json();
     },
     onSuccess: () => {
       setEmail('');
+      setMessage('');
     },
     onError: () => {
-      toast.error('Application failed. Try again.');
+      toast.error('Falha ao enviar. Tente novamente.');
     },
   });
 
@@ -173,23 +175,54 @@ function WaitlistForm() {
     <form
       onSubmit={e => {
         e.preventDefault();
-        if (email) mutation.mutate(email);
+        if (email.trim()) {
+          mutation.mutate({ email: email.trim(), message: message.trim() || undefined });
+        }
       }}
-      className={`transition-opacity duration-1000 ${mutation.isPending ? 'opacity-20 pointer-events-none' : 'opacity-100'}`}
+      className={`transition-opacity duration-1000 ${mutation.isPending ? 'opacity-20 pointer-events-none' : 'opacity-100'} max-w-[320px] mx-auto`}
     >
-      <label htmlFor='landing-email' className='sr-only'>
-        Email para aplicação de acesso
-      </label>
-      <input
-        id='landing-email'
-        type='email'
-        value={email}
-        onChange={e => setEmail(e.target.value)}
-        placeholder='Só o essencial para você entrar no nível certo.'
-        required
-        aria-label='Email para aplicação de acesso'
-        className='bg-transparent border-b border-white/20 focus:border-white/60 focus:outline-none py-3 md:py-2 w-full max-w-[320px] font-sans text-sm tracking-[0.15em] text-white/70 focus:text-white transition-all duration-500 placeholder:text-white/20 text-center uppercase'
-      />
+      <div className='space-y-4'>
+        <div>
+          <label htmlFor='landing-email' className='sr-only'>
+            Email para aplicação de acesso
+          </label>
+          <input
+            id='landing-email'
+            type='email'
+            value={email}
+            onChange={e => setEmail(e.target.value)}
+            placeholder='Só o essencial para você entrar no nível certo.'
+            required
+            aria-label='Email para aplicação de acesso'
+            className='bg-transparent border-b border-white/20 focus:border-white/60 focus:outline-none py-3 md:py-2 w-full font-sans text-sm tracking-[0.15em] text-white/70 focus:text-white transition-all duration-500 placeholder:text-white/20 text-center uppercase'
+          />
+        </div>
+
+        <div>
+          <label htmlFor='landing-message' className='sr-only'>
+            Mensagem opcional
+          </label>
+          <textarea
+            id='landing-message'
+            value={message}
+            onChange={e => setMessage(e.target.value)}
+            placeholder='Conte-nos mais sobre você (opcional)'
+            aria-label='Mensagem opcional'
+            rows={3}
+            maxLength={500}
+            className='bg-transparent border-b border-white/10 focus:border-white/40 focus:outline-none py-2 w-full font-sans text-xs tracking-widest text-white/60 focus:text-white/80 transition-all duration-500 placeholder:text-white/20 text-center resize-none'
+          />
+        </div>
+
+        <button
+          type='submit'
+          disabled={mutation.isPending || !email.trim()}
+          className='w-full py-3 md:py-2 border border-white/20 hover:border-white/40 focus:outline-none font-sans text-xs tracking-[0.2em] text-white/70 hover:text-white transition-all duration-500 uppercase disabled:opacity-30 disabled:cursor-not-allowed'
+        >
+          {mutation.isPending ? 'Enviando...' : 'Enviar'}
+        </button>
+      </div>
+
       <p className='mt-3 text-[10px] md:text-xs tracking-[0.2em] text-white/40 text-center uppercase'>
         Nem mais. Nem menos.
       </p>
