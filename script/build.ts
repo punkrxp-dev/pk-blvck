@@ -1,6 +1,8 @@
 import { build as esbuild } from 'esbuild';
 import { build as viteBuild } from 'vite';
 import { rm, readFile, writeFile } from 'fs/promises';
+import { log } from '../server/utils/logger';
+import { validateForBuild, reportPrecheckResults } from './precheck';
 
 // server deps to bundle to reduce openat(2) syscalls
 // which helps cold start times
@@ -32,10 +34,26 @@ const allowlist = [
   'zod-validation-error',
 ];
 
-async function updateSEOFiles() {
-  console.log('updating SEO files...');
+// Environment validation using precheck utilities
+async function validateEnvironment(): Promise<void> {
+  const result = await validateForBuild();
+  reportPrecheckResults(result, 'Build');
+
+  if (!result.success) {
+    const errorMessage = `Build prechecks failed: ${result.errors.join(', ')}`;
+    throw new Error(errorMessage);
+  }
+}
+
+async function updateSEOFiles(): Promise<void> {
+  log('🔄 Updating SEO files...', 'build', 'info');
 
   const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD format
+
+  // Validate date format
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(today)) {
+    throw new Error(`Invalid date format generated: ${today}`);
+  }
 
   // Update sitemap.xml
   const sitemapPath = 'client/public/sitemap.xml';
@@ -48,44 +66,145 @@ async function updateSEOFiles() {
     <priority>1.0</priority>
   </url>
 </urlset>`;
-  await writeFile(sitemapPath, sitemapContent);
 
-  console.log('✅ SEO files updated with current date:', today);
+  try {
+    await writeFile(sitemapPath, sitemapContent, 'utf-8');
+    log(`✅ Sitemap updated: ${sitemapPath} (lastmod: ${today})`, 'build', 'info');
+  } catch (error) {
+    log(`❌ Failed to update sitemap.xml: ${error.message}`, 'build', 'error');
+    throw error;
+  }
 }
 
-async function buildAll() {
-  await rm('dist', { recursive: true, force: true });
+async function buildAll(): Promise<void> {
+  const startTime = Date.now();
 
-  // Update SEO files before building
-  await updateSEOFiles();
+  try {
+    log('🏗️ Starting production build process...', 'build', 'info');
 
-  console.log('building client...');
-  await viteBuild();
+    // Clean dist directory with validation
+    try {
+      await rm('dist', { recursive: true, force: true });
+      log('🧹 Cleaned dist directory', 'build', 'info');
+    } catch (error) {
+      log(`⚠️ Could not clean dist directory: ${error.message}`, 'build', 'warn');
+    }
 
-  console.log('building server...');
-  const pkg = JSON.parse(await readFile('package.json', 'utf-8'));
-  const allDeps = [
-    ...Object.keys(pkg.dependencies || {}),
-    ...Object.keys(pkg.devDependencies || {}),
-  ];
-  const externals = allDeps.filter(dep => !allowlist.includes(dep));
+    // Update SEO files before building
+    await updateSEOFiles();
 
-  await esbuild({
-    entryPoints: ['server/index.ts'],
-    platform: 'node',
-    bundle: true,
-    format: 'cjs',
-    outfile: 'dist/index.cjs',
-    define: {
-      'process.env.NODE_ENV': '"production"',
-    },
-    minify: true,
-    external: externals,
-    logLevel: 'info',
-  });
+    // Build client
+    log('🏗️ Building client (Vite)...', 'build', 'info');
+    const clientStartTime = Date.now();
+
+    await viteBuild();
+
+    const clientBuildTime = Date.now() - clientStartTime;
+    log(`✅ Client build completed in ${clientBuildTime}ms`, 'build', 'info');
+
+    // Build server
+    log('🏗️ Building server (esbuild)...', 'build', 'info');
+    const serverStartTime = Date.now();
+
+    // Validate package.json
+    let pkg: any;
+    try {
+      const packageJson = await readFile('package.json', 'utf-8');
+      pkg = JSON.parse(packageJson);
+    } catch (error) {
+      throw new Error(`Failed to read/parse package.json: ${error.message}`);
+    }
+
+    const allDeps = [
+      ...Object.keys(pkg.dependencies || {}),
+      ...Object.keys(pkg.devDependencies || {}),
+    ];
+
+    if (allDeps.length === 0) {
+      log('⚠️ No dependencies found in package.json', 'build', 'warn');
+    }
+
+    const externals = allDeps.filter(dep => !allowlist.includes(dep));
+    const bundled = allDeps.filter(dep => allowlist.includes(dep));
+
+    log(`📦 Bundling ${bundled.length} dependencies: ${bundled.join(', ')}`, 'build', 'info');
+    log(`📦 Externalizing ${externals.length} dependencies: ${externals.join(', ')}`, 'build', 'info');
+
+    await esbuild({
+      entryPoints: ['server/index.ts'],
+      platform: 'node',
+      bundle: true,
+      format: 'cjs',
+      outfile: 'dist/index.cjs',
+      define: {
+        'process.env.NODE_ENV': '"production"',
+      },
+      minify: true,
+      external: externals,
+      logLevel: 'info',
+      // Additional security and performance options
+      banner: {
+        js: '// Built with esbuild - PUNK BLVCK Production Build\n',
+      },
+      footer: {
+        js: '\n// Build completed successfully',
+      },
+    });
+
+    const serverBuildTime = Date.now() - serverStartTime;
+    log(`✅ Server build completed in ${serverBuildTime}ms`, 'build', 'info');
+
+    const totalTime = Date.now() - startTime;
+    log(`🎉 Build completed successfully in ${totalTime}ms (client: ${clientBuildTime}ms, server: ${serverBuildTime}ms)`, 'build', 'info');
+
+  } catch (error) {
+    const totalTime = Date.now() - startTime;
+    log(`💥 Build failed after ${totalTime}ms: ${error.message}`, 'build', 'error');
+    throw error;
+  }
 }
 
-buildAll().catch(err => {
-  console.error(err);
+// Main execution with proper error handling and environment validation
+async function main(): Promise<void> {
+  try {
+    // Validate environment before starting build
+    await validateEnvironment();
+
+    // Execute build process
+    await buildAll();
+
+    log('✨ Build process completed successfully', 'build', 'info');
+    process.exit(0);
+
+  } catch (error) {
+    log(`🚨 Build process failed: ${error.message}`, 'build', 'error');
+
+    // Ensure clean exit with error code
+    process.exit(1);
+  }
+}
+
+// Handle uncaught exceptions and unhandled rejections
+process.on('uncaughtException', (error) => {
+  log(`💥 Uncaught Exception: ${error.message}`, 'build', 'error');
   process.exit(1);
 });
+
+process.on('unhandledRejection', (reason, promise) => {
+  log(`💥 Unhandled Rejection: ${reason}`, 'build', 'error');
+  process.exit(1);
+});
+
+// Graceful shutdown on SIGINT/SIGTERM
+process.on('SIGINT', () => {
+  log('🛑 Build interrupted by user', 'build', 'info');
+  process.exit(130);
+});
+
+process.on('SIGTERM', () => {
+  log('🛑 Build terminated', 'build', 'info');
+  process.exit(143);
+});
+
+// Execute main function
+main();

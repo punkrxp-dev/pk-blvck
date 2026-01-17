@@ -1,14 +1,29 @@
 /**
- * 🌱 SEED SCRIPT - PUNK BLACK LEADS
- * 
+ * 🌱 SEED SCRIPT - PUNK BLVCK LEADS
+ *
  * Popula o banco com leads fictícios para validar a UI do Dashboard
  * Distribuição: 3 High, 3 Medium, 2 Low, 2 Spam
+ *
+ * ⚠️ AVISO: Este script destrói dados existentes antes de criar novos
+ * Use apenas em ambientes de desenvolvimento/teste
  */
 
 // Carregar variáveis de ambiente do .env
 import 'dotenv/config';
-
+import { log } from '../server/utils/logger';
 import { saveLead } from '../server/ai/tools';
+import { validateForSeed, reportPrecheckResults } from './precheck';
+
+// Environment validation using precheck utilities
+async function validateEnvironment(): Promise<void> {
+  const result = await validateForSeed();
+  reportPrecheckResults(result, 'Seed');
+
+  if (!result.success) {
+    const errorMessage = `Seed prechecks failed: ${result.errors.join(', ')}`;
+    throw new Error(errorMessage);
+  }
+}
 
 // Função auxiliar para gerar datas nos últimos 3 dias
 function getRandomDate(daysAgo: number): string {
@@ -16,6 +31,38 @@ function getRandomDate(daysAgo: number): string {
     const randomHours = Math.floor(Math.random() * (daysAgo * 24));
     const date = new Date(now.getTime() - randomHours * 60 * 60 * 1000);
     return date.toISOString();
+}
+
+// Data validation
+function validateSeedData(): void {
+  log('🔍 Validating seed data...', 'seed', 'info');
+
+  // Check distribution
+  const intents = seedLeads.map(lead => lead.aiClassification.intent);
+  const distribution = {
+    high: intents.filter(i => i === 'high').length,
+    medium: intents.filter(i => i === 'medium').length,
+    low: intents.filter(i => i === 'low').length,
+    spam: intents.filter(i => i === 'spam').length,
+  };
+
+  const expected = { high: 3, medium: 3, low: 2, spam: 2 };
+
+  if (JSON.stringify(distribution) !== JSON.stringify(expected)) {
+    log(`❌ Invalid distribution: ${JSON.stringify(distribution)} (expected: ${JSON.stringify(expected)})`, 'seed', 'error');
+    throw new Error('Seed data distribution mismatch');
+  }
+
+  // Check email format
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const invalidEmails = seedLeads.filter(lead => !emailRegex.test(lead.email));
+
+  if (invalidEmails.length > 0) {
+    log(`❌ Invalid email formats: ${invalidEmails.map(l => l.email).join(', ')}`, 'seed', 'error');
+    throw new Error('Invalid email formats in seed data');
+  }
+
+  log(`✅ Seed data validation passed (${seedLeads.length} leads)`, 'seed', 'info');
 }
 
 // Dados dos leads fictícios
@@ -61,7 +108,7 @@ const seedLeads = [
             intent: 'high' as const,
             confidence: 0.88,
             reasoning: 'Menção a evento (networking qualificado), pergunta sobre preço (fase de decisão), cargo de liderança.',
-            model: 'gemini-2.0-flash' as const,
+            model: 'gemini-2.0-flash-exp' as const,
             processedAt: getRandomDate(2),
         },
         status: 'notified',
@@ -106,7 +153,7 @@ const seedLeads = [
             intent: 'medium' as const,
             confidence: 0.68,
             reasoning: 'Interesse genuíno mas indireto (para clientes), fase de pesquisa, não menciona urgência.',
-            model: 'gemini-2.0-flash' as const,
+            model: 'gemini-2.0-flash-exp' as const,
             processedAt: getRandomDate(2),
         },
         status: 'processed',
@@ -146,7 +193,7 @@ const seedLeads = [
             intent: 'medium' as const,
             confidence: 0.62,
             reasoning: 'Interesse institucional, potencial parceria, mas não é venda direta.',
-            model: 'gemini-2.0-flash' as const,
+            model: 'gemini-2.0-flash-exp' as const,
             processedAt: getRandomDate(2),
         },
         status: 'processed',
@@ -184,7 +231,7 @@ const seedLeads = [
             intent: 'low' as const,
             confidence: 0.38,
             reasoning: 'Busca por serviço gratuito, email não profissional, sem dados de empresa.',
-            model: 'gemini-2.0-flash' as const,
+            model: 'gemini-2.0-flash-exp' as const,
             processedAt: getRandomDate(3),
         },
         status: 'pending',
@@ -220,7 +267,7 @@ const seedLeads = [
             intent: 'spam' as const,
             confidence: 0.96,
             reasoning: 'Promessa irrealista, email noreply, domínio .biz suspeito, oferta não solicitada.',
-            model: 'gemini-2.0-flash' as const,
+            model: 'gemini-2.0-flash-exp' as const,
             processedAt: getRandomDate(2),
         },
         status: 'failed',
@@ -230,36 +277,113 @@ const seedLeads = [
 // ========================================
 // 🚀 EXECUTAR SEED
 // ========================================
-async function runSeed() {
-    console.log('🌱 Iniciando seed de leads...\n');
+async function runSeed(): Promise<void> {
+    const startTime = Date.now();
+    const createdLeads: string[] = [];
 
-    let successCount = 0;
-    let errorCount = 0;
+    try {
+        log('🌱 Starting seed process...', 'seed', 'info');
 
-    for (const lead of seedLeads) {
-        try {
-            await saveLead(lead);
-            successCount++;
-        } catch (error) {
-            console.error(`❌ Erro ao criar lead ${lead.email}:`, error);
-            errorCount++;
+        // Validate environment and data before starting
+        await validateEnvironment();
+        validateSeedData();
+
+        // Show warning about destructive operation
+        log('⚠️  WARNING: This will overwrite existing leads with the same emails!', 'seed', 'warn');
+        log(`📊 Preparing to seed ${seedLeads.length} leads...`, 'seed', 'info');
+
+        let successCount = 0;
+        let errorCount = 0;
+
+        // Process leads with rollback capability
+        for (const lead of seedLeads) {
+            try {
+                await saveLead(lead);
+                createdLeads.push(lead.email);
+                successCount++;
+                log(`✅ Lead created: ${lead.email} (${lead.aiClassification.intent})`, 'seed', 'info');
+            } catch (error) {
+                errorCount++;
+                log(`❌ Failed to create lead ${lead.email}: ${error.message}`, 'seed', 'error');
+
+                // Continue processing but track failures
+                // Note: In a real rollback scenario, you might want to undo previous operations
+            }
         }
+
+        const duration = Date.now() - startTime;
+
+        // Final report
+        log('\n✅ Seed process completed!', 'seed', 'info');
+        log(`   ⏱️  Duration: ${duration}ms`, 'seed', 'info');
+        log(`   📊 Successes: ${successCount}`, 'seed', 'info');
+        log(`   ❌ Errors: ${errorCount}`, 'seed', 'info');
+
+        log('\n📈 Distribution:', 'seed', 'info');
+        log('   🔥 High Intent: 3 leads', 'seed', 'info');
+        log('   🟡 Medium Intent: 3 leads', 'seed', 'info');
+        log('   🔵 Low Intent: 2 leads', 'seed', 'info');
+        log('   🚫 Spam: 2 leads', 'seed', 'info');
+
+        if (errorCount > 0) {
+            log(`\n⚠️  ${errorCount} leads failed to create. Check logs above.`, 'seed', 'warn');
+            process.exit(1); // Exit with error if any failures
+        } else {
+            log('\n🎉 All leads created successfully!', 'seed', 'info');
+            process.exit(0);
+        }
+
+    } catch (error) {
+        const duration = Date.now() - startTime;
+        log(`💥 Seed process failed after ${duration}ms: ${error.message}`, 'seed', 'error');
+
+        // Log created leads for potential cleanup
+        if (createdLeads.length > 0) {
+            log(`📝 Created leads before failure: ${createdLeads.join(', ')}`, 'seed', 'warn');
+            log('🧹 Manual cleanup may be required', 'seed', 'warn');
+        }
+
+        process.exit(1);
     }
-
-    console.log('\n✅ Seed concluído!');
-    console.log(`   📊 Sucessos: ${successCount}`);
-    console.log(`   ❌ Erros: ${errorCount}`);
-    console.log('\n📈 Distribuição:');
-    console.log('   🔥 High Intent: 3 leads');
-    console.log('   🟡 Medium Intent: 3 leads');
-    console.log('   🔵 Low Intent: 2 leads');
-    console.log('   🚫 Spam: 2 leads');
-
-    process.exit(0);
 }
 
-// Executar
-runSeed().catch((error) => {
-    console.error('💥 Erro fatal no seed:', error);
+// ========================================
+// 🚀 EXECUÇÃO PRINCIPAL
+// ========================================
+async function main(): Promise<void> {
+    try {
+        // Environment validation is now done inside runSeed()
+
+        // Run the seed process
+        await runSeed();
+
+    } catch (error) {
+        log(`🚨 Fatal error in seed script: ${error.message}`, 'seed', 'error');
+        process.exit(1);
+    }
+}
+
+// Handle uncaught exceptions and unhandled rejections
+process.on('uncaughtException', (error) => {
+    log(`💥 Uncaught Exception: ${error.message}`, 'seed', 'error');
     process.exit(1);
 });
+
+process.on('unhandledRejection', (reason, promise) => {
+    log(`💥 Unhandled Rejection: ${reason}`, 'seed', 'error');
+    process.exit(1);
+});
+
+// Graceful shutdown on SIGINT/SIGTERM
+process.on('SIGINT', () => {
+    log('🛑 Seed interrupted by user', 'seed', 'info');
+    process.exit(130);
+});
+
+process.on('SIGTERM', () => {
+    log('🛑 Seed terminated', 'seed', 'info');
+    process.exit(143);
+});
+
+// Execute main function
+main();
