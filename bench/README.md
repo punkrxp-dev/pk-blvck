@@ -4,7 +4,7 @@ Este diretório contém ferramentas para benchmark comparativo entre as implemen
 
 ## Estrutura
 
-```
+"```
 bench/
 ├── configs/
 │   └── default.json          # Configurações padrão do benchmark
@@ -15,7 +15,7 @@ bench/
 ├── run-benchmark.ts          # Runner principal do benchmark
 ├── validate-dataset.ts       # Validador de datasets
 └── README.md                 # Esta documentação
-```
+``
 
 ## Dataset
 
@@ -60,10 +60,10 @@ npx tsx bench/validate-dataset.ts datasets/test-5.jsonl
 
 ### Métricas de Validação
 
-- **Distribuição balanceada**: 10 casos por categoria (high/medium/low/spam)
-- **Campos obrigatórios**: email, source, expected_intent
-- **Formato de email**: Validação básica de formato
-- **JSON válido**: Cada linha deve ser JSON válido
+-*Distribuição balanceada**: 10 casos por categoria (high/medium/low/spam)
+-*Campos obrigatórios**: email, source, expected_intent
+-*Formato de email**: Validação básica de formato
+-*JSON válido**: Cada linha deve ser JSON válido
 
 ## Como Executar
 
@@ -94,6 +94,22 @@ BENCH_API=http://localhost:3000/api/mcp/ingest BENCH_MODE=neo npx tsx bench/run-
 # Dataset customizado
 BENCH_DATASET=/path/to/custom/dataset.jsonl BENCH_MODE=neo npx tsx bench/run-benchmark.ts
 ```
+
+### ⚠️ Importante: Variáveis Opcionais
+
+**As variáveis `BENCH_*` são exclusivamente para benchmarking e não afetam a aplicação em produção:**
+
+-  **`BENCH_API`**: URL do endpoint de benchmark (padrão: `http://127.0.0.1:5001/api/mcp/benchmark`)
+-  **`BENCH_MODE`**: Modo do pipeline (`neo` ou `legacy`, padrão: `neo`)
+-  **`BENCH_DATASET`**: Caminho para arquivo de dados (padrão: `bench/datasets/dataset.jsonl`)
+
+**🚫 Não configure essas variáveis:**
+
+-  Na Vercel ou outros ambientes de produção
+-  No arquivo `.env` principal
+-  Elas são usadas apenas pelos scripts de benchmark
+
+**✅ A aplicação funciona perfeitamente sem essas variáveis.**
 
 ## Formato de Saída
 
