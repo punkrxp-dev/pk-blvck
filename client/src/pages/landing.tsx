@@ -194,7 +194,7 @@ function WaitlistForm() {
             placeholder='Só o essencial para você entrar no nível certo.'
             required
             aria-label='Email para aplicação de acesso'
-            className='bg-transparent border-b border-white/20 focus:border-white/60 focus:outline-none py-3 md:py-2 w-full font-sans text-sm tracking-[0.15em] text-white/70 focus:text-white transition-all duration-500 placeholder:text-white/20 text-center uppercase'
+            className='bg-transparent border-b border-white/30 focus:border-white/80 focus:outline-none py-3 md:py-2 w-full font-sans text-sm md:text-base tracking-[0.15em] text-white/90 focus:text-white transition-all duration-500 placeholder:text-white/50 placeholder:opacity-100 text-center uppercase'
           />
         </div>
 
@@ -210,20 +210,20 @@ function WaitlistForm() {
             aria-label='Mensagem opcional'
             rows={3}
             maxLength={500}
-            className='bg-transparent border-b border-white/10 focus:border-white/40 focus:outline-none py-2 w-full font-sans text-xs tracking-widest text-white/60 focus:text-white/80 transition-all duration-500 placeholder:text-white/20 text-center resize-none'
+            className='bg-transparent border-b border-white/30 focus:border-white/70 focus:outline-none py-2 w-full font-sans text-sm md:text-base tracking-widest text-white/85 focus:text-white transition-all duration-500 placeholder:text-white/50 placeholder:opacity-100 text-center resize-none'
           />
         </div>
 
         <button
           type='submit'
           disabled={mutation.isPending || !email.trim()}
-          className='w-full py-3 md:py-2 border border-white/20 hover:border-white/40 focus:outline-none font-sans text-xs tracking-[0.2em] text-white/70 hover:text-white transition-all duration-500 uppercase disabled:opacity-30 disabled:cursor-not-allowed'
+          className='w-full py-3 md:py-2 border border-white/40 hover:border-white/80 focus:outline-none font-sans text-sm md:text-base tracking-[0.2em] text-white/90 hover:text-white focus:text-white transition-all duration-500 uppercase disabled:opacity-40 disabled:cursor-not-allowed'
         >
           {mutation.isPending ? 'Enviando...' : 'Enviar'}
         </button>
       </div>
 
-      <p className='mt-3 text-[10px] md:text-xs tracking-[0.2em] text-white/40 text-center uppercase'>
+      <p className='mt-3 text-xs md:text-sm tracking-[0.2em] text-white/60 text-center uppercase'>
         Nem mais. Nem menos.
       </p>
     </form>
