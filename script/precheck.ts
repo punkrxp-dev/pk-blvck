@@ -140,6 +140,12 @@ export async function validateDatabaseConnection(): Promise<PrecheckResult> {
 export async function validateForBuild(): Promise<PrecheckResult> {
   log('🏗️ Running build prechecks...', 'precheck', 'info');
 
+  // Set default NODE_ENV for build if not provided
+  if (!process.env.NODE_ENV) {
+    process.env.NODE_ENV = 'production';
+    log('⚠️ NODE_ENV not set, defaulting to production for build', 'precheck', 'warn');
+  }
+
   const results = await Promise.all([
     validateNodeEnvironment(),
     validateRequiredFiles([
@@ -148,7 +154,8 @@ export async function validateForBuild(): Promise<PrecheckResult> {
       'tsconfig.json',
       'client/index.html',
     ]),
-    validateEnvironmentVariables(['NODE_ENV']),
+    // NODE_ENV is now optional for build (defaults to production)
+    // validateEnvironmentVariables(['NODE_ENV']),
   ]);
 
   const combined = results.reduce(
