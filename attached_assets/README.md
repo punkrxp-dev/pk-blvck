@@ -1,3 +1,5 @@
+<!-- README em /attached_assets -->
+
 # 📁 ATTACHED ASSETS - PUNK | BLVCK
 
 **Alias Vite:** `@assets` → `./attached_assets/`

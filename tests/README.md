@@ -1,3 +1,5 @@
+<!-- README em /tests -->
+
 # 🧪 Testes — PUNK BLVCK
 
 Pasta dedicada para testes automatizados do sistema.

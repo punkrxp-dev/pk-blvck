@@ -1,3 +1,5 @@
+<!-- README em / (raiz do projeto) -->
+
 # PUNK BLVCK
 
 **Versão 2.0.0 - Security Hardened** | **Arquitetura NEØ Protected**

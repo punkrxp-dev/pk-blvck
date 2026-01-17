@@ -1,3 +1,5 @@
+<!-- README em /script -->
+
 # Scripts - PUNK BLVCK
 
 Scripts de build, seed e utilitários com validações de segurança e logging estruturado.

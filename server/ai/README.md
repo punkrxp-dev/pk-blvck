@@ -1,3 +1,5 @@
+<!-- README em /server/ai -->
+
 # AI Module - PUNK BLVCK
 
 **NEØ Protected Architecture - Cognitive Pipeline Infrastructure**

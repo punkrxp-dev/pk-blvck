@@ -1,3 +1,5 @@
+<!-- README em /bench -->
+
 # Benchmark Neo vs Legacy
 
 Este diretório contém ferramentas para benchmark comparativo entre as implementações Neo (MCP) e Legacy do sistema de processamento de leads.

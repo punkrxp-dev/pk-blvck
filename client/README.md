@@ -1,3 +1,5 @@
+<!-- README em /client -->
+
 # 📁 CLIENT - PUNK BLVCK Frontend
 
 ## 📱 Frontend React/TypeScript com arquitetura NEØ
