@@ -70,7 +70,7 @@ A mensagem exibida nos emails e no dashboard é **exatamente o texto digitado pe
 **O sistema apenas:**
 
 -  ✅ Preserva o texto original (sem modificações)
--  ✅ Classifica a intenção (high/medium/low)
+-  ✅ Classifica a intenção (alto/médio/baixo/spam)
 -  ✅ Contextualiza com dados enriquecidos
 -  ✅ Cita literalmente no email ao gestor
 
@@ -118,7 +118,7 @@ O lead escreveu:
 "Gostaria de conhecer a academia premium"
 
 Análise da IA:
-Intent: HIGH (95% confidence)
+Intent: ALTO (95% confidence)
 Reasoning: Lead demonstra interesse claro em plano premium
 ```
 
@@ -137,8 +137,8 @@ Reasoning: Lead demonstra interesse claro em plano premium
 ✅ Validação rigorosa de emails (disposable domains)
 ✅ Detecção de spam/malware/XSS/SQL injection
 ✅ Sanitização completa de dados pessoais
-✅ Filtragem de conteúdo suspeito
-✅ Bloqueio de IPs maliciosos
+✅ Log de ameaças e avisos de conteúdo suspeito
+✅ Resiliência: Spams são classificados, não apenas bloqueados
 
 // Output:
 {
@@ -179,14 +179,14 @@ Reasoning: Lead demonstra interesse claro em plano premium
 ```typescript
 // Responsabilidades:
 ✅ Análise contextual com memória vetorial
-✅ Classificação: high/medium/low/spam
+✅ Classificação: alto/médio/baixo/spam
 ✅ Raciocínio detalhado da decisão
 ✅ Geração de resposta personalizada
 ✅ Fallback automático GPT-4o → Gemini
 
 // Output:
 {
-  intent: "high",
+  intent: "alto",
   confidence: 0.92,
   reasoning: "Lead mostra forte intenção de compra...",
   userReply: "Obrigado! Gostaria de agendar uma demonstração?",
@@ -210,7 +210,7 @@ Reasoning: Lead demonstra interesse claro em plano premium
 // Regras de Decisão:
 
 // REGRA CRÍTICA: Múltiplos leads do mesmo domínio (B2B Signal)
-if (intent === 'high' && accountContext.totalLeads >= 2) {
+if (intent === 'alto' && accountContext.totalLeads >= 2) {
   action = 'notify_immediate';
   channel = 'email';
   priority = 'urgent';
@@ -218,31 +218,31 @@ if (intent === 'high' && accountContext.totalLeads >= 2) {
   reasoning = 'Múltiplos sinais do mesmo domínio - B2B detectado';
 }
 
-if (intent === 'high' && position.includes('CEO') && source.includes('ad')) {
+if (intent === 'alto' && position.includes('CEO') && source.includes('ad')) {
   action = 'prepare_whatsapp';
   channel = 'whatsapp';
   priority = 'urgent';
   executeNow = false; // Preparar, não executar
 }
 
-if (intent === 'high' && !source.includes('ad')) {
+if (intent === 'alto' && !source.includes('ad')) {
   action = 'notify_immediate';
   channel = 'email';
-  priority = 'high';
+  priority = 'alto';
   executeNow = true; // Executar agora
 }
 
-if (intent === 'medium' && hasPhone) {
+if (intent === 'médio' && hasPhone) {
   action = 'prepare_whatsapp';
   channel = 'whatsapp';
-  priority = 'medium';
+  priority = 'médio';
   executeNow = false;
 }
 
-if (intent === 'low') {
+if (intent === 'baixo') {
   action = 'silent_queue';
   channel = 'dashboard_only';
-  priority = 'low';
+  priority = 'baixo';
   executeNow = false;
 }
 
@@ -347,7 +347,7 @@ getStats() // Retorna:
   "data": {
     "id": "uuid-lead-123",
     "email": "user@company.com",
-    "intent": "high",
+    "intent": "alto",
     "confidence": 0.92,
     "reasoning": "Lead shows strong purchase intent based on company size and role",
     "model": "gpt-4o",
@@ -487,9 +487,9 @@ NOTIFICATION_EMAIL=gestor@punkblvck.com.br  # Email do gestor (recebe alertas)
    └─ Se status === 'processed': Prossegue
 
 2. Seleciona template baseado em intent:
-   ├─ high: "High-Priority Lead Alert"
-   ├─ medium: "Medium-Priority Lead"
-   ├─ low: "New Lead Captured"
+   ├─ alto: "High-Priority Lead Alert"
+   ├─ médio: "Medium-Priority Lead"
+   ├─ baixo: "New Lead Captured"
    └─ spam: Apenas log (não notifica)
 
 3. Envia email via Resend API:
@@ -533,7 +533,7 @@ O lead escreveu (formulário landing page):
 
 Análise da IA:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Intent: HIGH (95% confidence)
+Intent: ALTO (95% confidence)
 Reasoning: CEO de empresa tech demonstrando interesse em plano premium
 
 Resposta sugerida para você enviar:
@@ -656,7 +656,7 @@ HUNTER_API_KEY=your_hunter_api_key_here
 ### Visualização de Leads
 
 ```bash
-GET /api/mcp/leads?page=1&pageSize=20&intent=high
+GET /api/mcp/leads?page=1&pageSize=20&intent=alto
 ```
 
 **Resposta:**
@@ -667,9 +667,9 @@ GET /api/mcp/leads?page=1&pageSize=20&intent=high
   "data": [...leads...],
   "stats": {
     "total": 150,
-    "high": 45,
-    "medium": 38,
-    "low": 42,
+    "alto": 45,
+    "médio": 38,
+    "baixo": 42,
     "spam": 25,
     "processedToday": 12
   },
@@ -731,7 +731,7 @@ GET /api/mcp/health
 ```typescript
 // Modelos carregados sob demanda
 const model = await getPrimaryModel(); // GPT-4o
-// Bundle: 1.1MB → 0.91MB (17% redução)
+// Bundle: 1.1MB → 0.88MB (20% redução)
 ```
 
 ### Cache Inteligente
@@ -794,7 +794,7 @@ await circuitBreaker.execute(async () => {
 
 -  ✅ **Resposta Instantânea:** Classificação IA em segundos
 -  ✅ **Personalização:** Respostas contextuais por perfil
--  ✅ **Qualificação Automática:** Detecção high/medium/low intent
+-  ✅ **Qualificação Automática:** Detecção alto/médio/baixo intent
 
 ### Para o Negócio
 

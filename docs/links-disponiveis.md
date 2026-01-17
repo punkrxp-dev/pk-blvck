@@ -10,7 +10,7 @@
 -  **Descrição:** Dashboard completo com visualização de leads em tempo real
 -  **Funcionalidades:**
   -  📊 KPIs de leads (total, alta intenção, processados hoje, spam)
-  -  🎯 Classificação automática por IA (high/medium/low/spam)
+  -  🎯 Classificação automática por IA (alto/médio/baixo/spam)
   -  📋 Tabela de leads com dados enriquecidos
   -  🔄 Atualização em tempo real (polling a cada 5s)
   -  🎨 UI Punk Black com neon orange accents
@@ -127,9 +127,9 @@ curl -X POST https://pk-blvck-production.up.railway.app/api/mcp/ingest \
 ### **Leads Processados**
 
 -  **Total:** 10 leads
--  **Alta Intenção:** 3 leads
--  **Média Intenção:** 3 leads
--  **Baixa Intenção:** 2 leads
+-  **Alta Intenção:** 3 leads (alto)
+-  **Média Intenção:** 3 leads (médio)
+-  **Baixa Intenção:** 2 leads (baixo)
 -  **Spam:** 2 leads
 
 ### **IA Performance**

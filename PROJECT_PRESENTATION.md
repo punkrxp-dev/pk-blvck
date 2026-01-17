@@ -101,7 +101,7 @@
 -  **Cobertura completa** de funcionalidades críticas
 -  **Testes de segurança** (XSS, SQL injection, spam detection)
 -  **Validação de Circuit Breaker** e rate limit handling
--  **Testes de agentes IA** com mocks e cenários reais
+-  **Testes de agentes IA** (alto/médio/baixo/spam) com mocks e cenários reais
 -  **Automação integrada** ao pipeline de build
 
 
@@ -159,7 +159,7 @@
 ### IA e Automação
 
 -  ✅ Integração com múltiplos LLMs (GPT-4o + Gemini)
--  ✅ Pipeline inteligente para classificação de leads
+-  ✅ Pipeline inteligente para classificação de leads (alto/médio/baixo/spam)
 -  ✅ Circuit Breaker avançado com retry para APIs de IA
 -  ✅ Benchmarking automatizado para comparação de modelos
 -  ✅ Fallback automático entre provedores
@@ -185,7 +185,7 @@
 -  **100% conformidade** com padrões NEØ
 -  **Cobertura de testes**: 100% funcionalidades críticas
 -  **Build time**: 1.85s (frente a ~10s em soluções similares)
--  **Bundle size**: 880KB minificado vs ~2MB em alternativas
+-  **Bundle size**: 888KB minificado vs ~2MB em alternativas
 
 
 ### Performance Técnica

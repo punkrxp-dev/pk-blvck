@@ -90,7 +90,7 @@ https://pk-blvck-production.up.railway.app
 -  **Processamento Automático:**
 
 -  🔍 **Enriquecimento Hunter.io** (busca dados públicos: nome, empresa, cargo)
--  🤖 **Classificação IA** (GPT-4o ou Gemini 2.0 Flash: high/medium/low/spam)
+-  🤖 **Classificação IA** (GPT-4o ou Gemini 2.0 Flash: alto/médio/baixo/spam)
 -  💾 **Salvamento no banco** (PostgreSQL via Drizzle ORM)
 -  📧 **Notificação Resend** (se configurado, envia email ao gestor)
 
@@ -103,7 +103,7 @@ https://pk-blvck-production.up.railway.app
   "data": {
     "id": "550e8400-e29b-41d4-a716-446655440000",
     "email": "joao.silva@empresa.com",
-    "intent": "high",
+    "intent": "alto",
     "confidence": 0.95,
     "reasoning": "Lead qualificado: CEO interessado em conhecer academia premium",
     "model": "gpt-4o",
@@ -173,7 +173,7 @@ O objeto `enrichedData` contém dados **buscados automaticamente via Hunter.io A
 -  **Autenticação:** Não necessária (dashboard público)
 -  **Query Parameters:**
 -  `status`: `pending|processed|notified|failed` - Filtrar por status
--  `intent`: `high|medium|low|spam` - Filtrar por intenção
+-  `intent`: `alto|médio|baixo|spam` - Filtrar por intenção
 -  `page`: `número` (padrão: 1) - Página atual
 -  `pageSize`: `1-100` (padrão: 20, máximo: 100) - Itens por página
 -  `sortBy`: `createdAt|email|status|intent` (padrão: `createdAt`) - Campo para ordenação
@@ -200,7 +200,7 @@ O objeto `enrichedData` contém dados **buscados automaticamente via Hunter.io A
         "verified": true
       },
       "aiClassification": {
-        "intent": "high",
+        "intent": "alto",
         "confidence": 0.95,
         "reasoning": "Lead qualificado com interesse demonstrado",
         "model": "gpt-4o",
@@ -214,9 +214,9 @@ O objeto `enrichedData` contém dados **buscados automaticamente via Hunter.io A
   ],
   "stats": {
     "total": 10,
-    "high": 3,
-    "medium": 3,
-    "low": 2,
+    "alto": 3,
+    "médio": 3,
+    "baixo": 2,
     "spam": 2,
     "processedToday": 5
   },
@@ -383,7 +383,7 @@ Quando um lead é submetido via `/api/mcp/ingest`, o sistema **automaticamente b
 | `linkedin`                          | **Hunter.io** (busca por email)                    | ❌ Opcional      |
 | `phone`                             | **Hunter.io** (registros públicos)                 | ❌ Opcional      |
 | `verified`                          | **Hunter.io** (verificação SMTP)                   | ❌ Opcional      |
-| `intent`, `confidence`, `reasoning` | **IA** (GPT-4o/Gemini)                             | ✅ Sempre gerado |
+| `intent`, `confidence`, `reasoning` | **IA** (GPT-4o/Gemini)                             | ✅ Sempre gerado (alto/médio/baixo/spam) |
 
 ### **⚙️ Configuração:**
 
