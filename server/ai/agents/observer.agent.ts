@@ -2,6 +2,14 @@
 import { BaseAgent } from './base.agent';
 import { PresenceLayerOutput } from '../mcp/types';
 import { enrichLead } from '../tools/enrichment.tool';
+import { z } from 'zod';
+import { log } from '../../utils/logger';
+import { validateAgentInput } from '../tools/validation.tool';
+
+// Input validation schema
+const observerInputSchema = z.object({
+    email: z.string().email('Formato de email inválido').max(254, 'Email muito longo'),
+}).strict();
 
 export class ObserverAgent extends BaseAgent<{ email: string }, PresenceLayerOutput> {
     constructor() {
@@ -43,7 +51,39 @@ export class ObserverAgent extends BaseAgent<{ email: string }, PresenceLayerOut
         };
     }
 
-    protected validate(input: { email: string }) {
-        return !!input.email;
+    protected validate(input: { email: string }): boolean {
+        try {
+            // Enhanced security validation for presence layer
+            const validation = validateAgentInput({
+                email: input.email,
+                message: undefined,
+                firstName: undefined,
+                lastName: undefined,
+                company: undefined,
+                position: undefined,
+                phone: undefined,
+                linkedin: undefined,
+            });
+
+            if (!validation.isValid) {
+                log(`Validação de segurança falhou: ${validation.issues.join(', ')}`, 'ObserverAgent', 'warn');
+
+                // Log security issues for monitoring
+                if (validation.security.emailSecurity.isSuspicious) {
+                    log(`Email suspeito detectado: ${input.email} - ${validation.security.emailSecurity.issues.join(', ')}`, 'ObserverAgent', 'warn');
+                }
+
+                return false;
+            }
+
+            // Legacy Zod validation for backward compatibility
+            observerInputSchema.parse(input);
+
+            return true;
+
+        } catch (error) {
+            log(`Validação Observer falhou: ${error instanceof Error ? error.message : 'Erro desconhecido'}`, 'ObserverAgent', 'error');
+            return false;
+        }
     }
 }

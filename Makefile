@@ -2,7 +2,7 @@
 # Versão: 2.0.0 - Security Hardened
 # Arquitetura: NEØ Protected
 
-.PHONY: help install dev dev-server dev-client build start check db-push db-generate db-studio clean lint test security-audit setup-production setup-dev logs backup restore ai-test ai-config ai-docs bench-neo bench-legacy bench-compare bench-custom
+.PHONY: help install dev dev-server dev-client build start check db-push db-generate db-studio clean lint test security-audit setup-production setup-dev logs backup restore ai-test ai-config ai-docs bench-neo bench-legacy bench-compare bench-custom bench-validate
 
 # 🎨 CORES PARA OUTPUT
 RED=\033[0;31m
@@ -469,24 +469,30 @@ test-ai: ai-test ## Alias para ai-test
 
 bench-neo: ## Executa benchmark Neo (MCP Pipeline)
 	@echo "$(CYAN)🔬 Executando benchmark NEO...$(NC)"
-	@BENCH_MODE=neo npx tsx bench/run-benchmark.ts
+	@BENCH_DATASET=datasets/dataset.jsonl BENCH_MODE=neo npx tsx bench/run-benchmark.ts
 
 bench-legacy: ## Executa benchmark Legacy
 	@echo "$(CYAN)🔬 Executando benchmark LEGACY...$(NC)"
-	@BENCH_MODE=legacy npx tsx bench/run-benchmark.ts
+	@BENCH_DATASET=datasets/dataset.jsonl BENCH_MODE=legacy npx tsx bench/run-benchmark.ts
 
 bench-compare: ## Executa benchmark comparativo Neo vs Legacy
 	@echo "$(CYAN)🔬 Executando benchmark comparativo...$(NC)"
 	@echo "$(YELLOW)📊 NEO MODE:$(NC)"
-	@BENCH_MODE=neo npx tsx bench/run-benchmark.ts
+	@BENCH_DATASET=datasets/dataset.jsonl BENCH_MODE=neo npx tsx bench/run-benchmark.ts
 	@echo ""
 	@echo "$(YELLOW)📊 LEGACY MODE:$(NC)"
-	@BENCH_MODE=legacy npx tsx bench/run-benchmark.ts
+	@BENCH_DATASET=datasets/dataset.jsonl BENCH_MODE=legacy npx tsx bench/run-benchmark.ts
 
 bench-custom: ## Executa benchmark com configuração customizada
 	@echo "$(CYAN)🔬 Executando benchmark customizado...$(NC)"
 	@echo "$(WHITE)Uso: make bench-custom BENCH_MODE=neo BENCH_API=http://localhost:3000/api/mcp/ingest$(NC)"
 	@BENCH_MODE=$(BENCH_MODE) BENCH_API=$(BENCH_API) npx tsx bench/run-benchmark.ts
+
+bench-validate: ## Valida datasets de benchmark
+	@echo "$(CYAN)🔍 Validando datasets de benchmark...$(NC)"
+	@npx tsx bench/validate-dataset.ts datasets/dataset.jsonl
+	@npx tsx bench/validate-dataset.ts datasets/test-5.jsonl
+	@echo "$(GREEN)✅ Validação concluída!$(NC)"
 
 # 🔍 DIAGNÓSTICO
 check-port: ## Verifica se a porta 5000 está em uso

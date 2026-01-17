@@ -6,14 +6,14 @@
  * Usa memória vetorial para contexto histórico.
  */
 
-import { generateObject } from 'ai';
 import { z } from 'zod';
 import { BaseAgent } from './base.agent';
-import { primaryModel, fallbackModel } from '../models';
+import { generateObjectWithOpenAI, generateObjectWithGoogle } from '../models';
 import { IntentLayerOutput, MemoryContext } from '../mcp/types';
 import { getMemoryContext } from '../memory';
 import { loadPrompt } from '../prompts';
 import { log } from '../../utils/logger';
+import { validateAgentInput } from '../tools/validation.tool';
 
 // ========================================
 // INPUT/OUTPUT
@@ -28,6 +28,16 @@ export interface IntentInput {
     verified?: boolean;
 }
 
+// Input validation schema
+const intentInputSchema = z.object({
+    email: z.string().email('Formato de email inválido').max(254, 'Email muito longo'),
+    message: z.string().max(10000, 'Mensagem muito longa').optional(),
+    firstName: z.string().max(100, 'Nome muito longo').optional(),
+    company: z.string().max(200, 'Nome da empresa muito longo').optional(),
+    position: z.string().max(200, 'Cargo muito longo').optional(),
+    verified: z.boolean().optional(),
+}).strict();
+
 // ========================================
 // SCHEMA
 // ========================================
@@ -38,6 +48,42 @@ const intentSchema = z.object({
     reasoning: z.string(),
     userReply: z.string().max(100),
 });
+
+// ========================================
+// HELPER FUNCTIONS
+// ========================================
+
+/**
+ * Safely extract intent result from AI response
+ */
+function extractIntentResult(result: unknown): {
+    intent: 'high' | 'medium' | 'low' | 'spam';
+    confidence: number;
+    reasoning: string;
+    userReply: string;
+} | null {
+    if (!result || typeof result !== 'object') {
+        return null;
+    }
+
+    const obj = result as Record<string, unknown>;
+
+    // Validate required fields exist and have correct types
+    if (typeof obj.intent !== 'string' ||
+        !['high', 'medium', 'low', 'spam'].includes(obj.intent) ||
+        typeof obj.confidence !== 'number' ||
+        typeof obj.reasoning !== 'string' ||
+        typeof obj.userReply !== 'string') {
+        return null;
+    }
+
+    return {
+        intent: obj.intent as 'high' | 'medium' | 'low' | 'spam',
+        confidence: obj.confidence,
+        reasoning: obj.reasoning,
+        userReply: obj.userReply,
+    };
+}
 
 // ========================================
 // AGENT
@@ -66,28 +112,29 @@ export class IntentAgent extends BaseAgent<IntentInput, IntentLayerOutput> {
 
         // 3. Tentar GPT-4o
         try {
-            const result = await generateObject({
-                model: primaryModel,
-                schema: intentSchema,
-                prompt,
-            });
+            const result = await generateObjectWithOpenAI(intentSchema, prompt);
+            const intentResult = extractIntentResult(result.object);
 
             return {
-                ...result.object,
+                intent: intentResult?.intent ?? 'low',
+                confidence: intentResult?.confidence ?? 0.0,
+                reasoning: intentResult?.reasoning ?? 'Falha na análise de intenção',
+                userReply: intentResult?.userReply ?? 'Obrigado pelo contato.',
                 similarLeads: memoryContext.similarLeads.map(l => l.id),
             };
         } catch (primaryError) {
             log('GPT-4o failed, trying Gemini...', 'IntentAgent', 'warn');
 
+
             // 4. Fallback para Gemini
-            const result = await generateObject({
-                model: fallbackModel,
-                schema: intentSchema,
-                prompt,
-            });
+            const result = await generateObjectWithGoogle(intentSchema, prompt);
+            const intentResult = extractIntentResult(result.object);
 
             return {
-                ...result.object,
+                intent: intentResult?.intent ?? 'low',
+                confidence: intentResult?.confidence ?? 0.0,
+                reasoning: intentResult?.reasoning ?? 'Análise realizada com modelo alternativo',
+                userReply: intentResult?.userReply ?? 'Obrigado pelo contato.',
                 similarLeads: memoryContext.similarLeads.map(l => l.id),
             };
         }
@@ -147,7 +194,34 @@ export class IntentAgent extends BaseAgent<IntentInput, IntentLayerOutput> {
     // ========================================
 
     protected validate(input: IntentInput): boolean {
-        return !!(input.email && input.email.includes('@'));
+        try {
+            // Enhanced security validation
+            const validation = validateAgentInput(input);
+
+            if (!validation.isValid) {
+                log(`Validação de segurança falhou: ${validation.issues.join(', ')}`, 'IntentAgent', 'warn');
+
+                // Log security issues for monitoring
+                if (validation.security.emailSecurity.isSuspicious) {
+                    log(`Email suspeito detectado: ${input.email} - ${validation.security.emailSecurity.issues.join(', ')}`, 'IntentAgent', 'warn');
+                }
+
+                if (!validation.security.contentSecurity.isSafe) {
+                    log(`Conteúdo suspeito detectado: ${validation.security.contentSecurity.threats.join(', ')}`, 'IntentAgent', 'warn');
+                }
+
+                return false;
+            }
+
+            // Legacy Zod validation for backward compatibility
+            intentInputSchema.parse(input);
+
+            return true;
+
+        } catch (error) {
+            log(`Validação de entrada falhou: ${error instanceof Error ? error.message : 'Erro desconhecido'}`, 'IntentAgent', 'error');
+            return false;
+        }
     }
 
     // ========================================

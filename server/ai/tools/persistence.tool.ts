@@ -8,19 +8,17 @@ import { db } from '../../db';
 import { leads, type Lead } from '@shared/schema';
 import { eq } from 'drizzle-orm';
 import { EnrichedLeadData } from './enrichment.tool';
+import { LeadClassification } from '../tools';
+import { ProcessingMetadata } from '../mcp/types';
 import { log } from '../../utils/logger';
-
-// Re-defining interface locally or importing could work, but using 'any' or flexible types 
-// for the JSONB columns is safer unless we strictly type them with schema.
-// We will use the schema's type inference primarily.
 
 export async function saveLead(data: {
     email: string;
     rawMessage?: string;
     source: string;
     enrichedData?: EnrichedLeadData;
-    aiClassification?: any; // Keep flexible for now or import IntentLayerOutput
-    processingMetadata?: any; // processingMetadata from mcp/types
+    aiClassification?: LeadClassification;
+    processingMetadata?: ProcessingMetadata;
     status?: string;
 }): Promise<Lead> {
     try {

@@ -5,7 +5,24 @@
  */
 
 // Models
-export { primaryModel, fallbackModel, selectModel, checkAIConfig } from './models';
+export {
+  getPrimaryModel,
+  getFallbackModel,
+  selectModel,
+  checkAIConfig,
+  generateObjectWithOpenAI,
+  generateObjectWithGoogle
+} from './models';
+
+// Circuit Breaker
+export {
+  CircuitBreaker,
+  CircuitState,
+  openaiCircuitBreaker,
+  googleCircuitBreaker,
+  getCircuitBreakerStats,
+  resetAllCircuitBreakers
+} from './circuit-breaker';
 
 // MCP Pipeline (NΞØ Protocol)
 export { processLeadPipeline } from './mcp/pipeline';
@@ -19,3 +36,14 @@ export {
   type EnrichedLeadData,
   type LeadClassification,
 } from './tools';
+
+// Memory & Cache
+export {
+  getMemoryContext,
+  embeddingCache,
+  contextCache,
+  responseCache,
+  getAllCacheStats,
+  cleanupAllCaches,
+  clearAllCaches,
+} from './memory';

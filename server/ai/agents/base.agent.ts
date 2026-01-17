@@ -13,6 +13,18 @@
 import { ProcessingMode, ModelName, LayerMetadata } from '../mcp/types';
 import { log } from '../../utils/logger';
 
+// Type-safe confidence extraction helper
+function extractConfidence(obj: unknown): number | null {
+    if (!obj || typeof obj !== 'object') {
+        return null;
+    }
+
+    const record = obj as Record<string, unknown>;
+    const confidence = record.confidence;
+
+    return typeof confidence === 'number' ? confidence : null;
+}
+
 export interface AgentConfig {
     name: string;
     requiresAI: boolean;
@@ -144,13 +156,9 @@ export abstract class BaseAgent<TInput, TOutput> {
             return 0.3;
         }
 
-        // Se output tem campo confidence, usar
-        if (typeof output === 'object' && output !== null && 'confidence' in output) {
-            return (output as any).confidence;
-        }
-
-        // Default para AI
-        return 0.8;
+        // Type-safe confidence extraction
+        const confidence = extractConfidence(output);
+        return confidence ?? 0.8;
     }
 
     // ========================================

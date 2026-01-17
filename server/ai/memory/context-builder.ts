@@ -1,15 +1,27 @@
 
 import { vectorStore } from './vector-store';
 import { MemoryContext, SimilarLead } from '../mcp/types';
+import { contextCache, generateContextKey } from './cache';
+import { log } from '../../utils/logger';
 
 /**
  * Builds the context object for a new lead by querying the vector store
- * for similar past interactions.
+ * for similar past interactions. Uses intelligent caching for performance.
  */
 export async function getMemoryContext(
     leadEmail: string,
     message: string
 ): Promise<MemoryContext> {
+    const cacheKey = generateContextKey(leadEmail, message);
+
+    // Check cache first
+    const cachedContext = contextCache.get(cacheKey);
+    if (cachedContext) {
+        log('Context cache hit', 'memory', 'info');
+        return cachedContext;
+    }
+
+    log('Context cache miss, querying vector store', 'memory', 'info');
     const query = `${leadEmail} ${message}`;
 
     // Search for similar leads
@@ -23,19 +35,29 @@ export async function getMemoryContext(
         processedAt: doc.metadata.processedAt || new Date().toISOString()
     }));
 
-    // In a real scenario, we would also generate an embedding for the current lead here
-    // but for the return type we just return an empty array or the classification embedding if needed.
-    // We'll leave it empty for now as it's not strictly required for the prompt.
+    // Extract domain from email for account context
+    const domain = leadEmail.split('@')[1] || 'unknown.com';
 
-    return {
-        leadId: '',
-        embedding: [],
+    const context: MemoryContext = {
+        leadId: '', // Will be set by caller if needed
+        embedding: [], // Could be populated with actual embedding if needed
         similarLeads,
         accountContext: {
-            domain: 'punkblack.com', // Static for now, could catch from config
-            totalLeads: 0, // Placeholder
-            avgIntent: 'unknown',
-            lastInteraction: new Date().toISOString()
+            domain,
+            totalLeads: similarLeads.length, // Rough estimate
+            avgIntent: similarLeads.length > 0
+                ? similarLeads[0].intent // Use most similar intent as average
+                : 'unknown',
+            lastInteraction: similarLeads.length > 0
+                ? similarLeads[0].processedAt
+                : new Date().toISOString()
         }
     };
+
+    // Cache the result for future use
+    contextCache.set(cacheKey, context, {
+        ttl: 60 * 60 * 1000, // 1 hour TTL
+    });
+
+    return context;
 }

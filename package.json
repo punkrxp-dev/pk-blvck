@@ -9,6 +9,8 @@
     "build": "tsx script/build.ts",
     "start": "NODE_ENV=production node dist/index.cjs",
     "check": "tsc",
+    "test": "node --test tests/unit/*.test.js",
+    "test:validation": "node --test tests/unit/validation.test.js",
     "db:push": "drizzle-kit push",
     "db:seed": "tsx script/seed-leads.ts"
   },
@@ -123,6 +125,7 @@
     "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.4.26",
+    "markdownlint-cli": "^0.47.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^4.1.14",
     "tsx": "^4.20.5",

@@ -11,7 +11,7 @@
  */
 
 import { generateObject } from 'ai';
-import { primaryModel, fallbackModel } from '../models';
+import { getPrimaryModel, getFallbackModel } from '../models';
 import { enrichLead, saveLead, notifyLead, type LeadClassification } from '../tools';
 import { z } from 'zod';
 import { log } from '../../utils/logger';
@@ -192,6 +192,7 @@ async function classifyIntentWithFallback(
   try {
     log('Attempting classification with GPT-4o...', 'legacy-orchestrator');
 
+    const primaryModel = await getPrimaryModel();
     const result = await generateObject({
       model: primaryModel,
       schema: intentClassificationSchema,
@@ -220,6 +221,7 @@ async function classifyIntentWithFallback(
     try {
       log('Attempting classification with Gemini...', 'legacy-orchestrator');
 
+      const fallbackModel = await getFallbackModel();
       const result = await generateObject({
         model: fallbackModel,
         schema: intentClassificationSchema,

@@ -4,34 +4,13 @@ import { rm, readFile, writeFile } from 'fs/promises';
 import { log } from '../server/utils/logger';
 import { validateForBuild, reportPrecheckResults } from './precheck';
 
-// server deps to bundle to reduce openat(2) syscalls
-// which helps cold start times
+// server deps to bundle - ULTRA-MINIMAL allowlist for optimal cold start
+// Only bundle the absolute minimum required for server startup
 const allowlist = [
-  '@google/generative-ai',
-  'axios',
-  'connect-pg-simple',
-  'cors',
-  'date-fns',
-  'drizzle-orm',
-  'drizzle-zod',
-  'express',
-  'express-rate-limit',
-  'express-session',
-  'jsonwebtoken',
-  'memorystore',
-  'multer',
-  'nanoid',
-  'nodemailer',
-  'openai',
-  'passport',
-  'passport-local',
-  'pg',
-  'stripe',
-  'uuid',
-  'ws',
-  'xlsx',
-  'zod',
-  'zod-validation-error',
+  // Only the most essential packages that benefit from bundling
+  'express',                // Core framework - keep bundled for startup speed
+  'zod',                   // Schema validation - core to the app
+  'cors',                  // Essential middleware - very small
 ];
 
 // Environment validation using precheck utilities
@@ -142,14 +121,59 @@ async function buildAll(): Promise<void> {
       minify: true,
       external: externals,
       logLevel: 'info',
+
+      // Aggressive optimizations for minimal bundle size
+      treeShaking: true,
+      ignoreAnnotations: true,
+      legalComments: 'none',
+      sourcemap: false,
+      metafile: true,
+
+      // Minification options
+      minifyIdentifiers: true,
+      minifySyntax: true,
+      minifyWhitespace: true,
+
+      // Remove unused code
+      pure: ['console.log', 'console.debug'], // Remove debug logs in production
+
       // Additional security and performance options
       banner: {
-        js: '// Built with esbuild - PUNK BLVCK Production Build\n',
+        js: '// PUNK BLVCK Production Build\n',
       },
       footer: {
-        js: '\n// Build completed successfully',
+        js: '\n// Success\n',
       },
     });
+
+    // Analyze bundle size from the file we just created
+    try {
+      const fs = await import('fs/promises');
+      const stats = await fs.stat('dist/index.cjs');
+      const bundleSize = stats.size;
+      const bundleSizeMB = (bundleSize / 1024 / 1024).toFixed(2);
+
+      log(`📊 Bundle analysis: ${bundleSizeMB}MB`, 'build', 'info');
+      log(`   📦 Bundled dependencies: ${bundled.length}`, 'build', 'info');
+      log(`   📦 External dependencies: ${externals.length}`, 'build', 'info');
+
+      if (bundleSize > 1000 * 1024) { // > 1MB - too large
+        log('🚨 Bundle size is too large (>1MB)', 'build', 'error');
+        log('💡 Critical optimizations needed:', 'build', 'error');
+        log('   1. Externalize heavy dependencies (AI SDKs, UI libraries)', 'build', 'error');
+        log('   2. Remove unused imports from server code', 'build', 'error');
+        log('   3. Consider dynamic imports for large features', 'build', 'error');
+        log('   4. Review server/index.ts for unnecessary imports', 'build', 'error');
+      } else if (bundleSize > 500 * 1024) { // > 500KB - acceptable but could be better
+        log(`⚠️ Bundle size is moderate: ${bundleSizeMB}MB`, 'build', 'warn');
+        log('💡 Consider further optimizations for better performance', 'build', 'warn');
+      } else {
+        log(`✅ Bundle size optimized: ${bundleSizeMB}MB`, 'build', 'info');
+        log('🎉 Excellent! Bundle size is well-optimized for production', 'build', 'info');
+      }
+    } catch (error) {
+      log(`⚠️ Could not analyze bundle size: ${error.message}`, 'build', 'warn');
+    }
 
     const serverBuildTime = Date.now() - serverStartTime;
     log(`✅ Server build completed in ${serverBuildTime}ms`, 'build', 'info');

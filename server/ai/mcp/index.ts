@@ -5,7 +5,8 @@ import {
     ProcessedLead,
     ProcessingMetadata,
     ProcessingMode,
-    ModelName
+    ModelName,
+    EntryLayerOutput
 } from './types';
 import { vectorStore } from '../memory';
 import { IntentAgent } from '../agents/intent.agent';
@@ -150,7 +151,7 @@ export class MCPCoordinator {
         }
     }
 
-    private buildOutput(leadId: string, input: LeadInput, metadata: ProcessingMetadata, status: any, entryOutput: any): ProcessedLead {
+    private buildOutput(leadId: string, input: LeadInput, metadata: ProcessingMetadata, status: ProcessedLead['status'], entryOutput: EntryLayerOutput): ProcessedLead {
         // Helper to return early
         return {
             id: leadId,

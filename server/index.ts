@@ -13,8 +13,27 @@ import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import cors from 'cors';
 import crypto from 'crypto';
-import DOMPurify from 'dompurify';
-import { JSDOM } from 'jsdom';
+// Lazy load heavy dependencies
+let DOMPurify: any = null;
+let JSDOM: any = null;
+
+// Lazy load DOMPurify and JSDOM
+async function getDOMPurify() {
+  if (!DOMPurify) {
+    const dompurifyModule = await import('dompurify');
+    DOMPurify = dompurifyModule.default;
+  }
+  return DOMPurify;
+}
+
+async function getJSDOM() {
+  if (!JSDOM) {
+    const jsdomModule = await import('jsdom');
+    JSDOM = jsdomModule.JSDOM;
+  }
+  return JSDOM;
+}
+
 import { storage } from './storage';
 import { type User } from '@shared/schema';
 
@@ -214,21 +233,23 @@ app.use(
 app.use(express.urlencoded({ extended: false, limit: '10mb' }));
 
 // Input sanitization middleware
-app.use((req: Request, res: Response, next: NextFunction) => {
+app.use(async (req: Request, res: Response, next: NextFunction) => {
   // Sanitize all string inputs recursively
-  const sanitizeObject = (obj: any): any => {
+  const sanitizeObject = async (obj: any): Promise<any> => {
     if (typeof obj === 'string') {
-      // Use DOMPurify to sanitize HTML/XSS
-      const window = new JSDOM('').window;
-      const DOMPurifyInstance = DOMPurify(window);
+      // Use DOMPurify to sanitize HTML/XSS (lazy loaded)
+      const [DOMPurifyLib, JSDOMLib] = await Promise.all([getDOMPurify(), getJSDOM()]);
+      const window = new JSDOMLib('').window;
+      const DOMPurifyInstance = DOMPurifyLib(window);
       return DOMPurifyInstance.sanitize(obj, { ALLOWED_TAGS: [] }).trim();
     } else if (Array.isArray(obj)) {
-      return obj.map(sanitizeObject);
+      return Promise.all(obj.map(sanitizeObject));
     } else if (obj !== null && typeof obj === 'object') {
       const sanitized: any = {};
-      for (const [key, value] of Object.entries(obj)) {
-        sanitized[key] = sanitizeObject(value);
-      }
+      const entries = Object.entries(obj);
+      await Promise.all(entries.map(async ([key, value]) => {
+        sanitized[key] = await sanitizeObject(value);
+      }));
       return sanitized;
     }
     return obj;
@@ -236,13 +257,13 @@ app.use((req: Request, res: Response, next: NextFunction) => {
 
   // Sanitize request body, query, and params
   if (req.body && typeof req.body === 'object') {
-    req.body = sanitizeObject(req.body);
+    req.body = await sanitizeObject(req.body);
   }
   if (req.query && typeof req.query === 'object') {
-    req.query = sanitizeObject(req.query);
+    req.query = await sanitizeObject(req.query);
   }
   if (req.params && typeof req.params === 'object') {
-    req.params = sanitizeObject(req.params);
+    req.params = await sanitizeObject(req.params);
   }
 
   next();
