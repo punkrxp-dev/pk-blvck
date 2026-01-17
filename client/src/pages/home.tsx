@@ -287,12 +287,12 @@ export default function Home() {
 
           {/* Scroll Indicator */}
           <div className='absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2'>
-            <span className='font-mono text-[9px] tracking-[0.3em] text-white/30'>SCROLL</span>
-            <div className='w-px h-8 bg-linear-to-b from-white/30 to-transparent pulse-subtle' />
+            <span className='font-mono text-[9px] tracking-[0.3em] text-white/60'>SCROLL</span>
+            <div className='w-px h-8 bg-linear-to-b from-white/50 to-transparent pulse-subtle' />
           </div>
 
           {/* Corner Markers */}
-          <div className='absolute top-6 right-4 md:right-8 font-mono text-[9px] tracking-[0.2em] text-white/20'>
+          <div className='absolute top-6 right-4 md:right-8 font-mono text-[9px] tracking-[0.2em] text-white/50'>
             ///
           </div>
         </section>
@@ -329,13 +329,13 @@ export default function Home() {
                 aria-label='Programa de treinamento - Performance Optimization Protocol'
               >
                 <div className='flex items-start justify-between mb-8'>
-                  <span className='font-mono text-xs text-white/50'>01</span>
+                  <span className='font-mono text-xs text-white/70'>01</span>
                   <span className='w-1.5 h-1.5 rounded-full bg-white/40 group-hover:bg-punk-neon transition-colors' />
                 </div>
-                <h3 className='font-industrial text-xl tracking-widest text-white mb-4 uppercase'>
+                <h2 className='font-industrial text-xl tracking-widest text-white mb-4 uppercase'>
                   // training
-                </h3>
-                <p className='font-sans text-xs tracking-wider text-white/60 leading-relaxed uppercase'>
+                </h2>
+                <p className='font-sans text-xs tracking-wider text-white/75 leading-relaxed uppercase'>
                   PERFORMANCE
                   <br />
                   OPTIMIZATION
@@ -359,13 +359,13 @@ export default function Home() {
                 aria-label='Programa Zone - High Intensity Framework'
               >
                 <div className='flex items-start justify-between mb-8'>
-                  <span className='font-mono text-xs text-white/50'>02</span>
+                  <span className='font-mono text-xs text-white/70'>02</span>
                   <span className='w-1.5 h-1.5 rounded-full bg-white/40 group-hover:bg-punk-neon transition-colors' />
                 </div>
-                <h3 className='font-industrial text-xl tracking-widest text-white mb-4 uppercase'>
+                <h2 className='font-industrial text-xl tracking-widest text-white mb-4 uppercase'>
                   [zone]
-                </h3>
-                <p className='font-sans text-xs tracking-wider text-white/60 leading-relaxed uppercase'>
+                </h2>
+                <p className='font-sans text-xs tracking-wider text-white/75 leading-relaxed uppercase'>
                   HIGH
                   <br />
                   INTENSITY
@@ -389,13 +389,13 @@ export default function Home() {
                 aria-label='Programa Yoga - Mobility Restoration Sequence'
               >
                 <div className='flex items-start justify-between mb-8'>
-                  <span className='font-mono text-xs text-white/50'>03</span>
+                  <span className='font-mono text-xs text-white/70'>03</span>
                   <span className='w-1.5 h-1.5 rounded-full bg-white/40 group-hover:bg-punk-neon transition-colors' />
                 </div>
-                <h3 className='font-industrial text-xl tracking-widest text-white mb-4 uppercase'>
+                <h2 className='font-industrial text-xl tracking-widest text-white mb-4 uppercase'>
                   .yoga
-                </h3>
-                <p className='font-sans text-xs tracking-wider text-white/60 leading-relaxed uppercase'>
+                </h2>
+                <p className='font-sans text-xs tracking-wider text-white/75 leading-relaxed uppercase'>
                   MOBILITY
                   <br />
                   RESTORATION
@@ -432,7 +432,7 @@ export default function Home() {
                 href='https://www.instagram.com/punk.blvck'
                 target='_blank'
                 rel='noreferrer noopener'
-                className='font-mono text-[10px] tracking-[0.2em] text-white/40 hover:text-punk-neon transition-colors'
+                className='font-mono text-[10px] tracking-[0.2em] text-white/60 hover:text-punk-neon transition-colors'
               >
                 instagram / @punk.blvck
               </a>
@@ -441,7 +441,7 @@ export default function Home() {
             {/* Location */}
             <div className='md:text-right'>
               <span
-                className='font-mono text-[10px] tracking-[0.2em] text-white/30'
+                className='font-mono text-[10px] tracking-[0.2em] text-white/60'
                 data-testid='footer-location'
               >
                 Plaza D'Oro Shopping // Goiânia - GO
@@ -451,10 +451,10 @@ export default function Home() {
 
           {/* Bottom Line */}
           <div className='mt-16 pt-8 border-t border-white/5 flex items-center justify-between'>
-            <span className='font-mono text-[9px] text-white/20'>Presence is The New Power</span>
+            <span className='font-mono text-[9px] text-white/50'>Presence is The New Power</span>
             <div className='flex items-center gap-2'>
               <span className='w-1 h-1 rounded-full bg-[hsl(25,100%,50%)]' />
-              <span className='font-mono text-[9px] text-white/20'>ACTIVE</span>
+              <span className='font-mono text-[9px] text-white/50'>ACTIVE</span>
             </div>
           </div>
         </div>

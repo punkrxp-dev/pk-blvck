@@ -13,17 +13,20 @@
   <meta name="theme-color" content="#000000" />
 
   <meta property="og:title" content="PUNK | BLVCK - Academia Premium Goiânia | Plaza D'Oro Shopping" />
-  <meta property="og:description" content="Academia premium no Plaza D'Oro Shopping. Ambiente assinado para performance de elite. Ecossistema de convivência e transformação." />
+  <meta property="og:description"
+    content="Academia premium no Plaza D'Oro Shopping. Ambiente assinado para performance de elite. Ecossistema de convivência e transformação." />
   <meta property="og:type" content="website" />
   <meta property="og:image" content="/images/opengraph.png" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:site" content="@punkblvck" />
   <meta name="twitter:title" content="PUNK | BLVCK - Academia Premium Goiânia" />
-  <meta name="twitter:description" content="Academia premium no Plaza D'Oro Shopping, Goiânia. Ambiente assinado para performance de elite e transformação pessoal." />
+  <meta name="twitter:description"
+    content="Academia premium no Plaza D'Oro Shopping, Goiânia. Ambiente assinado para performance de elite e transformação pessoal." />
   <meta name="twitter:image" content="/images/opengraph.png" />
 
   <!-- SEO Keywords -->
-  <meta name="keywords" content="academia premium goiania, plaza doro shopping academia, fitness elite goias, performance goiania, academia exclusiva goiania, treinamento premium, fitness high end goiania, academia vip goiania, plaza doro fitness" />
+  <meta name="keywords"
+    content="academia premium goiania, plaza doro shopping academia, fitness elite goias, performance goiania, academia exclusiva goiania, treinamento premium, fitness high end goiania, academia vip goiania, plaza doro fitness" />
 
   <!-- Local Business SEO -->
   <meta name="geo.region" content="BR-GO" />
@@ -88,6 +91,17 @@
 <body>
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').then(registration => {
+          console.log('SW registered: ', registration);
+        }).catch(registrationError => {
+          console.log('SW registration failed: ', registrationError);
+        });
+      });
+    }
+  </script>
 </body>
 
 </html>

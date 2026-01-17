@@ -155,7 +155,7 @@ export default function Landing() {
                   <h2 className='text-3xl font-industrial text-white uppercase tracking-widest'>
                     SINAL RECEBIDO.
                   </h2>
-                  <p className='font-mono text-xs text-white/50 tracking-widest'>
+                  <p className='font-mono text-xs text-white/70 tracking-widest'>
                     Aguarde contato se sua frequência for compatível.
                   </p>
                 </motion.div>
@@ -169,7 +169,7 @@ export default function Landing() {
           <div className='max-w-6xl mx-auto'>
             <div className='flex items-center gap-4 mb-10 md:mb-16'>
               <span className='w-8 md:w-12 h-px bg-punk-neon' />
-              <span className='font-mono text-[10px] md:text-xs tracking-[0.3em] text-white/70 italic'>
+              <span className='font-mono text-[10px] md:text-xs tracking-[0.3em] text-white/80 italic'>
                 SCHEDULE
               </span>
             </div>
@@ -211,10 +211,10 @@ export default function Landing() {
         {/* Context */}
         <section className='py-16 md:py-20 px-4 md:px-8 lg:px-16'>
           <div className='max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6'>
-            <span className='font-mono text-[10px] tracking-[0.2em] text-white/50 uppercase'>
+            <span className='font-mono text-[10px] tracking-[0.2em] text-white/70 uppercase'>
               Plaza D&apos;Oro Shopping // Goiânia - GO
             </span>
-            <span className='font-mono text-[10px] tracking-[0.2em] text-white/30 uppercase'>
+            <span className='font-mono text-[10px] tracking-[0.2em] text-white/60 uppercase'>
               Presence is The New Power
             </span>
           </div>
@@ -249,11 +249,11 @@ export default function Landing() {
             href='https://www.instagram.com/punk.blvck'
             target='_blank'
             rel='noreferrer noopener'
-            className='font-mono text-[10px] tracking-[0.2em] text-white/40 hover:text-punk-neon transition-colors'
+            className='font-mono text-[10px] tracking-[0.2em] text-white/60 hover:text-punk-neon transition-colors'
           >
             instagram / @punk.blvck
           </a>
-          <span className='font-mono text-[10px] tracking-[0.2em] text-white/30 md:text-right'>
+          <span className='font-mono text-[10px] tracking-[0.2em] text-white/60 md:text-right'>
             Presence is The New Power
           </span>
         </div>
@@ -268,7 +268,7 @@ function DecisionButton({ label, onClick }: { label: string; onClick: () => void
       onClick={onClick}
       className={`group relative h-[300px] md:h-[600px] flex items-center justify-center overflow-hidden border border-white/5 hover:border-punk-neon transition-colors duration-700`}
     >
-      <span className='relative z-10 font-industrial text-4xl md:text-7xl tracking-tighter text-white/40 group-hover:text-white group-hover:scale-110 transition-all duration-700 uppercase'>
+      <span className='relative z-10 font-industrial text-4xl md:text-7xl tracking-tighter text-white/60 group-hover:text-white group-hover:scale-110 transition-all duration-700 uppercase'>
         {label}
       </span>
       <div className='absolute inset-0 bg-punk-neon/10 translate-y-full group-hover:translate-y-0 transition-transform duration-700 ease-out' />
@@ -283,10 +283,10 @@ function ScheduleCard({ num, title, subtitle, items }: any) {
   return (
     <div className='bg-black p-8 md:p-12 flex flex-col group hover:bg-zinc-950 transition-colors duration-500'>
       <div className='flex items-start justify-between mb-8'>
-        <span className='font-mono text-xs text-white/50'>{num}</span>
+        <span className='font-mono text-xs text-white/70'>{num}</span>
         <span className='w-1.5 h-1.5 rounded-full bg-white/40 group-hover:bg-punk-neon transition-colors' />
       </div>
-      <h3 className='font-industrial text-xl tracking-widest text-white mb-2 uppercase'>{title}</h3>
+      <h2 className='font-industrial text-xl tracking-widest text-white mb-2 uppercase'>{title}</h2>
       <p className='font-mono text-[10px] tracking-wider text-punk-neon mb-6 uppercase'>
         {subtitle}
       </p>
