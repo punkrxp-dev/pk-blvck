@@ -4,10 +4,9 @@ import passport from 'passport';
 import { storage } from './storage';
 import { insertUserSchema, type User } from '@shared/schema';
 import { fromZodError } from 'zod-validation-error';
-import { processLeadPipeline } from './ai/mcp/pipeline';
-import { processLead as processLeadLegacy } from './ai/legacy/orchestrator';
 import { z } from 'zod';
 import { log } from './utils/logger';
+// AI pipeline imports moved to dynamic imports to reduce bundle size
 
 // ========================================
 // VALIDATION SCHEMAS
@@ -132,9 +131,10 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
       let result;
       if (mode === 'legacy') {
-        // Process lead through legacy pipeline
+        // Process lead through legacy pipeline (dynamic import to reduce bundle size)
         log('Using LEGACY mode', 'mcp-ingest');
-        result = await processLeadLegacy({
+        const { processLead: processLeadLegacy } = await import('./ai/legacy/orchestrator');
+        const legacyResult = await processLeadLegacy({
           email,
           message,
           source,
@@ -142,27 +142,28 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
         // Transform legacy result to match Neo response format
         result = {
-          id: result.id,
-          email: result.email,
+          id: legacyResult.id,
+          email: legacyResult.email,
           intent: {
-            intent: result.classification.intent,
-            confidence: result.classification.confidence,
-            reasoning: result.classification.reasoning,
-            userReply: result.classification.userReply,
+            intent: legacyResult.classification.intent,
+            confidence: legacyResult.classification.confidence,
+            reasoning: legacyResult.classification.reasoning,
+            userReply: legacyResult.classification.userReply,
           },
           processing: {
             processingMode: 'legacy',
-            actualModel: result.classification.model,
-            processingTimeMs: result.processingTime,
+            actualModel: legacyResult.classification.model,
+            processingTimeMs: legacyResult.processingTime,
             requiresHumanReview: false,
           },
-          presence: result.enrichedData,
-          notified: result.notified,
-          status: result.status,
+          presence: legacyResult.enrichedData,
+          notified: legacyResult.notified,
+          status: legacyResult.status,
         };
       } else {
-        // Process lead through new MCP pipeline (Neo mode)
+        // Process lead through new MCP pipeline (Neo mode) - dynamic import to reduce bundle size
         log('Using NEO mode', 'mcp-ingest');
+        const { processLeadPipeline } = await import('./ai/mcp/pipeline');
         result = await processLeadPipeline({
           email,
           message,

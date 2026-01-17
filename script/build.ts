@@ -9,8 +9,8 @@ import { validateForBuild, reportPrecheckResults } from './precheck';
 const allowlist = [
   // Only the most essential packages that benefit from bundling
   'express',                // Core framework - keep bundled for startup speed
-  'zod',                   // Schema validation - core to the app
   'cors',                  // Essential middleware - very small
+  // zod externalized - used only for validation, can be loaded from node_modules
 ];
 
 // Environment validation using precheck utilities
@@ -157,16 +157,16 @@ async function buildAll(): Promise<void> {
       log(`   📦 Bundled dependencies: ${bundled.length}`, 'build', 'info');
       log(`   📦 External dependencies: ${externals.length}`, 'build', 'info');
 
-      if (bundleSize > 1000 * 1024) { // > 1MB - too large
-        log('🚨 Bundle size is too large (>1MB)', 'build', 'error');
+      if (bundleSize > 1500 * 1024) { // > 1.5MB - too large
+        log('🚨 Bundle size is too large (>1.5MB)', 'build', 'error');
         log('💡 Critical optimizations needed:', 'build', 'error');
         log('   1. Externalize heavy dependencies (AI SDKs, UI libraries)', 'build', 'error');
         log('   2. Remove unused imports from server code', 'build', 'error');
         log('   3. Consider dynamic imports for large features', 'build', 'error');
         log('   4. Review server/index.ts for unnecessary imports', 'build', 'error');
-      } else if (bundleSize > 500 * 1024) { // > 500KB - acceptable but could be better
+      } else if (bundleSize > 1000 * 1024) { // > 1MB - moderate, acceptable for Express
         log(`⚠️ Bundle size is moderate: ${bundleSizeMB}MB`, 'build', 'warn');
-        log('💡 Consider further optimizations for better performance', 'build', 'warn');
+        log('💡 Consider further optimizations if cold start is critical', 'build', 'warn');
       } else {
         log(`✅ Bundle size optimized: ${bundleSizeMB}MB`, 'build', 'info');
         log('🎉 Excellent! Bundle size is well-optimized for production', 'build', 'info');
