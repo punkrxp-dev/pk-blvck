@@ -50,10 +50,11 @@ describe('Integration: API Routes', () => {
 
         server = createServer(app);
         await registerRoutes(server, app);
+        await new Promise<void>((resolve) => server.listen(0, () => resolve()));
     });
 
-    afterAll((done) => {
-        server.close(done);
+    afterAll(async () => {
+        await new Promise((resolve) => server.close(resolve));
     });
 
     beforeEach(() => {
@@ -70,7 +71,7 @@ describe('Integration: API Routes', () => {
                 updatedAt: new Date(),
             } as any);
 
-            const res = await request(app)
+            const res = await request(server)
                 .post('/api/auth/register')
                 .send({ username: 'testuser', password: 'Password123!' });
 
@@ -82,7 +83,7 @@ describe('Integration: API Routes', () => {
         it('should fail if username already exists', async () => {
             (storage.createUser as jest.Mock).mockRejectedValue(new Error('Username already exists'));
 
-            const res = await request(app)
+            const res = await request(server)
                 .post('/api/auth/register')
                 .send({ username: 'existing', password: 'Password123!' });
 
@@ -92,7 +93,7 @@ describe('Integration: API Routes', () => {
 
     describe('POST /api/auth/login', () => {
         it('should login successfully with valid credentials', async () => {
-            const res = await request(app)
+            const res = await request(server)
                 .post('/api/auth/login')
                 .send({ username: 'testuser', password: 'Password123!' });
 
@@ -101,7 +102,7 @@ describe('Integration: API Routes', () => {
         });
 
         it('should fail with invalid credentials', async () => {
-            const res = await request(app)
+            const res = await request(server)
                 .post('/api/auth/login')
                 .send({ username: 'wrong', password: 'wrong' });
 
@@ -127,7 +128,7 @@ describe('Integration: API Routes', () => {
 
             (processLeadPipeline as jest.Mock).mockResolvedValue(mockResult);
 
-            const res = await request(app)
+            const res = await request(server)
                 .post('/api/mcp/ingest')
                 .send({
                     email: 'lead@test.com',
@@ -145,7 +146,7 @@ describe('Integration: API Routes', () => {
         });
 
         it('should validation fail for invalid email', async () => {
-            const res = await request(app)
+            const res = await request(server)
                 .post('/api/mcp/ingest')
                 .send({
                     email: 'not-an-email',

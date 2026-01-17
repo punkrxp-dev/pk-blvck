@@ -22,7 +22,7 @@ describe('AI Agents', () => {
         expect(isValid).toBe(true);
       });
 
-      it('should reject disposable emails', () => {
+      it('should allow disposable emails for classification', () => {
         const input = {
           email: 'test@10minutemail.com',
           message: 'Hello',
@@ -30,7 +30,7 @@ describe('AI Agents', () => {
         };
 
         const isValid = (agent as any).validate(input);
-        expect(isValid).toBe(false);
+        expect(isValid).toBe(true);
       });
 
       it('should reject invalid sources', () => {

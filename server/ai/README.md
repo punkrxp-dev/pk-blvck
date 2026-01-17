@@ -2,13 +2,6 @@
 
 # AI Module - PUNK BLVCK
 
-**NEØ Protected Architecture - Cognitive Pipeline Infrastructure**
-
-Esta pasta contém toda a infraestrutura de Inteligência Artificial do projeto PUNK BLVCK, implementando o protocolo **MCP (Model Context Protocol)** com arquitetura de agentes especializados.
-
-## Arquitetura NEØ
-
-```
 server/ai/
 ├── index.ts              # Exports centralizados e tipagem
 ├── models.ts             # Lazy loading de modelos IA (GPT-4o + Gemini)

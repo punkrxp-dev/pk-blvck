@@ -88,18 +88,23 @@ export class SentinelAgent extends BaseAgent<
   }
 
   protected async processWithFallback(input: { email: string; message?: string; source: string }) {
-    // Simple regex check for spam
-    const spamKeywords = ['casino', 'viagra', 'inheritance', 'prince', 'lottery'];
-    const message = (input.message || '').toLowerCase();
-    const isSpam = spamKeywords.some(kw => message.includes(kw));
+    // Use centralized security check for spam keywords
+    const security = validateAgentInput({
+      email: input.email,
+      message: input.message,
+    });
+
+    const isSpam = !security.security.contentSecurity.isSafe ||
+      security.security.emailSecurity.isSuspicious;
 
     return {
       email: input.email,
       source: input.source,
       rawMessage: input.message,
-      sanitized: true, // Optimistic sanitization
+      sanitized: true,
       spam: isSpam,
       confidence: 0.5,
+      reasoning: isSpam ? `Detected via rules: ${security.security.contentSecurity.threats.join(', ')}` : 'Clean input',
     };
   }
 
@@ -118,30 +123,27 @@ export class SentinelAgent extends BaseAgent<
       });
 
       if (!validation.isValid) {
-        log(
-          `Validação de segurança falhou: ${validation.issues.join(', ')}`,
-          'SentinelAgent',
-          'warn'
+        // Log security issues but ONLY fail validation for serious content threats (XSS/Bash)
+        // Spam keywords are handled by the agent's logic, not validation-level blocking.
+        const hasSeriousThreats = validation.security.contentSecurity.threats.some(t =>
+          t.toLowerCase().includes('script') || t.toLowerCase().includes('sql')
         );
 
-        // Log security issues for monitoring
-        if (validation.security.emailSecurity.isSuspicious) {
+        if (hasSeriousThreats) {
           log(
-            `Email suspeito detectado: ${input.email} - ${validation.security.emailSecurity.issues.join(', ')}`,
+            `Check de segurança crítico falhou: ${validation.security.contentSecurity.threats.join(', ')}`,
             'SentinelAgent',
             'warn'
           );
+          return false;
         }
 
-        if (!validation.security.contentSecurity.isSafe) {
-          log(
-            `Conteúdo suspeito detectado: ${validation.security.contentSecurity.threats.join(', ')}`,
-            'SentinelAgent',
-            'warn'
-          );
-        }
-
-        return false;
+        // Log other issues but continue
+        log(
+          `Aviso de validação (prosseguindo): ${validation.issues.join(', ')}`,
+          'SentinelAgent',
+          'info'
+        );
       }
 
       // Additional source validation
@@ -169,16 +171,8 @@ export class SentinelAgent extends BaseAgent<
           return false;
         }
 
-        // Check for spam keywords
-        const spamKeywords = ['free', 'winner', 'prize', 'urgent', 'act now', 'click here'];
-        const lowerMessage = message.toLowerCase();
-
-        for (const keyword of spamKeywords) {
-          if (lowerMessage.includes(keyword)) {
-            log(`Palavra-chave de spam detectada: "${keyword}"`, 'SentinelAgent', 'warn');
-            return false;
-          }
-        }
+        // Spam keyword checking moved to fallback processing to allow graceful handling
+        return true;
       }
 
       return true;

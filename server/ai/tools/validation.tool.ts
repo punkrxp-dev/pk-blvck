@@ -233,8 +233,8 @@ function sanitizeName(name: string): string {
       .replace(/<[^>]*>/g, '')
       // Remove excessive whitespace
       .replace(/\s+/g, ' ')
-      // Remove suspicious characters but keep accents
-      .replace(/[<>'"&;]/g, '')
+      // Remove brackets specifically
+      .replace(/[<>]/g, '')
       // Limit length
       .substring(0, 100)
   );
