@@ -1,6 +1,7 @@
 /* global console */
 import { createServer } from 'http';
-import { registerRoutes } from '../dist/index.cjs';
+import serverBundle from '../dist/index.cjs';
+const { registerRoutes } = serverBundle;
 
 let server;
 
