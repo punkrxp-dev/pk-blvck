@@ -14,7 +14,7 @@ import { log } from './utils/logger';
 
 /**
  * MCP Ingest Schema
- * 
+ *
  * IMPORTANTE: O campo "message" contém a mensagem escrita pelo LEAD no formulário.
  * Este texto é preservado de forma imutável e apenas citado no email ao gestor.
  * O sistema NUNCA modifica, reescreve ou envia respostas automáticas ao lead.

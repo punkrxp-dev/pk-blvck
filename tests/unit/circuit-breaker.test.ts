@@ -192,7 +192,10 @@ describe('Circuit Breaker', () => {
       mockFn.mockRejectedValueOnce(new Error('error1'));
       await expect(circuitBreaker.execute(mockFn)).rejects.toThrow();
 
-      mockFn.mockRejectedValueOnce({ status: 429 });
+      mockFn
+        .mockRejectedValueOnce({ status: 429 })
+        .mockRejectedValueOnce({ status: 429 })
+        .mockRejectedValueOnce({ status: 429 });
       await expect(circuitBreaker.execute(mockFn)).rejects.toThrow();
 
       const stats = circuitBreaker.getStats();

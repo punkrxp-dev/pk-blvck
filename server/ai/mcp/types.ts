@@ -1,6 +1,6 @@
 /**
  * MCP (Model Context Protocol) Types
- * 
+ *
  * Define a estrutura formal do pipeline cognitivo.
  */
 
@@ -19,18 +19,18 @@ export type ModelName = 'gpt-4o' | 'gemini-2.0-flash-exp' | 'rule-based';
 // ========================================
 
 export interface PipelineStage {
-    name: string;
-    startedAt: string; // ISO String
-    completedAt?: string; // ISO String
-    durationMs?: number;
-    status: 'pending' | 'running' | 'completed' | 'failed';
-    error?: string;
+  name: string;
+  startedAt: string; // ISO String
+  completedAt?: string; // ISO String
+  durationMs?: number;
+  status: 'pending' | 'running' | 'completed' | 'failed';
+  error?: string;
 }
 
 export interface PipelineContext {
-    leadId?: string;
-    stages: Record<string, PipelineStage>; // Serializável
-    metadata: ProcessingMetadata;
+  leadId?: string;
+  stages: Record<string, PipelineStage>; // Serializável
+  metadata: ProcessingMetadata;
 }
 
 // ========================================
@@ -38,25 +38,25 @@ export interface PipelineContext {
 // ========================================
 
 export interface ProcessingMetadata {
-    processingMode: ProcessingMode;
-    modelProvider: ModelProvider;
-    actualModel: ModelName;
-    fallbackUsed: boolean;
-    requiresHumanReview: boolean;
-    processingTimeMs: number; // Padronizado
-    timestamp: string; // ISO String
+  processingMode: ProcessingMode;
+  modelProvider: ModelProvider;
+  actualModel: ModelName;
+  fallbackUsed: boolean;
+  requiresHumanReview: boolean;
+  processingTimeMs: number; // Padronizado
+  timestamp: string; // ISO String
 
-    // Rastreabilidade de cada camada
-    layers: Record<string, LayerMetadata>;
+  // Rastreabilidade de cada camada
+  layers: Record<string, LayerMetadata>;
 }
 
 export interface LayerMetadata {
-    agentName: string;
-    processingMode: ProcessingMode;
-    modelProvider: ModelProvider;
-    modelName: ModelName;
-    confidence: number;
-    durationMs: number; // Padronizado por camada
+  agentName: string;
+  processingMode: ProcessingMode;
+  modelProvider: ModelProvider;
+  modelName: ModelName;
+  confidence: number;
+  durationMs: number; // Padronizado por camada
 }
 
 // ========================================
@@ -64,36 +64,36 @@ export interface LayerMetadata {
 // ========================================
 
 export interface LeadInput {
-    email: string;
-    message?: string;
-    source: string;
-    metadata?: Record<string, any>;
+  email: string;
+  message?: string;
+  source: string;
+  metadata?: Record<string, any>;
 }
 
 export interface ProcessedLead {
-    id: string;
-    email: string;
+  id: string;
+  email: string;
 
-    // Dados de cada camada
-    entry: EntryLayerOutput;
-    presence: PresenceLayerOutput;
-    intent: IntentLayerOutput;
+  // Dados de cada camada
+  entry: EntryLayerOutput;
+  presence: PresenceLayerOutput;
+  intent: IntentLayerOutput;
 
-    // Metadados do processamento
-    processing: ProcessingMetadata;
+  // Metadados do processamento
+  processing: ProcessingMetadata;
 
-    // Action Router Decision (Fluxo Fantasma)
-    actionDecision?: {
-        action: string;
-        recommendedChannel: string;
-        priority: string;
-        executeNow: boolean;
-        reasoning: string;
-    };
+  // Action Router Decision (Fluxo Fantasma)
+  actionDecision?: {
+    action: string;
+    recommendedChannel: string;
+    priority: string;
+    executeNow: boolean;
+    reasoning: string;
+  };
 
-    // Status final
-    status: 'processed' | 'failed' | 'pending_review';
-    notified: boolean;
+  // Status final
+  status: 'processed' | 'failed' | 'pending_review';
+  notified: boolean;
 }
 
 // ========================================
@@ -101,31 +101,31 @@ export interface ProcessedLead {
 // ========================================
 
 export interface EntryLayerOutput {
-    email: string;
-    source: string;
-    rawMessage?: string;
-    sanitized: boolean;
-    spam: boolean;
-    confidence: number;
+  email: string;
+  source: string;
+  rawMessage?: string;
+  sanitized: boolean;
+  spam: boolean;
+  confidence: number;
 }
 
 export interface PresenceLayerOutput {
-    firstName?: string;
-    lastName?: string;
-    company?: string;
-    position?: string;
-    linkedin?: string;
-    phone?: string;
-    verified: boolean;
-    dataSource: 'hunter' | 'mock' | 'unavailable';
+  firstName?: string;
+  lastName?: string;
+  company?: string;
+  position?: string;
+  linkedin?: string;
+  phone?: string;
+  verified: boolean;
+  dataSource: 'hunter' | 'mock' | 'unavailable';
 }
 
 export interface IntentLayerOutput {
-    intent: 'high' | 'medium' | 'low' | 'spam';
-    confidence: number;
-    reasoning: string;
-    userReply: string;
-    similarLeads?: string[]; // IDs de leads similares (memória)
+  intent: 'high' | 'medium' | 'low' | 'spam';
+  confidence: number;
+  reasoning: string;
+  userReply: string;
+  similarLeads?: string[]; // IDs de leads similares (memória)
 }
 
 // ========================================
@@ -133,23 +133,23 @@ export interface IntentLayerOutput {
 // ========================================
 
 export interface MemoryContext {
-    leadId: string;
-    embedding: number[];
-    similarLeads: SimilarLead[];
-    accountContext?: AccountContext;
+  leadId: string;
+  embedding: number[];
+  similarLeads: SimilarLead[];
+  accountContext?: AccountContext;
 }
 
 export interface SimilarLead {
-    id: string;
-    email: string;
-    similarity: number;
-    intent: string;
-    processedAt: string;
+  id: string;
+  email: string;
+  similarity: number;
+  intent: string;
+  processedAt: string;
 }
 
 export interface AccountContext {
-    domain: string;
-    totalLeads: number;
-    avgIntent: string;
-    lastInteraction: string;
+  domain: string;
+  totalLeads: number;
+  avgIntent: string;
+  lastInteraction: string;
 }

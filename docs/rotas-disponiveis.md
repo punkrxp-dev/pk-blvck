@@ -6,6 +6,8 @@
 https://pk-blvck-production.up.railway.app
 ```
 
+⚠️ **Nota:** Verifique `docs/links-disponiveis.md` para URLs atualizadas de produção.
+
 ---
 
 ## 🔐 **AUTENTICAÇÃO**
@@ -71,6 +73,8 @@ https://pk-blvck-production.up.railway.app
 
 -  **Descrição:** Processar novo lead com IA completa + enriquecimento automático
 -  **Autenticação:** CSRF token necessário
+-  **Query Parameters:**
+-  `mode`: `neo|legacy` (padrão: `neo`) - Modo de processamento
 -  **Body (Dados fornecidos pelo usuário):**
 
 ```json
@@ -165,12 +169,16 @@ O objeto `enrichedData` contém dados **buscados automaticamente via Hunter.io A
 
 ### **GET /api/mcp/leads**
 
--  **Descrição:** Listar leads com filtros e estatísticas
+-  **Descrição:** Listar leads com filtros, paginação e estatísticas
 -  **Autenticação:** Não necessária (dashboard público)
 -  **Query Parameters:**
--  `status`: `pending|processed|notified|failed`
--  `intent`: `high|medium|low|spam`
--  `limit`: `1-100` (padrão: 50)
+-  `status`: `pending|processed|notified|failed` - Filtrar por status
+-  `intent`: `high|medium|low|spam` - Filtrar por intenção
+-  `page`: `número` (padrão: 1) - Página atual
+-  `pageSize`: `1-100` (padrão: 20, máximo: 100) - Itens por página
+-  `sortBy`: `createdAt|email|status|intent` (padrão: `createdAt`) - Campo para ordenação
+-  `sortOrder`: `asc|desc` (padrão: `desc`) - Ordem de classificação
+-  `dateRange`: `all|today|week|month` (padrão: `all`) - Filtro por período
 -  **Resposta:** `200 OK`
 
 ```json
@@ -214,16 +222,110 @@ O objeto `enrichedData` contém dados **buscados automaticamente via Hunter.io A
   },
   "meta": {
     "count": 10,
-    "limit": 50,
+    "limit": 20,
     "filters": {
       "status": null,
       "intent": null
+    },
+    "pagination": {
+      "total": 50,
+      "page": 1,
+      "pageSize": 20,
+      "totalPages": 3
     }
   }
 }
 ```
 
 ⚠️ **Nota:** Campos em `enrichedData` podem ser `null` se Hunter.io não encontrar informações.
+
+### **PATCH /api/mcp/leads/:id/status**
+
+-  **Descrição:** Atualizar status de um lead
+-  **Autenticação:** CSRF token necessário
+-  **Body:**
+
+```json
+{
+  "status": "pending|processed|notified|failed"
+}
+```
+
+-  **Resposta:** `200 OK`
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "status": "processed",
+    "updatedAt": "2026-01-17T10:30:15.000Z"
+  }
+}
+```
+
+-  **Erros:** `400` (status inválido), `404` (lead não encontrado)
+
+### **PATCH /api/mcp/leads/:id/mark-spam**
+
+-  **Descrição:** Marcar lead como spam (atualiza classificação IA)
+-  **Autenticação:** CSRF token necessário
+-  **Resposta:** `200 OK`
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "aiClassification": {
+      "intent": "spam",
+      "confidence": 1.0,
+      "model": "gpt-4o",
+      "processedAt": "2026-01-17T10:30:00.000Z"
+    },
+    "status": "processed",
+    "updatedAt": "2026-01-17T10:30:15.000Z"
+  }
+}
+```
+
+-  **Erros:** `404` (lead não encontrado)
+
+### **POST /api/mcp/leads/:id/notify**
+
+-  **Descrição:** Enviar notificação para um lead (dispara email Resend)
+-  **Autenticação:** CSRF token necessário
+-  **Resposta:** `200 OK`
+
+```json
+{
+  "success": true,
+  "message": "Notification sent",
+  "data": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "notifiedAt": "2026-01-17T10:30:15.000Z",
+    "status": "notified",
+    "updatedAt": "2026-01-17T10:30:15.000Z"
+  }
+}
+```
+
+-  **Erros:** `404` (lead não encontrado)
+
+### **DELETE /api/mcp/leads/:id**
+
+-  **Descrição:** Deletar lead do banco de dados
+-  **Autenticação:** CSRF token necessário
+-  **Resposta:** `200 OK`
+
+```json
+{
+  "success": true,
+  "message": "Lead deleted successfully"
+}
+```
+
+-  **Erros:** `404` (lead não encontrado)
 
 ---
 
@@ -356,7 +458,7 @@ curl https://pk-blvck-production.up.railway.app/api/mcp/leads
 ### **Acessar Dashboard**
 
 ```text
-https://pk-blvck.vercel.app/dashboard
+https://pk-blvck-three.vercel.app/dashboard
 ```
 
 ---
@@ -378,12 +480,14 @@ https://pk-blvck.vercel.app/dashboard
 
 1.  **Enriquecimento Automático:** Leads são automaticamente enriquecidos via Hunter.io API (dados públicos)
 2.  **Campos Opcionais:** Todos os campos em `enrichedData` podem retornar `null` se dados não forem encontrados
-3.  **CSRF Protection:** Todas as rotas POST/PUT/DELETE requerem header `x-csrf-token`
+3.  **CSRF Protection:** Todas as rotas POST/PUT/PATCH/DELETE requerem header `x-csrf-token`
 4.  **Rate Limiting:** Implementado em todas as rotas
 5.  **Autenticação:** Apenas rotas `/api/auth/*` e `/api/users` requerem session
 6.  **CORS:** Configurado para aceitar requisições do frontend Vercel
 7.  **IA Fallback:** Sistema automaticamente usa Google AI (Gemini) se OpenAI (GPT-4o) falhar
 8.  **Privacidade:** Apenas dados **públicos profissionais** são coletados (conforme LGPD/GDPR)
+9.  **Modo de Processamento:** POST `/api/mcp/ingest` suporta `mode=neo` (padrão) ou `mode=legacy` via query parameter
+10.  **Paginação:** GET `/api/mcp/leads` suporta paginação completa com `page`, `pageSize`, `sortBy`, `sortOrder` e `dateRange`
 
 ---
 

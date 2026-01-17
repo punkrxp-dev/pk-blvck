@@ -8,18 +8,18 @@
 import { log } from '../utils/logger';
 
 export enum CircuitState {
-  CLOSED = 'CLOSED',     // Normal operation
-  OPEN = 'OPEN',         // Circuit is open, failing fast
-  HALF_OPEN = 'HALF_OPEN' // Testing if service recovered
+  CLOSED = 'CLOSED', // Normal operation
+  OPEN = 'OPEN', // Circuit is open, failing fast
+  HALF_OPEN = 'HALF_OPEN', // Testing if service recovered
 }
 
 export interface CircuitBreakerConfig {
-  failureThreshold: number;     // Failures before opening circuit
-  recoveryTimeout: number;      // Time before trying to recover (ms)
-  monitoringPeriod: number;     // Time window for failure counting (ms)
-  successThreshold: number;     // Successes needed in HALF_OPEN to close
-  maxRetries: number;           // Maximum retry attempts for rate limits
-  baseBackoffMs: number;        // Base backoff time for retries
+  failureThreshold: number; // Failures before opening circuit
+  recoveryTimeout: number; // Time before trying to recover (ms)
+  monitoringPeriod: number; // Time window for failure counting (ms)
+  successThreshold: number; // Successes needed in HALF_OPEN to close
+  maxRetries: number; // Maximum retry attempts for rate limits
+  baseBackoffMs: number; // Base backoff time for retries
 }
 
 export interface CircuitBreakerStats {
@@ -120,7 +120,11 @@ export class CircuitBreaker {
 
           if (attempt < this.config.maxRetries) {
             const delay = this.calculateBackoffDelay(attempt);
-            log(`Rate limit hit, retrying in ${delay}ms (attempt ${attempt + 1}/${this.config.maxRetries + 1})`, this.name, 'warn');
+            log(
+              `Rate limit hit, retrying in ${delay}ms (attempt ${attempt + 1}/${this.config.maxRetries + 1})`,
+              this.name,
+              'warn'
+            );
             await this.sleep(delay);
             continue;
           }
@@ -145,7 +149,11 @@ export class CircuitBreaker {
       if (Date.now() - this.lastFailureTime > this.config.recoveryTimeout) {
         this.state = CircuitState.HALF_OPEN;
         this.successes = 0;
-        log(`Circuit breaker ${this.name}: OPEN → HALF_OPEN (testing recovery)`, 'circuit-breaker', 'info');
+        log(
+          `Circuit breaker ${this.name}: OPEN → HALF_OPEN (testing recovery)`,
+          'circuit-breaker',
+          'info'
+        );
       } else {
         throw new Error(`Circuit breaker ${this.name} is OPEN - service unavailable`);
       }
@@ -155,7 +163,6 @@ export class CircuitBreaker {
       const result = await this.executeWithRetry(fn);
       this.onSuccess();
       return result;
-
     } catch (error) {
       this.onFailure();
       throw error;
@@ -173,7 +180,11 @@ export class CircuitBreaker {
       if (this.successes >= this.config.successThreshold) {
         this.state = CircuitState.CLOSED;
         this.failures = 0;
-        log(`Circuit breaker ${this.name}: HALF_OPEN → CLOSED (service recovered)`, 'circuit-breaker', 'info');
+        log(
+          `Circuit breaker ${this.name}: HALF_OPEN → CLOSED (service recovered)`,
+          'circuit-breaker',
+          'info'
+        );
       }
     } else if (this.state === CircuitState.CLOSED) {
       // Reset failure count on success in monitoring period
@@ -195,11 +206,19 @@ export class CircuitBreaker {
     // Check if we should open the circuit
     if (this.state === CircuitState.CLOSED && this.failures >= this.config.failureThreshold) {
       this.state = CircuitState.OPEN;
-      log(`Circuit breaker ${this.name}: CLOSED → OPEN (${this.failures} failures)`, 'circuit-breaker', 'warn');
+      log(
+        `Circuit breaker ${this.name}: CLOSED → OPEN (${this.failures} failures)`,
+        'circuit-breaker',
+        'warn'
+      );
     } else if (this.state === CircuitState.HALF_OPEN) {
       // Failed during recovery test, go back to OPEN
       this.state = CircuitState.OPEN;
-      log(`Circuit breaker ${this.name}: HALF_OPEN → OPEN (recovery test failed)`, 'circuit-breaker', 'warn');
+      log(
+        `Circuit breaker ${this.name}: HALF_OPEN → OPEN (recovery test failed)`,
+        'circuit-breaker',
+        'warn'
+      );
     }
   }
 
@@ -230,6 +249,11 @@ export class CircuitBreaker {
     this.successes = 0;
     this.lastFailureTime = 0;
     this.lastSuccessTime = 0;
+    this.totalRequests = 0;
+    this.totalFailures = 0;
+    this.rateLimitHits = 0;
+    this.retriesAttempted = 0;
+    this.retriesSuccessful = 0;
     log(`Circuit breaker ${this.name} manually reset`, 'circuit-breaker', 'info');
   }
 
@@ -245,12 +269,12 @@ export class CircuitBreaker {
 
 // Global circuit breakers for AI services
 export const openaiCircuitBreaker = new CircuitBreaker('OpenAI', {
-  failureThreshold: 5,      // Open after 5 failures
-  recoveryTimeout: 60000,   // Wait 1 minute before testing
+  failureThreshold: 5, // Open after 5 failures
+  recoveryTimeout: 60000, // Wait 1 minute before testing
   monitoringPeriod: 300000, // 5 minutes monitoring window
-  successThreshold: 3,      // Need 3 successes to close
-  maxRetries: 3,            // Retry up to 3 times on rate limits
-  baseBackoffMs: 1000,      // Start with 1 second backoff
+  successThreshold: 3, // Need 3 successes to close
+  maxRetries: 3, // Retry up to 3 times on rate limits
+  baseBackoffMs: 1000, // Start with 1 second backoff
 });
 
 export const googleCircuitBreaker = new CircuitBreaker('GoogleAI', {
@@ -258,8 +282,8 @@ export const googleCircuitBreaker = new CircuitBreaker('GoogleAI', {
   recoveryTimeout: 60000,
   monitoringPeriod: 300000,
   successThreshold: 3,
-  maxRetries: 3,            // Retry up to 3 times on rate limits
-  baseBackoffMs: 1000,      // Start with 1 second backoff
+  maxRetries: 3, // Retry up to 3 times on rate limits
+  baseBackoffMs: 1000, // Start with 1 second backoff
 });
 
 /**

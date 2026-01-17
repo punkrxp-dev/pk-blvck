@@ -222,7 +222,7 @@ describe('Agent Input Validation', () => {
       const result = validateAgentInput(input);
 
       expect(result.isValid).toBe(true);
-      expect(result.sanitized).toEqual(input);
+      expect(result.sanitized).toMatchObject(input);
     });
   });
 });

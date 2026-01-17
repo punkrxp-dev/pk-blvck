@@ -220,58 +220,66 @@ export function sanitizePersonalData(data: {
  * Sanitize name fields
  */
 function sanitizeName(name: string): string {
-  return name
-    .trim()
-    // Remove excessive whitespace
-    .replace(/\s+/g, ' ')
-    // Remove suspicious characters but keep accents
-    .replace(/[<>'"&;]/g, '')
-    // Limit length
-    .substring(0, 100);
+  return (
+    name
+      .trim()
+      // Remove excessive whitespace
+      .replace(/\s+/g, ' ')
+      // Remove suspicious characters but keep accents
+      .replace(/[<>'"&;]/g, '')
+      // Limit length
+      .substring(0, 100)
+  );
 }
 
 /**
  * Sanitize company names
  */
 function sanitizeCompany(company: string): string {
-  return company
-    .trim()
-    // Remove excessive whitespace
-    .replace(/\s+/g, ' ')
-    // Remove suspicious characters
-    .replace(/[<>'"&;]/g, '')
-    // Remove potential script tags
-    .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
-    // Limit length
-    .substring(0, 200);
+  return (
+    company
+      .trim()
+      // Remove excessive whitespace
+      .replace(/\s+/g, ' ')
+      // Remove suspicious characters
+      .replace(/[<>'"&;]/g, '')
+      // Remove potential script tags
+      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+      // Limit length
+      .substring(0, 200)
+  );
 }
 
 /**
  * Sanitize position titles
  */
 function sanitizePosition(position: string): string {
-  return position
-    .trim()
-    // Remove excessive whitespace
-    .replace(/\s+/g, ' ')
-    // Remove suspicious characters
-    .replace(/[<>'"&;]/g, '')
-    // Limit length
-    .substring(0, 200);
+  return (
+    position
+      .trim()
+      // Remove excessive whitespace
+      .replace(/\s+/g, ' ')
+      // Remove suspicious characters
+      .replace(/[<>'"&;]/g, '')
+      // Limit length
+      .substring(0, 200)
+  );
 }
 
 /**
  * Sanitize phone numbers
  */
 function sanitizePhone(phone: string): string {
-  return phone
-    .trim()
-    // Remove all non-numeric characters except + and spaces
-    .replace(/[^\d+\s-()]/g, '')
-    // Remove excessive whitespace
-    .replace(/\s+/g, ' ')
-    // Limit length
-    .substring(0, 20);
+  return (
+    phone
+      .trim()
+      // Remove all non-numeric characters except + and spaces
+      .replace(/[^\d+\s-()]/g, '')
+      // Remove excessive whitespace
+      .replace(/\s+/g, ' ')
+      // Limit length
+      .substring(0, 20)
+  );
 }
 
 /**
@@ -315,7 +323,7 @@ export function checkContentSecurity(content: string): {
   // Check for SQL injection patterns
   const sqlPatterns = [
     /(\bUNION\b|\bSELECT\b|\bINSERT\b|\bUPDATE\b|\bDELETE\b|\bDROP\b)/i,
-    /('|(\\x27)|(\\x2D\\x2D)|(#)|(\%3B)|(\%27))/i,
+    /('|(\\x27)|(\\x2D\\x2D)|(#)|(%3B)|(%27))/i,
   ];
 
   if (sqlPatterns.some(pattern => pattern.test(content))) {
@@ -337,9 +345,18 @@ export function checkContentSecurity(content: string): {
 
   // Check for spam keywords
   const spamKeywords = [
-    'casino', 'lottery', 'winner', 'prize', 'inheritance',
-    'million dollars', 'bitcoin', 'crypto investment',
-    'pharmacy', 'viagra', 'cialis', 'enlargement',
+    'casino',
+    'lottery',
+    'winner',
+    'prize',
+    'inheritance',
+    'million dollars',
+    'bitcoin',
+    'crypto investment',
+    'pharmacy',
+    'viagra',
+    'cialis',
+    'enlargement',
   ];
 
   const foundSpam = spamKeywords.filter(keyword => lowerContent.includes(keyword));
@@ -375,59 +392,74 @@ export function checkContentSecurity(content: string): {
 /**
  * Enhanced email validation schema
  */
-export const secureEmailSchema = z.string()
+export const secureEmailSchema = z
+  .string()
   .min(5, 'Email muito curto')
   .max(254, 'Email muito longo')
   .email('Formato de email inválido')
-  .refine((email) => {
-    const validation = validateEmailSecurity(email);
-    return validation.isValid;
-  }, {
-    message: 'Email contém caracteres ou formato inválido',
-  })
-  .refine((email) => {
-    const validation = validateEmailSecurity(email);
-    return !validation.isDisposable;
-  }, {
-    message: 'Emails temporários não são permitidos',
-  });
+  .refine(
+    email => {
+      const validation = validateEmailSecurity(email);
+      return validation.isValid;
+    },
+    {
+      message: 'Email contém caracteres ou formato inválido',
+    }
+  )
+  .refine(
+    email => {
+      const validation = validateEmailSecurity(email);
+      return !validation.isDisposable;
+    },
+    {
+      message: 'Emails temporários não são permitidos',
+    }
+  );
 
 /**
  * Secure personal data schema
  */
-export const securePersonalDataSchema = z.object({
-  firstName: z.string()
-    .min(1, 'Nome é obrigatório')
-    .max(100, 'Nome muito longo')
-    .regex(/^[a-zA-ZÀ-ÿ\s'-]+$/, 'Nome contém caracteres inválidos')
-    .optional(),
+export const securePersonalDataSchema = z
+  .object({
+    firstName: z
+      .string()
+      .min(1, 'Nome é obrigatório')
+      .max(100, 'Nome muito longo')
+      .regex(/^[a-zA-ZÀ-ÿ\s'-]+$/, 'Nome contém caracteres inválidos')
+      .optional(),
 
-  lastName: z.string()
-    .min(1, 'Sobrenome é obrigatório')
-    .max(100, 'Sobrenome muito longo')
-    .regex(/^[a-zA-ZÀ-ÿ\s'-]+$/, 'Sobrenome contém caracteres inválidos')
-    .optional(),
+    lastName: z
+      .string()
+      .min(1, 'Sobrenome é obrigatório')
+      .max(100, 'Sobrenome muito longo')
+      .regex(/^[a-zA-ZÀ-ÿ\s'-]+$/, 'Sobrenome contém caracteres inválidos')
+      .optional(),
 
-  company: z.string()
-    .max(200, 'Nome da empresa muito longo')
-    .regex(/^[^<>'"&;]*$/, 'Nome da empresa contém caracteres inválidos')
-    .optional(),
+    company: z
+      .string()
+      .max(200, 'Nome da empresa muito longo')
+      .regex(/^[^<>'"&;]*$/, 'Nome da empresa contém caracteres inválidos')
+      .optional(),
 
-  position: z.string()
-    .max(200, 'Cargo muito longo')
-    .regex(/^[^<>'"&;]*$/, 'Cargo contém caracteres inválidos')
-    .optional(),
+    position: z
+      .string()
+      .max(200, 'Cargo muito longo')
+      .regex(/^[^<>'"&;]*$/, 'Cargo contém caracteres inválidos')
+      .optional(),
 
-  phone: z.string()
-    .regex(/^[\d+\s\-\(\)]+$/, 'Telefone contém caracteres inválidos')
-    .max(20, 'Telefone muito longo')
-    .optional(),
+    phone: z
+      .string()
+      .regex(/^[\d+\s-()]+$/, 'Telefone contém caracteres inválidos')
+      .max(20, 'Telefone muito longo')
+      .optional(),
 
-  linkedin: z.string()
-    .url('LinkedIn deve ser uma URL válida')
-    .refine((url) => url.includes('linkedin.com'), 'URL deve ser do LinkedIn')
-    .optional(),
-}).strict();
+    linkedin: z
+      .string()
+      .url('LinkedIn deve ser uma URL válida')
+      .refine(url => url.includes('linkedin.com'), 'URL deve ser do LinkedIn')
+      .optional(),
+  })
+  .strict();
 
 // ========================================
 // INTEGRATION HELPERS
@@ -485,7 +517,11 @@ export function validateAgentInput(input: {
   Object.assign(sanitized, sanitizedData);
 
   // Check content security
-  let contentSecurity = { isSafe: true, threats: [], riskLevel: 'low' as const };
+  let contentSecurity: ReturnType<typeof checkContentSecurity> = {
+    isSafe: true,
+    threats: [],
+    riskLevel: 'low',
+  };
   if (input.message) {
     contentSecurity = checkContentSecurity(input.message);
     if (!contentSecurity.isSafe) {

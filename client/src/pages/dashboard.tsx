@@ -332,12 +332,13 @@ export default function Dashboard() {
                     </td>
                     <td className='px-6 py-4'>
                       <span
-                        className={`text-[10px] uppercase tracking-widest font-bold px-2 py-1 rounded-sm ${lead.status === 'processed'
+                        className={`text-[10px] uppercase tracking-widest font-bold px-2 py-1 rounded-sm ${
+                          lead.status === 'processed'
                             ? 'bg-green-500/10 text-green-500'
                             : lead.status === 'failed'
                               ? 'bg-red-500/10 text-red-500'
                               : 'bg-zinc-800 text-zinc-500'
-                          }`}
+                        }`}
                       >
                         {lead.status}
                       </span>

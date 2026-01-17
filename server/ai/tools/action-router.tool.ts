@@ -1,9 +1,9 @@
 /**
  * Action Router Tool (Fluxo Fantasma)
- * 
+ *
  * Camada de decisão inteligente que determina COMO e QUANDO agir
  * com base em intent, dados enriquecidos e contexto da fonte.
- * 
+ *
  * O sistema NÃO executa todas as ações imediatamente,
  * mas DECIDE e REGISTRA o que deve ser feito.
  */
@@ -14,20 +14,15 @@ import { log } from '../../utils/logger';
 // TYPES & INTERFACES
 // ========================================
 
-export type ActionType = 
-  | 'notify_immediate'      // Email imediato ao gestor
-  | 'prepare_whatsapp'      // Preparar mensagem WhatsApp (não envia)
-  | 'prepare_instagram_dm'  // Preparar DM Instagram
-  | 'silent_queue'          // Guardar para follow-up manual
-  | 'archive'               // Arquivar (spam/low)
-  | 'nurture_sequence';     // Observação progressiva (silent_followup)
+export type ActionType =
+  | 'notify_immediate' // Email imediato ao gestor
+  | 'prepare_whatsapp' // Preparar mensagem WhatsApp (não envia)
+  | 'prepare_instagram_dm' // Preparar DM Instagram
+  | 'silent_queue' // Guardar para follow-up manual
+  | 'archive' // Arquivar (spam/low)
+  | 'nurture_sequence'; // Observação progressiva (silent_followup)
 
-export type RecommendedChannel = 
-  | 'email' 
-  | 'whatsapp' 
-  | 'instagram' 
-  | 'phone' 
-  | 'dashboard_only';
+export type RecommendedChannel = 'email' | 'whatsapp' | 'instagram' | 'phone' | 'dashboard_only';
 
 export type ActionPriority = 'urgent' | 'high' | 'medium' | 'low' | 'none';
 
@@ -76,8 +71,11 @@ export interface ActionRouterInput {
  */
 export function routeAction(input: ActionRouterInput): ActionDecision {
   const { intent, confidence, enrichedData, source, userReply, accountContext } = input;
-  
-  log(`🕶️ ACTION ROUTER - Analyzing: intent=${intent}, confidence=${confidence}, source=${source}`, 'action-router');
+
+  log(
+    `🕶️ ACTION ROUTER - Analyzing: intent=${intent}, confidence=${confidence}, source=${source}`,
+    'action-router'
+  );
 
   // ========================================
   // REGRA 1: SPAM/LOW → ARCHIVE
@@ -90,7 +88,7 @@ export function routeAction(input: ActionRouterInput): ActionDecision {
       suggestedMessage: '',
       executeNow: true,
       reasoning: 'Lead classificado como spam - arquivado automaticamente',
-      metadata: {}
+      metadata: {},
     };
   }
 
@@ -104,8 +102,8 @@ export function routeAction(input: ActionRouterInput): ActionDecision {
       reasoning: 'Lead de baixa prioridade - guardado para follow-up manual futuro',
       metadata: {
         estimatedResponseTime: '3-5 dias úteis',
-        bestTimeToContact: 'tarde'
-      }
+        bestTimeToContact: 'tarde',
+      },
     };
   }
 
@@ -126,21 +124,22 @@ export function routeAction(input: ActionRouterInput): ActionDecision {
         metadata: {
           estimatedResponseTime: 'imediato (15min)',
           bestTimeToContact: 'agora',
-          alternativeChannels: ['phone', 'whatsapp']
-        }
+          alternativeChannels: ['phone', 'whatsapp'],
+        },
       };
     }
 
-    const isCLevel = enrichedData.position && (
-      enrichedData.position.toLowerCase().includes('ceo') ||
-      enrichedData.position.toLowerCase().includes('founder') ||
-      enrichedData.position.toLowerCase().includes('diretor') ||
-      enrichedData.position.toLowerCase().includes('president')
-    );
+    const isCLevel =
+      enrichedData.position &&
+      (enrichedData.position.toLowerCase().includes('ceo') ||
+        enrichedData.position.toLowerCase().includes('founder') ||
+        enrichedData.position.toLowerCase().includes('diretor') ||
+        enrichedData.position.toLowerCase().includes('president'));
 
-    const isFromAds = source.toLowerCase().includes('ad') || 
-                      source.toLowerCase().includes('campaign') ||
-                      source.toLowerCase().includes('trafego');
+    const isFromAds =
+      source.toLowerCase().includes('ad') ||
+      source.toLowerCase().includes('campaign') ||
+      source.toLowerCase().includes('trafego');
 
     // CEO/Founder de campanhas pagas → WhatsApp + Email
     if (isCLevel && isFromAds) {
@@ -154,8 +153,8 @@ export function routeAction(input: ActionRouterInput): ActionDecision {
         metadata: {
           estimatedResponseTime: 'imediato (30min)',
           bestTimeToContact: 'manhã (09h-11h)',
-          alternativeChannels: ['email', 'phone']
-        }
+          alternativeChannels: ['email', 'phone'],
+        },
       };
     }
 
@@ -171,8 +170,8 @@ export function routeAction(input: ActionRouterInput): ActionDecision {
         metadata: {
           estimatedResponseTime: '1-2 horas',
           bestTimeToContact: 'manhã',
-          alternativeChannels: ['whatsapp']
-        }
+          alternativeChannels: ['whatsapp'],
+        },
       };
     }
 
@@ -186,8 +185,8 @@ export function routeAction(input: ActionRouterInput): ActionDecision {
       reasoning: 'Lead de alta prioridade - notificação imediata ao gestor',
       metadata: {
         estimatedResponseTime: '1-2 horas',
-        bestTimeToContact: 'horário comercial'
-      }
+        bestTimeToContact: 'horário comercial',
+      },
     };
   }
 
@@ -210,8 +209,8 @@ export function routeAction(input: ActionRouterInput): ActionDecision {
         metadata: {
           estimatedResponseTime: '24 horas',
           bestTimeToContact: 'tarde (14h-16h)',
-          alternativeChannels: hasPhone ? ['email', 'instagram'] : ['email']
-        }
+          alternativeChannels: hasPhone ? ['email', 'instagram'] : ['email'],
+        },
       };
     }
 
@@ -225,8 +224,8 @@ export function routeAction(input: ActionRouterInput): ActionDecision {
       reasoning: 'Lead médio - adicionar à sequência de nutrição automática',
       metadata: {
         estimatedResponseTime: '48 horas',
-        bestTimeToContact: 'manhã'
-      }
+        bestTimeToContact: 'manhã',
+      },
     };
   }
 
@@ -238,7 +237,7 @@ export function routeAction(input: ActionRouterInput): ActionDecision {
     suggestedMessage: userReply,
     executeNow: false,
     reasoning: 'Lead sem classificação clara - guardado para revisão manual',
-    metadata: {}
+    metadata: {},
   };
 }
 
@@ -249,30 +248,27 @@ export function routeAction(input: ActionRouterInput): ActionDecision {
 /**
  * Determina o melhor horário para contato baseado em contexto
  */
-export function determineBestContactTime(
-  position?: string, 
-  company?: string
-): string {
+export function determineBestContactTime(position?: string, company?: string): string {
   if (!position) return 'horário comercial';
 
   const positionLower = position.toLowerCase();
 
   // C-Level → manhã cedo
-  if (positionLower.includes('ceo') || 
-      positionLower.includes('founder') ||
-      positionLower.includes('president')) {
+  if (
+    positionLower.includes('ceo') ||
+    positionLower.includes('founder') ||
+    positionLower.includes('president')
+  ) {
     return 'manhã (07h-09h)';
   }
 
   // Gerência → manhã/tarde
-  if (positionLower.includes('manager') || 
-      positionLower.includes('gerente')) {
+  if (positionLower.includes('manager') || positionLower.includes('gerente')) {
     return 'manhã (10h-12h) ou tarde (14h-16h)';
   }
 
   // Coordenação → tarde
-  if (positionLower.includes('coordenador') || 
-      positionLower.includes('coordinator')) {
+  if (positionLower.includes('coordenador') || positionLower.includes('coordinator')) {
     return 'tarde (14h-17h)';
   }
 
@@ -286,15 +282,16 @@ export function analyzeSourceUrgency(source: string): 'urgent' | 'high' | 'norma
   const sourceLower = source.toLowerCase();
 
   // Tráfego pago → urgente (custo por lead)
-  if (sourceLower.includes('ad') || 
-      sourceLower.includes('campaign') ||
-      sourceLower.includes('paid')) {
+  if (
+    sourceLower.includes('ad') ||
+    sourceLower.includes('campaign') ||
+    sourceLower.includes('paid')
+  ) {
     return 'urgent';
   }
 
   // Indicação/parceiro → alta
-  if (sourceLower.includes('referral') || 
-      sourceLower.includes('partner')) {
+  if (sourceLower.includes('referral') || sourceLower.includes('partner')) {
     return 'high';
   }
 

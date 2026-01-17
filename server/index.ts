@@ -247,9 +247,11 @@ app.use(async (req: Request, res: Response, next: NextFunction) => {
     } else if (obj !== null && typeof obj === 'object') {
       const sanitized: any = {};
       const entries = Object.entries(obj);
-      await Promise.all(entries.map(async ([key, value]) => {
-        sanitized[key] = await sanitizeObject(value);
-      }));
+      await Promise.all(
+        entries.map(async ([key, value]) => {
+          sanitized[key] = await sanitizeObject(value);
+        })
+      );
       return sanitized;
     }
     return obj;

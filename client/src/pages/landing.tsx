@@ -25,8 +25,7 @@ export default function Landing() {
               O treino não é objetivo.
               <br />
               É presença.
-              <br />
-              É transformação.
+              <br />É transformação.
             </h1>
 
             <div className='text-[10px] md:text-xs tracking-[0.3em] text-white/50 uppercase mb-4'>
@@ -42,7 +41,9 @@ export default function Landing() {
           <div className='max-w-6xl mx-auto'>
             <div className='flex items-center gap-4 mb-10 md:mb-16'>
               <span className='w-8 md:w-12 h-px bg-punk-neon' />
-              <span className='font-mono text-[10px] md:text-xs tracking-[0.3em] text-white/70 italic'>SYSTEMS</span>
+              <span className='font-mono text-[10px] md:text-xs tracking-[0.3em] text-white/70 italic'>
+                SYSTEMS
+              </span>
             </div>
 
             <div className='grid grid-cols-1 md:grid-cols-3 gap-px bg-white/10'>
@@ -51,7 +52,9 @@ export default function Landing() {
                   <span className='font-mono text-xs text-white/50'>01</span>
                   <span className='w-1.5 h-1.5 rounded-full bg-white/40' />
                 </div>
-                <h3 className='font-industrial text-xl tracking-widest text-white mb-4 uppercase'>// training</h3>
+                <h3 className='font-industrial text-xl tracking-widest text-white mb-4 uppercase'>
+                  // training
+                </h3>
                 <p className='font-sans text-xs tracking-wider text-white/60 leading-relaxed uppercase'>
                   PERFORMANCE
                   <br />
@@ -66,7 +69,9 @@ export default function Landing() {
                   <span className='font-mono text-xs text-white/50'>02</span>
                   <span className='w-1.5 h-1.5 rounded-full bg-white/40' />
                 </div>
-                <h3 className='font-industrial text-xl tracking-widest text-white mb-4 uppercase'>[zone]</h3>
+                <h3 className='font-industrial text-xl tracking-widest text-white mb-4 uppercase'>
+                  [zone]
+                </h3>
                 <p className='font-sans text-xs tracking-wider text-white/60 leading-relaxed uppercase'>
                   HIGH
                   <br />
@@ -81,7 +86,9 @@ export default function Landing() {
                   <span className='font-mono text-xs text-white/50'>03</span>
                   <span className='w-1.5 h-1.5 rounded-full bg-white/40' />
                 </div>
-                <h3 className='font-industrial text-xl tracking-widest text-white mb-4 uppercase'>.yoga</h3>
+                <h3 className='font-industrial text-xl tracking-widest text-white mb-4 uppercase'>
+                  .yoga
+                </h3>
                 <p className='font-sans text-xs tracking-wider text-white/60 leading-relaxed uppercase'>
                   MOBILITY
                   <br />
@@ -106,7 +113,8 @@ export default function Landing() {
             <p className='text-sm md:text-base text-white/60 leading-relaxed'>
               Experiência além da repetição.
               <br />
-              Cada detalhe do design, da energia e dos programas foi pensado para transformar presença em resultado palpável.
+              Cada detalhe do design, da energia e dos programas foi pensado para transformar
+              presença em resultado palpável.
             </p>
           </div>
         </section>
@@ -127,7 +135,9 @@ export default function Landing() {
       {/* Footer */}
       <footer className='py-12 md:py-16 px-4 md:px-8 lg:px-16 border-t border-white/10'>
         <div className='max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8'>
-          <span className='font-mono text-xs tracking-[0.2em] text-white/70 block'>PUNK | BLVCK ©</span>
+          <span className='font-mono text-xs tracking-[0.2em] text-white/70 block'>
+            PUNK | BLVCK ©
+          </span>
           <a
             href='https://www.instagram.com/punk.blvck'
             target='_blank'
@@ -227,7 +237,7 @@ function WaitlistForm() {
           <span className='relative z-10 transition-colors duration-300 group-hover:text-black group-focus:text-black'>
             {mutation.isPending ? 'Enviando...' : 'Enviar'}
           </span>
-          <span className='absolute inset-0 bg-punk-neon scale-x-0 group-hover:scale-x-100 group-focus:scale-x-100 group-active:scale-x-100 origin-left transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] z-0' />
+          <span className='absolute inset-0 bg-punk-neon scale-x-0 group-hover:scale-x-100 group-focus:scale-x-100 group-active:scale-x-100 origin-left transition-transform duration-500 ease-in-out z-0' />
         </button>
       </div>
     </form>

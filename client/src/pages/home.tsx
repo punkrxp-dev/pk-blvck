@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
+import { CustomCursor } from '@/components/ui/custom-cursor';
+import { GlitchText } from '@/components/ui/glitch-text';
 
 export default function Home() {
   const [activeSection, setActiveSection] = useState(0);
@@ -105,9 +107,13 @@ export default function Home() {
 
   return (
     <div className='min-h-screen bg-punk-base text-white overflow-x-hidden font-sans selection:bg-punk-neon selection:text-black'>
+      <CustomCursor />
       <main>
         {/* Navigation Dots - Fixed */}
-        <nav className='fixed right-3 md:right-8 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-2 md:gap-3' aria-label='Navegação por seções'>
+        <nav
+          className='fixed right-3 md:right-8 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-2 md:gap-3'
+          aria-label='Navegação por seções'
+        >
           {sections.map((_, i) => (
             <button
               key={i}
@@ -116,10 +122,11 @@ export default function Home() {
                 setActiveSection(i);
                 document.getElementById(sections[i])?.scrollIntoView({ behavior: 'smooth' });
               }}
-              className={`w-1.5 h-1.5 md:w-1.5 md:h-1.5 rounded-full transition-all duration-300 touch-manipulation p-2 -m-2 focus:outline-none focus:ring-2 focus:ring-punk-neon focus:ring-offset-2 focus:ring-offset-black ${activeSection === i
-                ? 'bg-punk-neon scale-110 md:scale-150'
-                : 'bg-white/20 hover:bg-white/50 active:bg-white/60'
-                }`}
+              className={`w-1.5 h-1.5 md:w-1.5 md:h-1.5 rounded-full transition-all duration-300 touch-manipulation p-2 -m-2 focus:outline-none focus:ring-2 focus:ring-punk-neon focus:ring-offset-2 focus:ring-offset-black ${
+                activeSection === i
+                  ? 'bg-punk-neon scale-110 md:scale-150'
+                  : 'bg-white/20 hover:bg-white/50 active:bg-white/60'
+              }`}
               aria-label={`Ir para seção ${i + 1}`}
               aria-current={activeSection === i ? 'true' : 'false'}
             />
@@ -162,8 +169,9 @@ export default function Home() {
           role='dialog'
           aria-modal='true'
           aria-label='Menu de navegação'
-          className={`fixed inset-0 bg-black z-40 transition-transform duration-500 ${navOpen ? 'translate-x-0' : '-translate-x-full'
-            }`}
+          className={`fixed inset-0 bg-black z-40 transition-transform duration-500 ${
+            navOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
         >
           <div className='h-full flex flex-col justify-center px-8 md:px-16'>
             <div className='space-y-8'>
@@ -181,7 +189,7 @@ export default function Home() {
                 onClick={() => setNavOpen(false)}
                 className='block font-mono text-xs tracking-[0.3em] text-white/50 hover:text-[hsl(25,100%,50%)] focus:text-[hsl(25,100%,50%)] transition-colors focus:outline-none focus:ring-2 focus:ring-punk-neon focus:ring-offset-2 focus:ring-offset-black rounded-sm px-2 py-1'
               >
-              // training
+                // training
               </a>
               <a
                 href='#programs'
@@ -261,7 +269,7 @@ export default function Home() {
               IT'S NOT JUST <br className='md:hidden' /> FITNESS.
             </h1>
             <h2 className='text-lg md:text-2xl font-industrial tracking-[0.2em] md:tracking-[0.3em] text-punk-neon font-light uppercase mb-12 md:mb-16'>
-              IT'S LIFE.
+              <GlitchText text="IT'S LIFE." />
             </h2>
 
             <p className='max-w-xl text-sm md:text-base text-white/80 leading-relaxed mb-6'>
@@ -271,30 +279,37 @@ export default function Home() {
             <p className='max-w-2xl text-xs md:text-sm text-white/60 leading-relaxed'>
               <span className='block'>Experiência além da repetição.</span>
               <span className='block'>
-                Cada detalhe do design, da energia e dos programas foi pensado para transformar presença em resultado palpável.
+                Cada detalhe do design, da energia e dos programas foi pensado para transformar
+                presença em resultado palpável.
               </span>
             </p>
           </div>
 
           {/* Scroll Indicator */}
-            <div className='absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2'>
+          <div className='absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2'>
             <span className='font-mono text-[9px] tracking-[0.3em] text-white/30'>SCROLL</span>
-              <div className='w-px h-8 bg-linear-to-b from-white/30 to-transparent pulse-subtle' />
+            <div className='w-px h-8 bg-linear-to-b from-white/30 to-transparent pulse-subtle' />
           </div>
 
           {/* Corner Markers */}
           <div className='absolute top-6 right-4 md:right-8 font-mono text-[9px] tracking-[0.2em] text-white/20'>
-          ///
+            ///
           </div>
         </section>
 
         {/* Programs Section */}
-        <section id='programs' aria-label='Programas e sistemas oferecidos' className='min-h-screen py-24 md:py-32 px-4 md:px-8 lg:px-16'>
+        <section
+          id='programs'
+          aria-label='Programas e sistemas oferecidos'
+          className='min-h-screen py-24 md:py-32 px-4 md:px-8 lg:px-16'
+        >
           <div className='max-w-6xl mx-auto'>
             {/* Section Header */}
             <div className='flex items-center gap-4 mb-12 md:mb-24'>
               <span className='w-8 md:w-12 h-px bg-punk-neon' />
-              <span className='font-mono text-[10px] md:text-xs tracking-[0.3em] text-white/70 italic'>SYSTEMS</span>
+              <span className='font-mono text-[10px] md:text-xs tracking-[0.3em] text-white/70 italic'>
+                SYSTEMS
+              </span>
             </div>
 
             {/* Programs Grid */}
@@ -317,7 +332,9 @@ export default function Home() {
                   <span className='font-mono text-xs text-white/50'>01</span>
                   <span className='w-1.5 h-1.5 rounded-full bg-white/40 group-hover:bg-punk-neon transition-colors' />
                 </div>
-                <h3 className='font-industrial text-xl tracking-widest text-white mb-4 uppercase'>// training</h3>
+                <h3 className='font-industrial text-xl tracking-widest text-white mb-4 uppercase'>
+                  // training
+                </h3>
                 <p className='font-sans text-xs tracking-wider text-white/60 leading-relaxed uppercase'>
                   PERFORMANCE
                   <br />
@@ -345,7 +362,9 @@ export default function Home() {
                   <span className='font-mono text-xs text-white/50'>02</span>
                   <span className='w-1.5 h-1.5 rounded-full bg-white/40 group-hover:bg-punk-neon transition-colors' />
                 </div>
-                <h3 className='font-industrial text-xl tracking-widest text-white mb-4 uppercase'>[zone]</h3>
+                <h3 className='font-industrial text-xl tracking-widest text-white mb-4 uppercase'>
+                  [zone]
+                </h3>
                 <p className='font-sans text-xs tracking-wider text-white/60 leading-relaxed uppercase'>
                   HIGH
                   <br />
@@ -373,7 +392,9 @@ export default function Home() {
                   <span className='font-mono text-xs text-white/50'>03</span>
                   <span className='w-1.5 h-1.5 rounded-full bg-white/40 group-hover:bg-punk-neon transition-colors' />
                 </div>
-                <h3 className='font-industrial text-xl tracking-widest text-white mb-4 uppercase'>.yoga</h3>
+                <h3 className='font-industrial text-xl tracking-widest text-white mb-4 uppercase'>
+                  .yoga
+                </h3>
                 <p className='font-sans text-xs tracking-wider text-white/60 leading-relaxed uppercase'>
                   MOBILITY
                   <br />
@@ -388,7 +409,11 @@ export default function Home() {
       </main>
 
       {/* Footer */}
-      <footer id='footer' aria-label='Rodapé' className='py-16 md:py-24 px-4 md:px-8 lg:px-16 border-t border-white/10'>
+      <footer
+        id='footer'
+        aria-label='Rodapé'
+        className='py-16 md:py-24 px-4 md:px-8 lg:px-16 border-t border-white/10'
+      >
         <div className='max-w-6xl mx-auto'>
           <div className='grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-24'>
             {/* Brand */}

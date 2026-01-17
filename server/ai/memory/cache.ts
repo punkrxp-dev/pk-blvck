@@ -10,15 +10,15 @@ import { log } from '../../utils/logger';
 export interface CacheEntry<T = any> {
   data: T;
   timestamp: number;
-  ttl: number;        // Time to live in milliseconds
+  ttl: number; // Time to live in milliseconds
   accessCount: number;
   lastAccessed: number;
-  size: number;       // Approximate memory size
+  size: number; // Approximate memory size
 }
 
 export interface CacheStats {
   totalEntries: number;
-  totalSize: number;      // Approximate memory usage
+  totalSize: number; // Approximate memory usage
   hitRate: number;
   missRate: number;
   evictions: number;
@@ -28,8 +28,8 @@ export interface CacheStats {
 
 export class MemoryCache<T = any> {
   private cache = new Map<string, CacheEntry<T>>();
-  private maxSize: number;     // Maximum number of entries
-  private maxMemory: number;   // Maximum memory usage in bytes
+  private maxSize: number; // Maximum number of entries
+  private maxMemory: number; // Maximum memory usage in bytes
   private currentMemory = 0;
 
   // Statistics
@@ -48,7 +48,11 @@ export class MemoryCache<T = any> {
     this.maxSize = options.maxSize || 1000;
     this.maxMemory = (options.maxMemoryMB || 50) * 1024 * 1024; // Convert MB to bytes
 
-    log(`Memory cache initialized: ${name} (maxSize: ${this.maxSize}, maxMemory: ${options.maxMemoryMB || 50}MB)`, 'cache', 'info');
+    log(
+      `Memory cache initialized: ${name} (maxSize: ${this.maxSize}, maxMemory: ${options.maxMemoryMB || 50}MB)`,
+      'cache',
+      'info'
+    );
   }
 
   /**
@@ -96,7 +100,7 @@ export class MemoryCache<T = any> {
       ttl,
       accessCount: 0,
       lastAccessed: Date.now(),
-      size
+      size,
     };
 
     // Remove old entry if exists
@@ -157,7 +161,7 @@ export class MemoryCache<T = any> {
     const now = Date.now();
     let cleaned = 0;
 
-    for (const [key, entry] of this.cache.entries()) {
+    for (const [key, entry] of Array.from(this.cache.entries())) {
       if (now - entry.timestamp > entry.ttl) {
         this.cache.delete(key);
         this.currentMemory -= entry.size;
@@ -189,15 +193,18 @@ export class MemoryCache<T = any> {
    */
   private evictEntries(requiredSize: number): void {
     // Sort entries by last accessed time (oldest first)
-    const entries = Array.from(this.cache.entries())
-      .sort(([, a], [, b]) => a.lastAccessed - b.lastAccessed);
+    const entries = Array.from(this.cache.entries()).sort(
+      ([, a], [, b]) => a.lastAccessed - b.lastAccessed
+    );
 
     let evictedSize = 0;
     let evictedCount = 0;
 
     for (const [key, entry] of entries) {
-      if (this.cache.size <= this.maxSize * 0.8 && // Keep at least 80% capacity
-          this.currentMemory + requiredSize - evictedSize <= this.maxMemory) {
+      if (
+        this.cache.size <= this.maxSize * 0.8 && // Keep at least 80% capacity
+        this.currentMemory + requiredSize - evictedSize <= this.maxMemory
+      ) {
         break;
       }
 
@@ -209,7 +216,11 @@ export class MemoryCache<T = any> {
     if (evictedCount > 0) {
       this.evictions += evictedCount;
       this.currentMemory -= evictedSize;
-      log(`Cache ${this.name} eviction: ${evictedCount} entries removed (${(evictedSize / 1024 / 1024).toFixed(2)}MB)`, 'cache', 'info');
+      log(
+        `Cache ${this.name} eviction: ${evictedCount} entries removed (${(evictedSize / 1024 / 1024).toFixed(2)}MB)`,
+        'cache',
+        'info'
+      );
     }
   }
 }
@@ -272,7 +283,7 @@ export function generateEmbeddingKey(text: string): string {
   let hash = 0;
   for (let i = 0; i < text.length; i++) {
     const char = text.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
+    hash = (hash << 5) - hash + char;
     hash = hash & hash; // Convert to 32-bit integer
   }
   return `emb_${Math.abs(hash)}`;
@@ -286,7 +297,7 @@ export function generateContextKey(email: string, message: string): string {
   let hash = 0;
   for (let i = 0; i < combined.length; i++) {
     const char = combined.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
+    hash = (hash << 5) - hash + char;
     hash = hash & hash;
   }
   return `ctx_${Math.abs(hash)}`;
@@ -300,7 +311,7 @@ export function generateResponseKey(agent: string, input: string): string {
   let hash = 0;
   for (let i = 0; i < combined.length; i++) {
     const char = combined.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
+    hash = (hash << 5) - hash + char;
     hash = hash & hash;
   }
   return `resp_${Math.abs(hash)}`;
