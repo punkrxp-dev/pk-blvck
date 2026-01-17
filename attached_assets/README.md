@@ -51,3 +51,10 @@ attached_assets/
 **Status:** Reservado para uso futuro
 
 **Arquitetura:** NEØ Protected
+
+---
+
+**Author:** MELLØ // NEØ DEV
+
+This project follows NEØ development standards.
+Security is a priority, not an afterthought.

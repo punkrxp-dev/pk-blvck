@@ -335,3 +335,10 @@ make security-force-fix
 -  ESLint configurado (se disponível)
 -  Testes unitários recomendados
 -  Documentação obrigatória para novas funcionalidades
+
+---
+
+**Author:** MELLØ // NEØ DEV
+
+This project follows NEØ development standards.
+Security is a priority, not an afterthought.

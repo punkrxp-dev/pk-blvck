@@ -178,3 +178,10 @@ cat .env
 # Benchmark com timeout customizado (implementar se necessário)
 timeout 300s npx tsx bench/run-benchmark.ts
 ```
+
+---
+
+**Author:** MELLØ // NEØ DEV
+
+This project follows NEØ development standards.
+Security is a priority, not an afterthought.
