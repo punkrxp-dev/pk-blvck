@@ -76,10 +76,12 @@ https://pk-blvck-production.up.railway.app
 ```json
 {
   "email": "joao.silva@empresa.com",
-  "message": "Gostaria de conhecer a academia",
+  "message": "Gostaria de conhecer a academia",  // ← Texto escrito pelo LEAD no formulário
   "source": "web"
 }
 ```
+
+**📝 IMPORTANTE:** O campo `message` contém a **mensagem escrita pelo próprio lead**. Este texto é preservado de forma imutável e apenas citado no email ao gestor. O sistema NUNCA modifica, reescreve ou envia respostas automáticas ao lead.
 
 -  **Processamento Automático:**
 

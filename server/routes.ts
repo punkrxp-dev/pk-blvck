@@ -13,9 +13,16 @@ import { log } from './utils/logger';
 // VALIDATION SCHEMAS
 // ========================================
 
+/**
+ * MCP Ingest Schema
+ * 
+ * IMPORTANTE: O campo "message" contém a mensagem escrita pelo LEAD no formulário.
+ * Este texto é preservado de forma imutável e apenas citado no email ao gestor.
+ * O sistema NUNCA modifica, reescreve ou envia respostas automáticas ao lead.
+ */
 const mcpIngestSchema = z.object({
   email: z.string().email('Invalid email address'),
-  message: z.string().optional(),
+  message: z.string().optional(), // ← leadMessage (texto escrito pelo lead)
   source: z.string().min(1, 'Source is required'),
 });
 

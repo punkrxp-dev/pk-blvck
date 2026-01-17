@@ -2,6 +2,12 @@
 /**
  * Notification Tool
  * Sends email notifications via Resend
+ * 
+ * IMPORTANTE: Este sistema apenas NOTIFICA o gestor sobre novos leads.
+ * NUNCA envia emails automáticos ao lead.
+ * NUNCA escreve mensagens em nome do usuário.
+ * 
+ * O email ao gestor cita literalmente a mensagem escrita pelo lead no formulário.
  */
 
 import { log } from '../../utils/logger';
@@ -13,6 +19,7 @@ export async function notifyLead(
     const resendApiKey = process.env.RESEND_API_KEY;
 
     // Determine email template based on intent
+    // Nota: Templates devem sempre deixar claro que a mensagem É DO LEAD
     const templates = {
         high: {
             subject: 'High-Priority Lead Alert',

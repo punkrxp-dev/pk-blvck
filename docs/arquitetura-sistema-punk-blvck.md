@@ -29,8 +29,10 @@ O **PUNK BLVCK** é uma plataforma full-stack enterprise-grade desenvolvida para
 
 -  **URL:** `https://punkblvck.com.br/`
 -  **Interface:** Landing page React com formulário premium
--  **Dados:** Email + Mensagem opcional + Source
+-  **Dados:** Email + Mensagem do lead (opcional) + Source
 -  **Ação:** Submit → `POST /api/mcp/ingest`
+
+**📝 Importante:** A mensagem é escrita pelo próprio lead no formulário. O sistema apenas captura, classifica e contextualiza. Nunca modifica ou reescreve o conteúdo original.
 
 #### **2. Validação e Segurança (Backend)**
 
@@ -54,6 +56,73 @@ export async function processLeadPipeline(input: LeadInput) {
   // 5. ACTION LAYER - Salvamento + Notificação Baseada em Decisão
 }
 ```
+
+---
+
+## 📝 **ORIGEM DA MENSAGEM DO LEAD**
+
+### **Clareza Crítica - Sem Ambiguidade**
+
+**O sistema NÃO gera mensagens em nome do usuário.**
+
+A mensagem exibida nos emails e no dashboard é **exatamente o texto digitado pelo lead no formulário** da landing page.
+
+**O sistema apenas:**
+
+-  ✅ Preserva o texto original (sem modificações)
+-  ✅ Classifica a intenção (high/medium/low)
+-  ✅ Contextualiza com dados enriquecidos
+-  ✅ Cita literalmente no email ao gestor
+
+**O sistema NUNCA:**
+
+-  ❌ Reescreve a mensagem do lead
+-  ❌ Envia respostas automáticas ao lead
+-  ❌ Escreve em nome do usuário
+
+### **Fluxo Temporal (Blindado)**
+
+```text
+1. Lead escreve mensagem no formulário (opcional)
+   └─ Exemplo: "Gostaria de conhecer a academia premium"
+
+2. Sistema captura e CONGELA esse texto
+   └─ Armazenado como: leadMessage (imutável)
+
+3. IA analisa o conteúdo (SEM alterá-lo)
+   └─ Classifica intenção + contexto
+
+4. Email ao gestor CITA literalmente o texto original
+   └─ "O lead escreveu: [texto original]"
+
+5. Ações são decididas a partir dessa leitura
+   └─ Gestor vê texto original + análise da IA
+```
+
+### **Exemplo Prático:**
+
+**Lead preenche formulário:**
+
+```json
+{
+  "email": "joao@empresa.com",
+  "leadMessage": "Gostaria de conhecer a academia premium",
+  "source": "web"
+}
+```
+
+**Email que gestor recebe:**
+
+```text
+O lead escreveu:
+"Gostaria de conhecer a academia premium"
+
+Análise da IA:
+Intent: HIGH (95% confidence)
+Reasoning: Lead demonstra interesse claro em plano premium
+```
+
+**⚠️ Garantia Legal:** Nenhuma mensagem é criada, modificada ou enviada em nome do lead. Sistema opera apenas como observador e classificador.
 
 ---
 
@@ -309,10 +378,12 @@ Content-Type: application/json
 
 {
   "email": "user@company.com",
-  "message": "Interessado em soluções premium de fitness",
+  "message": "Interessado em soluções premium de fitness",  // ← leadMessage (texto escrito pelo lead)
   "source": "landing-page"
 }
 ```
+
+**📝 Nomenclatura:** O campo `message` contém a **mensagem escrita pelo próprio lead** no formulário. Esse texto é preservado de forma imutável e apenas citado no email ao gestor.
 
 -  **Pipeline:** Sentinel → Observer → Intent → Actions
 -  **IA:** GPT-4o primary + Gemini fallback
@@ -457,14 +528,15 @@ Lead Details:
 🔗 LinkedIn: linkedin.com/in/joaosilva
 ✅ Verified: Yes
 
-Original Message:
+O lead escreveu (formulário landing page):
 "Gostaria de conhecer a academia premium"
 
-AI Classification:
+Análise da IA:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 Intent: HIGH (95% confidence)
 Reasoning: CEO de empresa tech demonstrando interesse em plano premium
 
-Suggested Reply:
+Resposta sugerida para você enviar:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 "Olá João! Que ótimo receber seu contato. Nossa academia oferece
 planos corporativos personalizados para empresas tech. Posso agendar 
@@ -774,8 +846,9 @@ await circuitBreaker.execute(async () => {
 ```text
 ┌─────────────────────────────────────────────────────────────────┐
 │                     1. ENTRADA DO LEAD                          │
-│  Usuário preenche formulário: email + mensagem + source        │
+│  Lead preenche formulário: email + leadMessage + source        │
 │  POST /api/mcp/ingest                                           │
+│  📝 leadMessage = texto escrito pelo LEAD (imutável)            │
 └─────────────────────────────────────────────────────────────────┘
                               ↓
 ┌─────────────────────────────────────────────────────────────────┐
@@ -948,41 +1021,41 @@ await circuitBreaker.execute(async () => {
 ### **Validações Obrigatórias Antes de Ir ao Ar:**
 
 -  [ ] **Resend API com domínio verificado**
-  -  Domínio `punkclub.com.br` verificado no Resend
-  -  Registros DNS configurados (MX, TXT, DKIM)
-  -  Email de teste enviado e recebido com sucesso
+-  Domínio `punkclub.com.br` verificado no Resend
+-  Registros DNS configurados (MX, TXT, DKIM)
+-  Email de teste enviado e recebido com sucesso
 
 -  [ ] **Hunter.io funcionando com dados reais**
-  -  API Key configurada
-  -  Teste com email real retornou dados enriquecidos
-  -  Mock data desativado em produção
+-  API Key configurada
+-  Teste com email real retornou dados enriquecidos
+-  Mock data desativado em produção
 
 -  [ ] **Email padrão de reconhecimento funcionando**
-  -  Template HIGH priority testado
-  -  Template MEDIUM priority testado
-  -  Template LOW priority testado
-  -  Variáveis dinâmicas populando corretamente
+-  Template HIGH priority testado
+-  Template MEDIUM priority testado
+-  Template LOW priority testado
+-  Variáveis dinâmicas populando corretamente
 
 -  [ ] **Decision Layer (Action Router) registrando decisões**
-  -  `actionDecision` aparecendo no response da API
-  -  Log de telemetria ativo
-  -  Decisões sendo salvas no banco para análise
+-  `actionDecision` aparecendo no response da API
+-  Log de telemetria ativo
+-  Decisões sendo salvas no banco para análise
 
 -  [ ] **Teste end-to-end com email real**
-  -  Submeter lead de teste via formulário
-  -  Verificar email recebido em `bruno@punkcrossfit.com.br`
-  -  Confirmar dados enriquecidos corretos
-  -  Validar actionDecision apropriada
+-  Submeter lead de teste via formulário
+-  Verificar email recebido em `bruno@punkcrossfit.com.br`
+-  Confirmar dados enriquecidos corretos
+-  Validar actionDecision apropriada
 
 -  [ ] **Dashboard mostrando actionDecision**
-  -  Campo `actionDecision` visível na interface
-  -  Prioridade (urgent/high/medium/low) destacada
-  -  Canal recomendado (email/whatsapp) visível
+-  Campo `actionDecision` visível na interface
+-  Prioridade (urgent/high/medium/low) destacada
+-  Canal recomendado (email/whatsapp) visível
 
 -  [ ] **Performance validada**
-  -  Tempo de processamento < 2s
-  -  Circuit breaker funcionando
-  -  Rate limiting testado
+-  Tempo de processamento < 2s
+-  Circuit breaker funcionando
+-  Rate limiting testado
 
 ### **⚠️ Bloqueadores Críticos:**
 
