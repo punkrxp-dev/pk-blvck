@@ -395,7 +395,7 @@ export default function Home() {
       {/* Footer */}
       <footer id='footer' aria-label='Rodapé' className='py-16 md:py-24 px-4 md:px-8 lg:px-16 border-t border-white/10'>
         <div className='max-w-6xl mx-auto'>
-          <div className='grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24'>
+          <div className='grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-24'>
             {/* Brand */}
             <div>
               <span
@@ -404,6 +404,18 @@ export default function Home() {
               >
                 PUNK | BLVCK ©
               </span>
+            </div>
+
+            {/* Instagram */}
+            <div>
+              <a
+                href='https://www.instagram.com/punk.blvck'
+                target='_blank'
+                rel='noreferrer noopener'
+                className='font-mono text-[10px] tracking-[0.2em] text-white/40 hover:text-punk-neon transition-colors'
+              >
+                instagram / @punk.blvck
+              </a>
             </div>
 
             {/* Location */}
