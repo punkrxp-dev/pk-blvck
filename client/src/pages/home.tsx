@@ -1,7 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import { useMutation } from '@tanstack/react-query';
-import { apiRequest } from '@/lib/queryClient';
-import { toast } from 'sonner';
 
 export default function Home() {
   const [activeSection, setActiveSection] = useState(0);
@@ -271,14 +268,12 @@ export default function Home() {
               <span className='block'>Mais que um espaço de treino.</span>
               <span className='block'>Um ecossistema de performance premium e convivência.</span>
             </p>
-            <p className='max-w-2xl text-xs md:text-sm text-white/60 leading-relaxed mb-10'>
+            <p className='max-w-2xl text-xs md:text-sm text-white/60 leading-relaxed'>
               <span className='block'>Experiência além da repetição.</span>
               <span className='block'>
                 Cada detalhe do design, da energia e dos programas foi pensado para transformar presença em resultado palpável.
               </span>
             </p>
-
-            <WaitlistForm />
           </div>
 
           {/* Scroll Indicator */}
@@ -440,82 +435,5 @@ export default function Home() {
         </div>
       </footer>
     </div>
-  );
-}
-function WaitlistForm() {
-  const [email, setEmail] = useState('');
-
-  const mutation = useMutation({
-    mutationFn: async (email: string) => {
-      const res = await apiRequest('POST', '/api/mcp/ingest', {
-        email,
-        message: 'Membership Application',
-        source: 'web_waitlist',
-      });
-      return res.json();
-    },
-    onSuccess: () => {
-      setEmail('');
-    },
-    onError: () => {
-      toast.error('Application failed. Try again.');
-    },
-  });
-
-  if (mutation.isSuccess) {
-    const reply = mutation.data?.data?.reply || 'Registrado.';
-    return (
-      <div className='animate-in fade-in duration-500 max-w-sm text-center'>
-        <Typewriter text={reply} />
-      </div>
-    );
-  }
-
-  return (
-    <form
-      onSubmit={e => {
-        e.preventDefault();
-        if (email) mutation.mutate(email);
-      }}
-      className={`transition-opacity duration-1000 ${mutation.isPending ? 'opacity-20 pointer-events-none' : 'opacity-100'}`}
-    >
-      <label htmlFor='waitlist-email' className='sr-only'>
-        Email para aplicação de acesso
-      </label>
-      <input
-        id='waitlist-email'
-        type='email'
-        value={email}
-        onChange={e => setEmail(e.target.value)}
-        placeholder='Só o essencial para você entrar no nível certo.'
-        required
-        aria-label='Email para aplicação de acesso'
-        className='bg-transparent border-b border-white/20 focus:border-white/60 focus:outline-none py-3 md:py-2 w-full max-w-[280px] md:max-w-xs font-sans text-sm md:text-sm tracking-[0.15em] md:tracking-[0.2em] text-white/70 focus:text-white transition-all duration-500 placeholder:text-white/20 text-center uppercase'
-      />
-      <p className='mt-3 text-[10px] md:text-xs tracking-[0.2em] text-white/40 text-center uppercase'>
-        Nem mais. Nem menos.
-      </p>
-    </form>
-  );
-}
-function Typewriter({ text }: { text: string }) {
-  const [displayText, setDisplayText] = useState('');
-  const [index, setIndex] = useState(0);
-
-  useEffect(() => {
-    if (index < text.length) {
-      const timeout = setTimeout(() => {
-        setDisplayText(prev => prev + text[index]);
-        setIndex(prev => prev + 1);
-      }, 40); // Standard typewriter speed
-      return () => clearTimeout(timeout);
-    }
-  }, [index, text]);
-
-  return (
-    <span className='font-mono text-xs md:text-sm tracking-wider text-punk-neon/80 italic leading-relaxed'>
-      &gt; {displayText}
-      <span className='animate-pulse ml-1 inline-block w-2 h-4 bg-punk-neon/40 align-middle' />
-    </span>
   );
 }
