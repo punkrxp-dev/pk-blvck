@@ -41,7 +41,7 @@ export interface ActionDecision {
 }
 
 export interface ActionRouterInput {
-  intent: 'high' | 'medium' | 'low' | 'spam';
+  intent: 'alto' | 'médio' | 'baixo' | 'spam';
   confidence: number;
   enrichedData: {
     firstName?: string;
@@ -92,7 +92,7 @@ export function routeAction(input: ActionRouterInput): ActionDecision {
     };
   }
 
-  if (intent === 'low') {
+  if (intent === 'baixo') {
     return {
       action: 'silent_queue',
       recommendedChannel: 'email',
@@ -110,7 +110,7 @@ export function routeAction(input: ActionRouterInput): ActionDecision {
   // ========================================
   // REGRA 2: HIGH INTENT → AÇÃO IMEDIATA
   // ========================================
-  if (intent === 'high') {
+  if (intent === 'alto') {
     // REGRA CRÍTICA: Múltiplos leads do mesmo domínio (B2B Signal)
     // Indica conta corporativa ativa - prioridade máxima
     if (accountContext && accountContext.totalLeads >= 2) {
@@ -193,7 +193,7 @@ export function routeAction(input: ActionRouterInput): ActionDecision {
   // ========================================
   // REGRA 3: MEDIUM INTENT → NURTURE
   // ========================================
-  if (intent === 'medium') {
+  if (intent === 'médio') {
     const hasPhone = !!enrichedData.phone;
     const hasLinkedIn = !!enrichedData.linkedin;
 

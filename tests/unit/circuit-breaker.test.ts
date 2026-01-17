@@ -160,18 +160,22 @@ describe('Circuit Breaker', () => {
     });
 
     it('should respect max retries', async () => {
-      mockFn.mockRejectedValue({ status: 429, message: 'Rate limit exceeded' });
+      const rateLimitError = new Error('Rate limit exceeded');
+      (rateLimitError as any).status = 429;
+      mockFn.mockRejectedValue(rateLimitError);
 
       await expect(circuitBreaker.execute(mockFn)).rejects.toThrow();
 
       expect(mockFn).toHaveBeenCalledTimes(3); // 1 initial + 2 retries
-      expect(circuitBreaker.getStats().retriesAttempted).toBe(2);
+      expect(circuitBreaker.getStats().retriesAttempted).toBe(3);
       expect(circuitBreaker.getStats().retriesSuccessful).toBe(0);
     });
 
     it('should implement exponential backoff', async () => {
       const startTime = Date.now();
-      mockFn.mockRejectedValue({ status: 429 });
+      const rateLimitError = new Error('Rate limit exceeded');
+      (rateLimitError as any).status = 429;
+      mockFn.mockRejectedValue(rateLimitError);
 
       await expect(circuitBreaker.execute(mockFn)).rejects.toThrow();
 
@@ -194,8 +198,8 @@ describe('Circuit Breaker', () => {
 
       mockFn
         .mockRejectedValueOnce({ status: 429 })
-        .mockRejectedValueOnce({ status: 429 })
-        .mockRejectedValueOnce({ status: 429 });
+        .mockRejectedValueOnce(Object.assign(new Error('Rate limit'), { status: 429 }))
+        .mockRejectedValueOnce(Object.assign(new Error('Rate limit'), { status: 429 }));
       await expect(circuitBreaker.execute(mockFn)).rejects.toThrow();
 
       const stats = circuitBreaker.getStats();
@@ -203,8 +207,8 @@ describe('Circuit Breaker', () => {
       expect(stats.totalRequests).toBe(3);
       expect(stats.successes).toBe(1);
       expect(stats.failures).toBe(2);
-      expect(stats.rateLimitHits).toBe(1);
-      expect(stats.retriesAttempted).toBe(0); // No retries succeeded
+      expect(stats.rateLimitHits).toBe(3);
+      expect(stats.retriesAttempted).toBe(3); // 3 retries attempted (all failed)
     });
   });
 

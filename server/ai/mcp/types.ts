@@ -121,7 +121,7 @@ export interface PresenceLayerOutput {
 }
 
 export interface IntentLayerOutput {
-  intent: 'high' | 'medium' | 'low' | 'spam';
+  intent: 'alto' | 'médio' | 'baixo' | 'spam';
   confidence: number;
   reasoning: string;
   userReply: string;

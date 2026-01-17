@@ -33,6 +33,7 @@ const intentInputSchema = z
     email: z.string().email('Formato de email inválido').max(254, 'Email muito longo'),
     message: z.string().max(10000, 'Mensagem muito longa').optional(),
     firstName: z.string().max(100, 'Nome muito longo').optional(),
+    lastName: z.string().max(100, 'Sobrenome muito longo').optional(),
     company: z.string().max(200, 'Nome da empresa muito longo').optional(),
     position: z.string().max(200, 'Cargo muito longo').optional(),
     verified: z.boolean().optional(),
@@ -44,7 +45,7 @@ const intentInputSchema = z
 // ========================================
 
 const intentSchema = z.object({
-  intent: z.enum(['high', 'medium', 'low', 'spam']),
+  intent: z.enum(['alto', 'médio', 'baixo', 'spam']),
   confidence: z.number().min(0).max(1),
   reasoning: z.string(),
   userReply: z.string().max(100),
@@ -57,8 +58,8 @@ const intentSchema = z.object({
 /**
  * Safely extract intent result from AI response
  */
-function extractIntentResult(result: unknown): {
-  intent: 'high' | 'medium' | 'low' | 'spam';
+export function extractIntentResult(result: unknown): {
+  intent: 'alto' | 'médio' | 'baixo' | 'spam';
   confidence: number;
   reasoning: string;
   userReply: string;
@@ -72,7 +73,7 @@ function extractIntentResult(result: unknown): {
   // Validate required fields exist and have correct types
   if (
     typeof obj.intent !== 'string' ||
-    !['high', 'medium', 'low', 'spam'].includes(obj.intent) ||
+    !['alto', 'médio', 'baixo', 'spam'].includes(obj.intent) ||
     typeof obj.confidence !== 'number' ||
     typeof obj.reasoning !== 'string' ||
     typeof obj.userReply !== 'string'
@@ -81,7 +82,7 @@ function extractIntentResult(result: unknown): {
   }
 
   return {
-    intent: obj.intent as 'high' | 'medium' | 'low' | 'spam',
+    intent: obj.intent as 'alto' | 'médio' | 'baixo' | 'spam',
     confidence: obj.confidence,
     reasoning: obj.reasoning,
     userReply: obj.userReply,
@@ -119,7 +120,7 @@ export class IntentAgent extends BaseAgent<IntentInput, IntentLayerOutput> {
       const intentResult = extractIntentResult(result.object);
 
       return {
-        intent: intentResult?.intent ?? 'low',
+        intent: intentResult?.intent ?? 'baixo',
         confidence: intentResult?.confidence ?? 0.0,
         reasoning: intentResult?.reasoning ?? 'Falha na análise de intenção',
         userReply: intentResult?.userReply ?? 'Obrigado pelo contato.',
@@ -137,7 +138,7 @@ export class IntentAgent extends BaseAgent<IntentInput, IntentLayerOutput> {
       const intentResult = extractIntentResult(result.object);
 
       return {
-        intent: intentResult?.intent ?? 'low',
+        intent: intentResult?.intent ?? 'baixo',
         confidence: intentResult?.confidence ?? 0.0,
         reasoning: intentResult?.reasoning ?? 'Análise realizada com modelo alternativo',
         userReply: intentResult?.userReply ?? 'Obrigado pelo contato.',
@@ -170,7 +171,7 @@ export class IntentAgent extends BaseAgent<IntentInput, IntentLayerOutput> {
     // Keywords de spam
     const spamKeywords = ['viagra', 'casino', 'lottery', 'prince', 'inheritance'];
 
-    let intent: IntentLayerOutput['intent'] = 'low';
+    let intent: IntentLayerOutput['intent'] = 'baixo';
     let reasoning = 'Rule-based classification (AI unavailable)';
 
     // 1. Check spam
@@ -184,12 +185,12 @@ export class IntentAgent extends BaseAgent<IntentInput, IntentLayerOutput> {
       (input.position || '').toLowerCase().includes('ceo') ||
       (input.position || '').toLowerCase().includes('founder')
     ) {
-      intent = 'high';
+      intent = 'alto';
       reasoning = 'High-intent keywords or senior position detected';
     }
     // 3. Check verified
     else if (input.verified) {
-      intent = 'medium';
+      intent = 'médio';
       reasoning = 'Verified email with valid message';
     }
 
@@ -275,8 +276,8 @@ export class IntentAgent extends BaseAgent<IntentInput, IntentLayerOutput> {
     const similarContext =
       memory.similarLeads.length > 0
         ? `\n\nSIMILAR PAST LEADS:\n${memory.similarLeads
-            .map(l => `- ${l.email} (${l.intent}, ${Math.round(l.similarity * 100)}% similar)`)
-            .join('\n')}`
+          .map(l => `- ${l.email} (${l.intent}, ${Math.round(l.similarity * 100)}% similar)`)
+          .join('\n')}`
         : '';
 
     return template
@@ -290,10 +291,10 @@ export class IntentAgent extends BaseAgent<IntentInput, IntentLayerOutput> {
 
   private getDefaultReply(intent: IntentLayerOutput['intent']): string {
     // Respostas frias e industriais em Português
-    const replies = {
-      high: 'Sua ambição foi notada. Estamos observando.',
-      medium: 'Registro recebido. O sistema avaliará sua elegibilidade.',
-      low: 'Acesso registrado. Aguarde análise.',
+    const replies: Record<IntentLayerOutput['intent'], string> = {
+      alto: 'Sua ambição foi notada. Estamos observando.',
+      médio: 'Registro recebido. O sistema avaliará sua elegibilidade.',
+      baixo: 'Acesso registrado. Aguarde análise.',
       spam: 'Ruído detectado. Acesso negado.',
     };
 

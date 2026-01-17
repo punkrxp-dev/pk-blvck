@@ -29,7 +29,7 @@ export interface Lead {
     verified?: boolean;
   } | null;
   aiClassification: {
-    intent: 'high' | 'medium' | 'low' | 'spam';
+    intent: 'alto' | 'médio' | 'baixo' | 'spam';
     confidence: number;
     reasoning?: string;
     model: 'gpt-4o' | 'gemini-2.0-flash';
@@ -143,7 +143,7 @@ export function useLeads(options: UseLeadsOptions = {}) {
  * Hook specifically for high-intent leads
  */
 export function useHighIntentLeads() {
-  return useLeads({ intent: 'high' });
+  return useLeads({ intent: 'alto' });
 }
 
 /**

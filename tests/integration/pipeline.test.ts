@@ -60,7 +60,7 @@ describe('Integration: MCP Lead Pipeline', () => {
         // Mock Intent Agent response (High Intent)
         (generateObjectWithOpenAI as jest.Mock).mockResolvedValueOnce({
             object: {
-                intent: 'high',
+                intent: 'alto',
                 confidence: 0.95,
                 reasoning: 'Strong buying signal',
                 userReply: 'We would love to sell to you.',
@@ -76,7 +76,7 @@ describe('Integration: MCP Lead Pipeline', () => {
         const result = await processLeadPipeline(input);
 
         expect(result.email).toBe(input.email);
-        expect(result.intent.intent).toBe('high');
+        expect(result.intent.intent).toBe('alto');
         expect(result.status).toBe('processed');
 
         // Verify mocks were called

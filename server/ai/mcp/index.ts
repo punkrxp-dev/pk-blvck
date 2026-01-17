@@ -115,7 +115,7 @@ export class MCPCoordinator {
         },
         presence: { verified: false, dataSource: 'unavailable' },
         intent: {
-          intent: 'low',
+          intent: 'baixo',
           confidence: 0,
           reasoning: 'Pipeline crash',
           userReply: 'Erro interno.',

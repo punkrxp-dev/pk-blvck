@@ -39,7 +39,7 @@ describe('Integration: API Routes', () => {
         // Setup Mock Passport Strategy
         passport.use(new LocalStrategy(async (username, password, done) => {
             // Simple mock authentication logic
-            if (username === 'testuser' && password === 'password123') {
+            if (username === 'testuser' && password === 'Password123!') {
                 return done(null, { id: '1', username: 'testuser' } as any);
             }
             return done(null, false);
@@ -72,7 +72,7 @@ describe('Integration: API Routes', () => {
 
             const res = await request(app)
                 .post('/api/auth/register')
-                .send({ username: 'testuser', password: 'password123' });
+                .send({ username: 'testuser', password: 'Password123!' });
 
             expect(res.status).toBe(201);
             expect(res.body).toHaveProperty('username', 'testuser');
@@ -84,7 +84,7 @@ describe('Integration: API Routes', () => {
 
             const res = await request(app)
                 .post('/api/auth/register')
-                .send({ username: 'existing', password: '123' });
+                .send({ username: 'existing', password: 'Password123!' });
 
             expect(res.status).toBe(409);
         });
@@ -94,7 +94,7 @@ describe('Integration: API Routes', () => {
         it('should login successfully with valid credentials', async () => {
             const res = await request(app)
                 .post('/api/auth/login')
-                .send({ username: 'testuser', password: 'password123' });
+                .send({ username: 'testuser', password: 'Password123!' });
 
             expect(res.status).toBe(200);
             expect(res.body).toHaveProperty('message', 'Login successful');
@@ -115,7 +115,7 @@ describe('Integration: API Routes', () => {
                 id: 'lead-1',
                 email: 'lead@test.com',
                 intent: {
-                    intent: 'high',
+                    intent: 'alto',
                     confidence: 0.9,
                     reasoning: 'Strong interest',
                     userReply: 'Thanks',

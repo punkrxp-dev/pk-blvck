@@ -6,7 +6,7 @@ import { log } from '../../utils/logger';
 import { validateAgentInput } from '../tools/validation.tool';
 
 // Type-safe result extraction helper
-function extractSentinelResult(result: unknown): SentinelResult | null {
+export function extractSentinelResult(result: unknown): SentinelResult | null {
   if (!result || typeof result !== 'object') {
     return null;
   }

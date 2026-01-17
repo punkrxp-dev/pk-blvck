@@ -13,22 +13,22 @@ import { log } from '../../utils/logger';
 
 export async function notifyLead(
   email: string,
-  intent: 'high' | 'medium' | 'low' | 'spam'
+  intent: 'alto' | 'médio' | 'baixo' | 'spam'
 ): Promise<boolean> {
   const resendApiKey = process.env.RESEND_API_KEY;
 
   // Determine email template based on intent
   // Nota: Templates devem sempre deixar claro que a mensagem É DO LEAD
   const templates = {
-    high: {
+    alto: {
       subject: 'High-Priority Lead Alert',
       body: `A high-priority lead has been identified: ${email}. Immediate follow-up recommended.`,
     },
-    medium: {
+    médio: {
       subject: 'Medium-Priority Lead',
       body: `A medium-priority lead has been captured: ${email}. Follow-up within 24 hours.`,
     },
-    low: {
+    baixo: {
       subject: 'New Lead Captured',
       body: `A new lead has been added: ${email}. Standard follow-up process.`,
     },
@@ -38,7 +38,7 @@ export async function notifyLead(
     },
   };
 
-  const template = templates[intent] || templates.low;
+  const template = templates[intent] || templates.baixo;
 
   // If Resend API key is configured, send real email
   if (resendApiKey) {

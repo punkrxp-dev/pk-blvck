@@ -27,7 +27,7 @@ export interface EnrichedLeadData {
 }
 
 export interface LeadClassification {
-  intent: 'high' | 'medium' | 'low' | 'spam';
+  intent: 'alto' | 'médio' | 'baixo' | 'spam';
   confidence: number;
   reasoning?: string;
   userReply?: string; // Sentinel's response to the user
@@ -204,21 +204,21 @@ export async function saveLead(data: {
  */
 export async function notifyLead(
   email: string,
-  intent: 'high' | 'medium' | 'low' | 'spam'
+  intent: 'alto' | 'médio' | 'baixo' | 'spam'
 ): Promise<boolean> {
   const resendApiKey = process.env.RESEND_API_KEY;
 
   // Determine email template based on intent
   const templates = {
-    high: {
+    alto: {
       subject: 'High-Priority Lead Alert',
       body: `A high-priority lead has been identified: ${email}. Immediate follow-up recommended.`,
     },
-    medium: {
+    médio: {
       subject: 'Medium-Priority Lead',
       body: `A medium-priority lead has been captured: ${email}. Follow-up within 24 hours.`,
     },
-    low: {
+    baixo: {
       subject: 'New Lead Captured',
       body: `A new lead has been added: ${email}. Standard follow-up process.`,
     },

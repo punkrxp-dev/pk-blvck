@@ -77,7 +77,7 @@ export const leads = pgTable('leads', {
 
   // AI Classification (JSONB for structured data)
   aiClassification: jsonb('ai_classification').$type<{
-    intent: 'high' | 'medium' | 'low' | 'spam';
+    intent: 'alto' | 'médio' | 'baixo' | 'spam';
     confidence: number;
     reasoning?: string;
     userReply?: string;
@@ -120,7 +120,7 @@ export const insertLeadSchema = createInsertSchema(leads)
   });
 
 export const leadIntentSchema = z.object({
-  intent: z.enum(['high', 'medium', 'low', 'spam']),
+  intent: z.enum(['alto', 'médio', 'baixo', 'spam']),
   confidence: z.number().min(0).max(1),
   reasoning: z.string().optional(),
 });

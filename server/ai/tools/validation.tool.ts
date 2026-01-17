@@ -79,6 +79,12 @@ export function validateEmailSecurity(email: string): {
       isValid = false;
     }
 
+    // Check for excessive numbers in local part
+    if ((localPart.match(/\d/g) || []).length > 5) {
+      issues.push('Excessive numbers in local part');
+      isSuspicious = true;
+    }
+
     // Check for suspicious characters
     if (/[<>'"&]/.test(localPart)) {
       issues.push('Suspicious characters in local part');
@@ -223,6 +229,8 @@ function sanitizeName(name: string): string {
   return (
     name
       .trim()
+      // Remove HTML tags
+      .replace(/<[^>]*>/g, '')
       // Remove excessive whitespace
       .replace(/\s+/g, ' ')
       // Remove suspicious characters but keep accents
@@ -273,10 +281,8 @@ function sanitizePhone(phone: string): string {
   return (
     phone
       .trim()
-      // Remove all non-numeric characters except + and spaces
-      .replace(/[^\d+\s-()]/g, '')
-      // Remove excessive whitespace
-      .replace(/\s+/g, ' ')
+      // Remove all non-numeric characters except +
+      .replace(/[^\d+]/g, '')
       // Limit length
       .substring(0, 20)
   );
@@ -286,7 +292,10 @@ function sanitizePhone(phone: string): string {
  * Sanitize LinkedIn URLs
  */
 function sanitizeLinkedIn(linkedin: string): string {
-  const clean = linkedin.trim().toLowerCase();
+  let clean = linkedin.trim().toLowerCase();
+
+  // Remove HTML tags
+  clean = clean.replace(/<[^>]*>/g, '');
 
   // Check if it's a valid LinkedIn URL
   if (!clean.includes('linkedin.com/in/') && !clean.includes('linkedin.com/pub/')) {
@@ -359,7 +368,7 @@ export function checkContentSecurity(content: string): {
     'enlargement',
   ];
 
-  const foundSpam = spamKeywords.filter(keyword => lowerContent.includes(keyword));
+  const foundSpam = spamKeywords.filter(keyword => lowerContent.includes(keyword)).sort();
   if (foundSpam.length > 0) {
     threats.push(`Spam keywords detected: ${foundSpam.join(', ')}`);
     riskLevel = riskLevel === 'high' ? 'high' : 'medium';

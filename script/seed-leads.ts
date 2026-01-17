@@ -16,13 +16,13 @@ import { validateForSeed, reportPrecheckResults } from './precheck';
 
 // Environment validation using precheck utilities
 async function validateEnvironment(): Promise<void> {
-  const result = await validateForSeed();
-  reportPrecheckResults(result, 'Seed');
+    const result = await validateForSeed();
+    reportPrecheckResults(result, 'Seed');
 
-  if (!result.success) {
-    const errorMessage = `Seed prechecks failed: ${result.errors.join(', ')}`;
-    throw new Error(errorMessage);
-  }
+    if (!result.success) {
+        const errorMessage = `Seed prechecks failed: ${result.errors.join(', ')}`;
+        throw new Error(errorMessage);
+    }
 }
 
 // Função auxiliar para gerar datas nos últimos 3 dias
@@ -35,34 +35,34 @@ function getRandomDate(daysAgo: number): string {
 
 // Data validation
 function validateSeedData(): void {
-  log('🔍 Validating seed data...', 'seed', 'info');
+    log('🔍 Validating seed data...', 'seed', 'info');
 
-  // Check distribution
-  const intents = seedLeads.map(lead => lead.aiClassification.intent);
-  const distribution = {
-    high: intents.filter(i => i === 'high').length,
-    medium: intents.filter(i => i === 'medium').length,
-    low: intents.filter(i => i === 'low').length,
-    spam: intents.filter(i => i === 'spam').length,
-  };
+    // Check distribution
+    const intents = seedLeads.map(lead => lead.aiClassification.intent);
+    const distribution = {
+        high: intents.filter(i => i === 'alto').length,
+        medium: intents.filter(i => i === 'médio').length,
+        low: intents.filter(i => i === 'baixo').length,
+        spam: intents.filter(i => i === 'spam').length,
+    };
 
-  const expected = { high: 3, medium: 3, low: 2, spam: 2 };
+    const expected = { high: 3, medium: 3, low: 2, spam: 2 };
 
-  if (JSON.stringify(distribution) !== JSON.stringify(expected)) {
-    log(`❌ Invalid distribution: ${JSON.stringify(distribution)} (expected: ${JSON.stringify(expected)})`, 'seed', 'error');
-    throw new Error('Seed data distribution mismatch');
-  }
+    if (JSON.stringify(distribution) !== JSON.stringify(expected)) {
+        log(`❌ Invalid distribution: ${JSON.stringify(distribution)} (expected: ${JSON.stringify(expected)})`, 'seed', 'error');
+        throw new Error('Seed data distribution mismatch');
+    }
 
-  // Check email format
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const invalidEmails = seedLeads.filter(lead => !emailRegex.test(lead.email));
+    // Check email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const invalidEmails = seedLeads.filter(lead => !emailRegex.test(lead.email));
 
-  if (invalidEmails.length > 0) {
-    log(`❌ Invalid email formats: ${invalidEmails.map(l => l.email).join(', ')}`, 'seed', 'error');
-    throw new Error('Invalid email formats in seed data');
-  }
+    if (invalidEmails.length > 0) {
+        log(`❌ Invalid email formats: ${invalidEmails.map(l => l.email).join(', ')}`, 'seed', 'error');
+        throw new Error('Invalid email formats in seed data');
+    }
 
-  log(`✅ Seed data validation passed (${seedLeads.length} leads)`, 'seed', 'info');
+    log(`✅ Seed data validation passed (${seedLeads.length} leads)`, 'seed', 'info');
 }
 
 // Dados dos leads fictícios
@@ -83,7 +83,7 @@ const seedLeads = [
             verified: true,
         },
         aiClassification: {
-            intent: 'high' as const,
+            intent: 'alto' as const,
             confidence: 0.92,
             reasoning: 'Demonstra urgência, cargo de decisão (CTO), empresa verificada, interesse específico em produto.',
             model: 'gpt-4o' as const,
@@ -105,7 +105,7 @@ const seedLeads = [
             verified: true,
         },
         aiClassification: {
-            intent: 'high' as const,
+            intent: 'alto' as const,
             confidence: 0.88,
             reasoning: 'Menção a evento (networking qualificado), pergunta sobre preço (fase de decisão), cargo de liderança.',
             model: 'gemini-2.0-flash-exp' as const,
@@ -126,7 +126,7 @@ const seedLeads = [
             verified: true,
         },
         aiClassification: {
-            intent: 'high' as const,
+            intent: 'alto' as const,
             confidence: 0.95,
             reasoning: 'Budget explícito (alto valor), necessidade clara, empresa grande, cargo executivo.',
             model: 'gpt-4o' as const,
@@ -150,7 +150,7 @@ const seedLeads = [
             verified: false,
         },
         aiClassification: {
-            intent: 'medium' as const,
+            intent: 'médio' as const,
             confidence: 0.68,
             reasoning: 'Interesse genuíno mas indireto (para clientes), fase de pesquisa, não menciona urgência.',
             model: 'gemini-2.0-flash-exp' as const,
@@ -170,7 +170,7 @@ const seedLeads = [
             verified: false,
         },
         aiClassification: {
-            intent: 'medium' as const,
+            intent: 'médio' as const,
             confidence: 0.55,
             reasoning: 'Interesse técnico, possível futuro cliente ou parceiro, mas sem indicação de compra imediata.',
             model: 'gpt-4o' as const,
@@ -190,7 +190,7 @@ const seedLeads = [
             verified: true,
         },
         aiClassification: {
-            intent: 'medium' as const,
+            intent: 'médio' as const,
             confidence: 0.62,
             reasoning: 'Interesse institucional, potencial parceria, mas não é venda direta.',
             model: 'gemini-2.0-flash-exp' as const,
@@ -212,7 +212,7 @@ const seedLeads = [
             verified: false,
         },
         aiClassification: {
-            intent: 'low' as const,
+            intent: 'baixo' as const,
             confidence: 0.45,
             reasoning: 'Pergunta genérica, sem contexto profissional, email pessoal.',
             model: 'gpt-4o' as const,
@@ -228,7 +228,7 @@ const seedLeads = [
             verified: false,
         },
         aiClassification: {
-            intent: 'low' as const,
+            intent: 'baixo' as const,
             confidence: 0.38,
             reasoning: 'Busca por serviço gratuito, email não profissional, sem dados de empresa.',
             model: 'gemini-2.0-flash-exp' as const,
@@ -304,7 +304,7 @@ async function runSeed(): Promise<void> {
                 log(`✅ Lead created: ${lead.email} (${lead.aiClassification.intent})`, 'seed', 'info');
             } catch (error) {
                 errorCount++;
-                log(`❌ Failed to create lead ${lead.email}: ${error.message}`, 'seed', 'error');
+                log(`❌ Failed to create lead ${lead.email}: ${error instanceof Error ? error.message : 'Unknown error'}`, 'seed', 'error');
 
                 // Continue processing but track failures
                 // Note: In a real rollback scenario, you might want to undo previous operations
@@ -335,7 +335,7 @@ async function runSeed(): Promise<void> {
 
     } catch (error) {
         const duration = Date.now() - startTime;
-        log(`💥 Seed process failed after ${duration}ms: ${error.message}`, 'seed', 'error');
+        log(`💥 Seed process failed after ${duration}ms: ${error instanceof Error ? error.message : 'Unknown error'}`, 'seed', 'error');
 
         // Log created leads for potential cleanup
         if (createdLeads.length > 0) {
@@ -358,7 +358,7 @@ async function main(): Promise<void> {
         await runSeed();
 
     } catch (error) {
-        log(`🚨 Fatal error in seed script: ${error.message}`, 'seed', 'error');
+        log(`🚨 Fatal error in seed script: ${error instanceof Error ? error.message : 'Unknown error'}`, 'seed', 'error');
         process.exit(1);
     }
 }

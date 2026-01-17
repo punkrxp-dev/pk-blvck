@@ -42,9 +42,9 @@ export interface ProcessedLead {
 
 const intentClassificationSchema = z.object({
   intent: z
-    .enum(['high', 'medium', 'low', 'spam'])
+    .enum(['alto', 'médio', 'baixo', 'spam'])
     .describe(
-      'Lead intent classification: high (ready to buy), medium (interested), low (just browsing), spam (not genuine)'
+      'Lead intent classification: alto (ready to buy), médio (interested), baixo (just browsing), spam (not genuine)'
     ),
   confidence: z.number().min(0).max(1).describe('Confidence score between 0 and 1'),
   reasoning: z.string().describe('Brief explanation of why this classification was chosen'),
@@ -275,10 +275,10 @@ ENRICHED DATA:
 - Email Verified: ${enrichedData.verified ? 'Yes' : 'No'}
 
 CLASSIFICATION CRITERIA:
-- HIGH: Clear buying intent, verified email, senior position, specific inquiry
-- MEDIUM: General interest, verified email, relevant position
-- LOW: Casual inquiry, unverified email, unclear intent
-- SPAM: Suspicious patterns, generic message, invalid email
+- alto: Clear buying intent, verified email, senior position, specific inquiry
+- médio: General interest, verified email, relevant position
+- baixo: Casual inquiry, unverified email, unclear intent
+- spam: Suspicious patterns, generic message, invalid email
 
 Classify this lead's intent and provide your reasoning. 
 
@@ -297,7 +297,7 @@ GUIDELINES:
  * Rule-based classification fallback (when AI fails)
  */
 function getRuleBasedClassification(input: LeadInput, enrichedData: any): LeadClassification {
-  let intent: 'high' | 'medium' | 'low' | 'spam' = 'low';
+  let intent: 'alto' | 'médio' | 'baixo' | 'spam' = 'baixo';
   let confidence = 0.5;
   let reasoning = 'Rule-based classification (AI unavailable)';
 
@@ -320,7 +320,7 @@ function getRuleBasedClassification(input: LeadInput, enrichedData: any): LeadCl
     enrichedData.position?.toLowerCase().includes('founder') ||
     enrichedData.position?.toLowerCase().includes('director')
   ) {
-    intent = 'high'; // Strong signal -> High Intent
+    intent = 'alto'; // Strong signal -> High Intent
     confidence = 0.85;
     reasoning = 'NEO MODE: Keyword Rescue triggered (High buying signal detected)';
   }
@@ -332,19 +332,19 @@ function getRuleBasedClassification(input: LeadInput, enrichedData: any): LeadCl
   }
   // 3. Check for MEDIUM intent (Verified + Valid Message)
   else if (enrichedData.verified) {
-    intent = 'medium';
+    intent = 'médio';
     confidence = 0.6;
     reasoning = 'Verified lead with valid message';
   }
   // 4. Fallback to LOW
   else {
-    intent = 'low';
+    intent = 'baixo';
     confidence = 0.4;
     reasoning = 'Unverified lead with generic message';
   }
 
   let userReply = 'Registro recebido. O sistema avaliará sua elegibilidade.';
-  if (intent === 'high') userReply = 'Sua ambição foi notada. Estamos observando.';
+  if (intent === 'alto') userReply = 'Sua ambição foi notada. Estamos observando.';
   if (intent === 'spam') userReply = 'Ruído detectado. Acesso negado.';
 
   return {

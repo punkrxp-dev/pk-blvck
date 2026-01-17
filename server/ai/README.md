@@ -103,7 +103,7 @@ const result = await processLeadPipeline({
 });
 
 // Resultado estruturado com todas as camadas
-console.log(result.intent.intent);    // 'high' | 'medium' | 'low' | 'spam'
+console.log(result.intent.intent);    // 'alto' | 'médio' | 'baixo' | 'spam'
 console.log(result.processing);       // Metadados completos
 ```
 
@@ -123,7 +123,7 @@ const saved = await saveLead({
 });
 
 // Notificação
-const notified = await notifyLead('user@company.com', 'high');
+const notified = await notifyLead('user@company.com', 'alto');
 ```
 
 ## Protocolo MCP (Model Context Protocol)

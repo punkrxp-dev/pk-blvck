@@ -328,9 +328,9 @@ export async function registerRoutes(httpServer: Server, app: Express): Promise<
 
       const stats = {
         total: allLeads.length,
-        high: allLeads.filter(l => l.aiClassification?.intent === 'high').length,
-        medium: allLeads.filter(l => l.aiClassification?.intent === 'medium').length,
-        low: allLeads.filter(l => l.aiClassification?.intent === 'low').length,
+        high: allLeads.filter(l => l.aiClassification?.intent === 'alto').length,
+        medium: allLeads.filter(l => l.aiClassification?.intent === 'médio').length,
+        low: allLeads.filter(l => l.aiClassification?.intent === 'baixo').length,
         spam: allLeads.filter(l => l.aiClassification?.intent === 'spam').length,
         processedToday: allLeads.filter(l => {
           const today = new Date();
