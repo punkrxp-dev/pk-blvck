@@ -158,17 +158,20 @@ export function routeAction(input: ActionRouterInput): ActionDecision {
       };
     }
 
-    // High intent de landing page orgânica → Email + Dashboard
+    // High intent de landing page orgânica ou THE SIGNAL → Email + Dashboard
     if (!isFromAds) {
+      const isTheSignal = source === 'the_signal_experience';
       return {
         action: 'notify_immediate',
         recommendedChannel: 'email',
-        priority: 'high',
+        priority: isTheSignal ? 'urgent' : 'high',
         suggestedMessage: userReply,
         executeNow: true,
-        reasoning: 'Lead qualificado via landing page - interesse orgânico demonstrado',
+        reasoning: isTheSignal
+          ? 'Lead qualificado via THE SIGNAL (Experiência Interativa) - Altíssimo engajamento'
+          : 'Lead qualificado via landing page - interesse orgânico demonstrado',
         metadata: {
-          estimatedResponseTime: '1-2 horas',
+          estimatedResponseTime: isTheSignal ? 'imediato (30min)' : '1-2 horas',
           bestTimeToContact: 'manhã',
           alternativeChannels: ['whatsapp'],
         },
@@ -248,7 +251,7 @@ export function routeAction(input: ActionRouterInput): ActionDecision {
 /**
  * Determina o melhor horário para contato baseado em contexto
  */
-export function determineBestContactTime(position?: string, company?: string): string {
+export function determineBestContactTime(position?: string): string {
   if (!position) return 'horário comercial';
 
   const positionLower = position.toLowerCase();
