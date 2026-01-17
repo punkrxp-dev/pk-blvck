@@ -351,7 +351,10 @@ app.use((req, res, next) => {
     // Silenciar warnings para endpoints conhecidos que não existem (scanners/bots)
     const silentEndpoints = ['/api/v0/swarm/peers', '/api/v0/swarm'];
     if (!silentEndpoints.includes(req.path)) {
-      log(`CSRF token validation failed for ${req.method} ${req.path}`, 'security', 'warn');
+      log(`CSRF token validation failed for ${req.method} ${req.path}. Header Token: ${token ? 'Present' : 'Missing'}, Session Token: ${req.session.csrfToken ? 'Present' : 'Missing'}`, 'security', 'warn');
+      if (process.env.NODE_ENV === 'production' && !token) {
+        log('DEBUG: In production, CSRF failures might be due to missing cookie forwarding or SameSite issues.', 'security', 'info');
+      }
     }
     return res.status(403).json({
       message: 'CSRF token validation failed',
