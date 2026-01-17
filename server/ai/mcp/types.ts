@@ -82,6 +82,15 @@ export interface ProcessedLead {
     // Metadados do processamento
     processing: ProcessingMetadata;
 
+    // Action Router Decision (Fluxo Fantasma)
+    actionDecision?: {
+        action: string;
+        recommendedChannel: string;
+        priority: string;
+        executeNow: boolean;
+        reasoning: string;
+    };
+
     // Status final
     status: 'processed' | 'failed' | 'pending_review';
     notified: boolean;

@@ -7,8 +7,8 @@ build
 .next
 .nuxt
 
-# Documentation
-docs 
+# Documentation (REMOVED - we want to track docs in git)
+# docs 
 
 # Environment variables (CRITICAL - NEVER COMMIT!)
 .env

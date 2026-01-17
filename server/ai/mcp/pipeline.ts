@@ -7,7 +7,7 @@
 
 import { LeadInput, ProcessedLead } from './types';
 import { mcp } from './index';
-import { saveLead, notifyLead } from '../tools';
+import { saveLead, notifyLead, routeAction, logActionDecision } from '../tools';
 import { log } from '../../utils/logger';
 
 /**
@@ -24,7 +24,17 @@ export async function processLeadPipeline(input: LeadInput): Promise<ProcessedLe
         // 1. Core Cognitive Processing (Sentinel -> Observer -> Intent)
         const result = await mcp.processLead(input);
 
-        // 2. Action Layer (Persistence)
+        // 2. Action Router (Fluxo Fantasma) - NOVA CAMADA
+        log('🕶️ ACTION ROUTER: Deciding action strategy...', 'mcp-pipeline');
+        const actionDecision = routeAction({
+            intent: result.intent.intent,
+            confidence: result.intent.confidence,
+            enrichedData: result.presence,
+            source: input.source,
+            userReply: result.intent.userReply
+        });
+
+        // 3. Action Layer (Persistence)
         log('ACTION LAYER: Saving to Database...', 'mcp-pipeline');
         const savedLead = await saveLead({
             email: result.email,
@@ -43,11 +53,22 @@ export async function processLeadPipeline(input: LeadInput): Promise<ProcessedLe
             status: result.status
         });
 
-        // 3. Notification Layer
+        // Log action decision for telemetry
+        logActionDecision(actionDecision, savedLead.id);
+
+        // 4. Notification Layer (Baseado na decisão do Action Router)
         let notified = false;
-        if (result.status !== 'failed') {
-            log('ACTION LAYER: Notifying...', 'mcp-pipeline');
-            notified = await notifyLead(result.email, result.intent.intent);
+        if (result.status !== 'failed' && actionDecision.executeNow) {
+            log(`ACTION LAYER: Executing ${actionDecision.action} via ${actionDecision.recommendedChannel}...`, 'mcp-pipeline');
+            
+            // Por enquanto, apenas email é executado automaticamente
+            if (actionDecision.recommendedChannel === 'email') {
+                notified = await notifyLead(result.email, result.intent.intent);
+            } else {
+                log(`ACTION LAYER: ${actionDecision.action} prepared but not executed (requires manual trigger)`, 'mcp-pipeline');
+            }
+        } else {
+            log(`ACTION LAYER: Action deferred - ${actionDecision.reasoning}`, 'mcp-pipeline');
         }
 
         const processingTime = Date.now() - startTimeMs;
@@ -56,7 +77,14 @@ export async function processLeadPipeline(input: LeadInput): Promise<ProcessedLe
         return {
             ...result,
             id: savedLead.id, // Ensure we return the DB ID
-            notified
+            notified,
+            actionDecision: {
+                action: actionDecision.action,
+                recommendedChannel: actionDecision.recommendedChannel,
+                priority: actionDecision.priority,
+                executeNow: actionDecision.executeNow,
+                reasoning: actionDecision.reasoning
+            }
         };
 
     } catch (error) {
