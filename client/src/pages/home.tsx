@@ -143,7 +143,6 @@ export default function Home() {
           data-testid='menu-toggle'
           onClick={() => setNavOpen(!navOpen)}
           aria-label={navOpen ? 'Fechar menu' : 'Abrir menu'}
-          aria-expanded={navOpen ? 'true' : 'false'}
           className='fixed top-6 left-4 md:left-8 z-50 flex items-center gap-2 group focus:outline-none focus:ring-2 focus:ring-punk-neon focus:ring-offset-2 focus:ring-offset-black rounded-sm'
         >
           <div className='flex flex-col gap-1'>
@@ -242,20 +241,22 @@ export default function Home() {
                 type='video/mp4'
               />
               {/* Fallback for browsers that don't support video */}
-              <div className='absolute inset-0 bg-gradient-to-br from-gray-900 to-black flex items-center justify-center'>
+              <div className='absolute inset-0 bg-linear-to-br from-gray-900 to-black flex items-center justify-center'>
                 <div className='text-white/20 font-mono text-sm'>VIDEO BACKGROUND</div>
               </div>
             </video>
             {/* Spotlight overlay - Fixed gradient strategy to avoid 'onça' effect */}
-            <div className='absolute inset-0 bg-gradient-to-b from-black via-transparent to-black opacity-80' />
-            <div className='absolute inset-0 bg-[radial-gradient(circle_at_center,_transparent_0%,_black_90%)]' />
+            <div className='absolute inset-0 bg-linear-to-b from-black via-transparent to-black opacity-80' />
+            <div className='absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,black_90%)]' />
           </div>
 
           {/* Center Content */}
           <div className='relative z-10 flex flex-col items-center px-4 text-center'>
             <div className='flex items-center gap-4 mb-12'>
               <span className='w-8 h-px bg-white/40' />
-              <span className='font-mono text-[10px] tracking-[0.4em] text-white/70'>SYS.01</span>
+              <span className='font-mono text-[10px] tracking-[0.2em] text-white/70'>
+                Training. Strength. Conditioning.
+              </span>
               <span className='w-8 h-px bg-white/40' />
             </div>
 
@@ -266,13 +267,24 @@ export default function Home() {
               IT'S LIFE.
             </h2>
 
+            <p className='max-w-xl text-sm md:text-base text-white/80 leading-relaxed mb-6'>
+              <span className='block'>Mais que um espaço de treino.</span>
+              <span className='block'>Um ecossistema de performance premium e convivência.</span>
+            </p>
+            <p className='max-w-2xl text-xs md:text-sm text-white/60 leading-relaxed mb-10'>
+              <span className='block'>Experiência além da repetição.</span>
+              <span className='block'>
+                Cada detalhe do design, da energia e dos programas foi pensado para transformar presença em resultado palpável.
+              </span>
+            </p>
+
             <WaitlistForm />
           </div>
 
           {/* Scroll Indicator */}
-          <div className='absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2'>
+            <div className='absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2'>
             <span className='font-mono text-[9px] tracking-[0.3em] text-white/30'>SCROLL</span>
-            <div className='w-px h-8 bg-gradient-to-b from-white/30 to-transparent pulse-subtle' />
+              <div className='w-px h-8 bg-linear-to-b from-white/30 to-transparent pulse-subtle' />
           </div>
 
           {/* Corner Markers */}
@@ -303,14 +315,14 @@ export default function Home() {
                     // Adicionar ação se necessário
                   }
                 }}
-                className='bg-black p-8 md:p-12 group cursor-pointer transition-colors hover:bg-white/[0.02] focus:outline-none focus:ring-2 focus:ring-punk-neon focus:ring-offset-2 focus:ring-offset-black'
+                className='bg-black p-8 md:p-12 group cursor-pointer transition-colors hover:bg-white/2 focus:outline-none focus:ring-2 focus:ring-punk-neon focus:ring-offset-2 focus:ring-offset-black'
                 aria-label='Programa de treinamento - Performance Optimization Protocol'
               >
                 <div className='flex items-start justify-between mb-8'>
                   <span className='font-mono text-xs text-white/50'>01</span>
                   <span className='w-1.5 h-1.5 rounded-full bg-white/40 group-hover:bg-punk-neon transition-colors' />
                 </div>
-                <h3 className='font-industrial text-xl tracking-[0.1em] text-white mb-4 uppercase'>// training</h3>
+                <h3 className='font-industrial text-xl tracking-widest text-white mb-4 uppercase'>// training</h3>
                 <p className='font-sans text-xs tracking-wider text-white/60 leading-relaxed uppercase'>
                   PERFORMANCE
                   <br />
@@ -331,14 +343,14 @@ export default function Home() {
                     // Adicionar ação se necessário
                   }
                 }}
-                className='bg-black p-8 md:p-12 group cursor-pointer transition-colors hover:bg-white/[0.02] focus:outline-none focus:ring-2 focus:ring-punk-neon focus:ring-offset-2 focus:ring-offset-black'
+                className='bg-black p-8 md:p-12 group cursor-pointer transition-colors hover:bg-white/2 focus:outline-none focus:ring-2 focus:ring-punk-neon focus:ring-offset-2 focus:ring-offset-black'
                 aria-label='Programa Zone - High Intensity Framework'
               >
                 <div className='flex items-start justify-between mb-8'>
                   <span className='font-mono text-xs text-white/50'>02</span>
                   <span className='w-1.5 h-1.5 rounded-full bg-white/40 group-hover:bg-punk-neon transition-colors' />
                 </div>
-                <h3 className='font-industrial text-xl tracking-[0.1em] text-white mb-4 uppercase'>[zone]</h3>
+                <h3 className='font-industrial text-xl tracking-widest text-white mb-4 uppercase'>[zone]</h3>
                 <p className='font-sans text-xs tracking-wider text-white/60 leading-relaxed uppercase'>
                   HIGH
                   <br />
@@ -359,14 +371,14 @@ export default function Home() {
                     // Adicionar ação se necessário
                   }
                 }}
-                className='bg-black p-8 md:p-12 group cursor-pointer transition-colors hover:bg-white/[0.02] focus:outline-none focus:ring-2 focus:ring-punk-neon focus:ring-offset-2 focus:ring-offset-black'
+                className='bg-black p-8 md:p-12 group cursor-pointer transition-colors hover:bg-white/2 focus:outline-none focus:ring-2 focus:ring-punk-neon focus:ring-offset-2 focus:ring-offset-black'
                 aria-label='Programa Yoga - Mobility Restoration Sequence'
               >
                 <div className='flex items-start justify-between mb-8'>
                   <span className='font-mono text-xs text-white/50'>03</span>
                   <span className='w-1.5 h-1.5 rounded-full bg-white/40 group-hover:bg-punk-neon transition-colors' />
                 </div>
-                <h3 className='font-industrial text-xl tracking-[0.1em] text-white mb-4 uppercase'>.yoga</h3>
+                <h3 className='font-industrial text-xl tracking-widest text-white mb-4 uppercase'>.yoga</h3>
                 <p className='font-sans text-xs tracking-wider text-white/60 leading-relaxed uppercase'>
                   MOBILITY
                   <br />
@@ -407,7 +419,7 @@ export default function Home() {
 
           {/* Bottom Line */}
           <div className='mt-16 pt-8 border-t border-white/5 flex items-center justify-between'>
-            <span className='font-mono text-[9px] text-white/20'>SYS.VERSION.01</span>
+            <span className='font-mono text-[9px] text-white/20'>Presence is The New Power</span>
             <div className='flex items-center gap-2'>
               <span className='w-1 h-1 rounded-full bg-[hsl(25,100%,50%)]' />
               <span className='font-mono text-[9px] text-white/20'>ACTIVE</span>
@@ -439,7 +451,7 @@ function WaitlistForm() {
   });
 
   if (mutation.isSuccess) {
-    const reply = mutation.data?.data?.reply || 'Registered.';
+    const reply = mutation.data?.data?.reply || 'Registrado.';
     return (
       <div className='animate-in fade-in duration-500 max-w-sm text-center'>
         <Typewriter text={reply} />
@@ -463,11 +475,14 @@ function WaitlistForm() {
         type='email'
         value={email}
         onChange={e => setEmail(e.target.value)}
-        placeholder='apply for access'
+        placeholder='Só o essencial para você entrar no nível certo.'
         required
         aria-label='Email para aplicação de acesso'
         className='bg-transparent border-b border-white/20 focus:border-white/60 focus:outline-none py-3 md:py-2 w-full max-w-[280px] md:max-w-xs font-sans text-sm md:text-sm tracking-[0.15em] md:tracking-[0.2em] text-white/70 focus:text-white transition-all duration-500 placeholder:text-white/20 text-center uppercase'
       />
+      <p className='mt-3 text-[10px] md:text-xs tracking-[0.2em] text-white/40 text-center uppercase'>
+        Nem mais. Nem menos.
+      </p>
     </form>
   );
 }
