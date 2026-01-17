@@ -20,58 +20,9 @@ import {
 import { Button } from '../components/ui/button';
 import { Download, ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import { DashboardHeader } from '../components/dashboard/dashboard-header';
+import { Footer } from '@/components/layout/footer';
 
-// ========================================
-// LOGO COMPONENT (Footer version)
-// ========================================
 
-function PunkBlackLogoSmall() {
-  return (
-    <div className='flex items-center gap-2'>
-      <div className='w-8 h-8 bg-punk-plate rounded border border-punk-steel/20 flex items-center justify-center overflow-hidden'>
-        <img
-          src='/favicon.svg'
-          alt='PUNK | BLVCK Logo'
-          className='w-full h-full object-contain p-1'
-        />
-      </div>
-      <span className='text-lg font-industrial font-bold text-white tracking-widest'>
-        PUNK<span className='text-punk-neon'>|</span>BLVCK
-      </span>
-    </div>
-  );
-}
-
-// ========================================
-// FOOTER COMPONENT
-// ========================================
-
-function DashboardFooter() {
-  const currentYear = new Date().getFullYear();
-
-  return (
-    <footer className='mt-16 py-8 border-t border-punk-steel/10'>
-      <div className='max-w-7xl mx-auto px-8'>
-        <div className='flex flex-col md:flex-row justify-between items-center gap-4'>
-          <div className='flex items-center gap-4'>
-            <PunkBlackLogoSmall />
-          </div>
-          <div className='flex flex-wrap items-center justify-center gap-6 text-xs text-zinc-500 font-mono uppercase tracking-wider'>
-            <span>© {currentYear} INDUSTRIAL SYSTEMS</span>
-            <span>•</span>
-            <span>NEØ PROTOCOL v2.0</span>
-          </div>
-          <div className='flex items-center gap-4'>
-            <div className='flex items-center gap-2 px-3 py-1 bg-punk-plate border border-punk-steel/10 rounded-full'>
-              <div className='w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse'></div>
-              <span className='text-[10px] text-zinc-500 uppercase tracking-widest'>Online</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </footer>
-  );
-}
 
 // ========================================
 // SORTABLE TABLE HEADER
@@ -332,13 +283,12 @@ export default function Dashboard() {
                     </td>
                     <td className='px-6 py-4'>
                       <span
-                        className={`text-[10px] uppercase tracking-widest font-bold px-2 py-1 rounded-sm ${
-                          lead.status === 'processed'
-                            ? 'bg-green-500/10 text-green-500'
-                            : lead.status === 'failed'
-                              ? 'bg-red-500/10 text-red-500'
-                              : 'bg-zinc-800 text-zinc-500'
-                        }`}
+                        className={`text-[10px] uppercase tracking-widest font-bold px-2 py-1 rounded-sm ${lead.status === 'processed'
+                          ? 'bg-green-500/10 text-green-500'
+                          : lead.status === 'failed'
+                            ? 'bg-red-500/10 text-red-500'
+                            : 'bg-zinc-800 text-zinc-500'
+                          }`}
                       >
                         {lead.status}
                       </span>
@@ -386,7 +336,7 @@ export default function Dashboard() {
         </div>
 
         <LeadDetailModal lead={selectedLead} open={modalOpen} onOpenChange={setModalOpen} />
-        <DashboardFooter />
+        <Footer variant="dashboard" />
       </div>
     </div>
   );

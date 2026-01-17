@@ -3,6 +3,7 @@ import { useMutation } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Footer } from '@/components/layout/footer';
 
 type ExperienceStep = 'intro' | 'q1' | 'q2' | 'q3' | 'q4' | 'email' | 'success';
 
@@ -233,31 +234,11 @@ export default function Landing() {
               Experiência além da repetição.
               <br />
               Cada detalhe do design, da energia e dos programas foi pensado para transformar
-              presença em resultado palpável.
             </p>
           </div>
         </section>
+        <Footer variant="landing" />
       </main>
-
-      {/* Footer */}
-      <footer className='py-12 md:py-16 px-4 md:px-8 lg:px-16 border-t border-white/10'>
-        <div className='max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8'>
-          <span className='font-mono text-xs tracking-[0.2em] text-white/70 block'>
-            PUNK | BLVCK ©
-          </span>
-          <a
-            href='https://www.instagram.com/punk.blvck'
-            target='_blank'
-            rel='noreferrer noopener'
-            className='font-mono text-[10px] tracking-[0.2em] text-white/60 hover:text-punk-neon transition-colors'
-          >
-            instagram / @punk.blvck
-          </a>
-          <span className='font-mono text-[10px] tracking-[0.2em] text-white/60 md:text-right'>
-            Presence is The New Power
-          </span>
-        </div>
-      </footer>
     </div>
   );
 }

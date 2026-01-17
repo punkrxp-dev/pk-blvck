@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { CustomCursor } from '@/components/ui/custom-cursor';
 import { GlitchText } from '@/components/ui/glitch-text';
+import { Footer } from '@/components/layout/footer';
 
 export default function Home() {
   const [activeSection, setActiveSection] = useState(0);
@@ -122,11 +123,10 @@ export default function Home() {
                 setActiveSection(i);
                 document.getElementById(sections[i])?.scrollIntoView({ behavior: 'smooth' });
               }}
-              className={`w-1.5 h-1.5 md:w-1.5 md:h-1.5 rounded-full transition-all duration-300 touch-manipulation p-2 -m-2 focus:outline-none focus:ring-2 focus:ring-punk-neon focus:ring-offset-2 focus:ring-offset-black ${
-                activeSection === i
-                  ? 'bg-punk-neon scale-110 md:scale-150'
-                  : 'bg-white/20 hover:bg-white/50 active:bg-white/60'
-              }`}
+              className={`w-1.5 h-1.5 md:w-1.5 md:h-1.5 rounded-full transition-all duration-300 touch-manipulation p-2 -m-2 focus:outline-none focus:ring-2 focus:ring-punk-neon focus:ring-offset-2 focus:ring-offset-black ${activeSection === i
+                ? 'bg-punk-neon scale-110 md:scale-150'
+                : 'bg-white/20 hover:bg-white/50 active:bg-white/60'
+                }`}
               aria-label={`Ir para seção ${i + 1}`}
               aria-current={activeSection === i ? 'true' : 'false'}
             />
@@ -169,9 +169,8 @@ export default function Home() {
           role='dialog'
           aria-modal='true'
           aria-label='Menu de navegação'
-          className={`fixed inset-0 bg-black z-40 transition-transform duration-500 ${
-            navOpen ? 'translate-x-0' : '-translate-x-full'
-          }`}
+          className={`fixed inset-0 bg-black z-40 transition-transform duration-500 ${navOpen ? 'translate-x-0' : '-translate-x-full'
+            }`}
         >
           <div className='h-full flex flex-col justify-center px-8 md:px-16'>
             <div className='space-y-8'>
@@ -308,7 +307,7 @@ export default function Home() {
             <div className='flex items-center gap-4 mb-12 md:mb-24'>
               <span className='w-8 md:w-12 h-px bg-punk-neon' />
               <span className='font-mono text-[10px] md:text-xs tracking-[0.3em] text-white/70 italic'>
-                SYSTEMS
+                PROGRAMS //
               </span>
             </div>
 
@@ -406,59 +405,8 @@ export default function Home() {
             </div>
           </div>
         </section>
+        <Footer />
       </main>
-
-      {/* Footer */}
-      <footer
-        id='footer'
-        aria-label='Rodapé'
-        className='py-16 md:py-24 px-4 md:px-8 lg:px-16 border-t border-white/10'
-      >
-        <div className='max-w-6xl mx-auto'>
-          <div className='grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-24'>
-            {/* Brand */}
-            <div>
-              <span
-                className='font-mono text-xs tracking-[0.2em] text-white/70 block'
-                data-testid='footer-brand'
-              >
-                PUNK | BLVCK ©
-              </span>
-            </div>
-
-            {/* Instagram */}
-            <div>
-              <a
-                href='https://www.instagram.com/punk.blvck'
-                target='_blank'
-                rel='noreferrer noopener'
-                className='font-mono text-[10px] tracking-[0.2em] text-white/60 hover:text-punk-neon transition-colors'
-              >
-                instagram / @punk.blvck
-              </a>
-            </div>
-
-            {/* Location */}
-            <div className='md:text-right'>
-              <span
-                className='font-mono text-[10px] tracking-[0.2em] text-white/60'
-                data-testid='footer-location'
-              >
-                Plaza D'Oro Shopping // Goiânia - GO
-              </span>
-            </div>
-          </div>
-
-          {/* Bottom Line */}
-          <div className='mt-16 pt-8 border-t border-white/5 flex items-center justify-between'>
-            <span className='font-mono text-[9px] text-white/50'>Presence is The New Power</span>
-            <div className='flex items-center gap-2'>
-              <span className='w-1 h-1 rounded-full bg-[hsl(25,100%,50%)]' />
-              <span className='font-mono text-[9px] text-white/50'>ACTIVE</span>
-            </div>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }

@@ -458,7 +458,7 @@ curl https://pk-blvck-production.up.railway.app/api/mcp/leads
 ### **Acessar Dashboard**
 
 ```text
-https://pk-blvck-three.vercel.app/dashboard
+https://punkblvck.com.br/dashboard
 ```
 
 ---

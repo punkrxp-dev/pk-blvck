@@ -32,41 +32,69 @@ interface LeadActionsProps {
   onViewDetails?: () => void;
 }
 
-const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-
 async function updateLeadStatus(leadId: string, status: string) {
-  const response = await fetch(`${apiBaseUrl}/api/mcp/leads/${leadId}/status`, {
+  const response = await fetch(`/api/mcp/leads/${leadId}/status`, {
     method: 'PATCH',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRF-Token': localStorage.getItem('csrf-token') || ''
+    },
     body: JSON.stringify({ status }),
   });
+
+  // Update token if present in header
+  const newToken = response.headers.get('X-CSRF-Token');
+  if (newToken) localStorage.setItem('csrf-token', newToken);
+
   if (!response.ok) throw new Error('Failed to update status');
   return response.json();
 }
 
 async function markAsSpam(leadId: string) {
-  const response = await fetch(`${apiBaseUrl}/api/mcp/leads/${leadId}/mark-spam`, {
+  const response = await fetch(`/api/mcp/leads/${leadId}/mark-spam`, {
     method: 'PATCH',
+    headers: {
+      'X-CSRF-Token': localStorage.getItem('csrf-token') || ''
+    }
   });
+
+  const newToken = response.headers.get('X-CSRF-Token');
+  if (newToken) localStorage.setItem('csrf-token', newToken);
+
   if (!response.ok) throw new Error('Failed to mark as spam');
   return response.json();
 }
 
 async function sendNotification(leadId: string) {
-  const response = await fetch(`${apiBaseUrl}/api/mcp/leads/${leadId}/notify`, {
+  const response = await fetch(`/api/mcp/leads/${leadId}/notify`, {
     method: 'POST',
+    headers: {
+      'X-CSRF-Token': localStorage.getItem('csrf-token') || ''
+    }
   });
+
+  const newToken = response.headers.get('X-CSRF-Token');
+  if (newToken) localStorage.setItem('csrf-token', newToken);
+
   if (!response.ok) throw new Error('Failed to send notification');
   return response.json();
 }
 
 async function deleteLead(leadId: string) {
-  const response = await fetch(`${apiBaseUrl}/api/mcp/leads/${leadId}`, {
+  const response = await fetch(`/api/mcp/leads/${leadId}`, {
     method: 'DELETE',
+    headers: {
+      'X-CSRF-Token': localStorage.getItem('csrf-token') || ''
+    }
   });
+
+  const newToken = response.headers.get('X-CSRF-Token');
+  if (newToken) localStorage.setItem('csrf-token', newToken);
+
   if (!response.ok) throw new Error('Failed to delete lead');
   return response.json();
 }
+
 
 export function LeadActions({ lead, onViewDetails }: LeadActionsProps) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);

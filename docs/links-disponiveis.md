@@ -4,7 +4,7 @@
 
 ### **Frontend (Vercel)**
 
--  **URL:** <https://pk-blvck-three.vercel.app>
+-  **URL:** <https://punkblvck.com.br>
 -  **Projeto:** vercel.com/prxps-projects/pk-blvck
 -  **Status:** ✅ Ativo (Deploy automático)
 -  **Descrição:** Dashboard completo com visualização de leads em tempo real
@@ -156,7 +156,7 @@ curl -X POST https://pk-blvck-production.up.railway.app/api/mcp/ingest \
 
 | Componente | Status | URL |
 |------------|--------|-----|
-| Frontend | ✅ Ativo | <https://pk-blvck-three.vercel.app> |
+| Frontend | ✅ Ativo | <https://punkblvck.com.br> |
 | Projeto Vercel | ✅ Ativo | vercel.com/prxps-projects/pk-blvck |
 | Backend API | ✅ Ativo | <https://pk-blvck-production.up.railway.app> |
 | Database | ✅ Ativo | Neon Postgres |
@@ -178,12 +178,12 @@ curl -X POST https://pk-blvck-production.up.railway.app/api/mcp/ingest \
 
 ```
 ✅ Access granted: https://pk-blvck-production.up.railway.app/api/mcp/leads
-from origin https://pk-blvck-three.vercel.app
+from origin https://punkblvck.com.br
 ```
 
 **Solução aplicada:**
 
--  ✅ Variável `FRONTEND_URL=https://pk-blvck-three.vercel.app` configurada no Railway
+-  ✅ Variável `FRONTEND_URL=https://punkblvck.com.br` configurada no Railway
 -  ✅ Redeploy realizado com sucesso
 -  ✅ Conexão frontend-backend funcionando 100%
 
