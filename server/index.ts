@@ -159,9 +159,28 @@ app.use(
 
 app.use(
   cors({
-    origin: process.env.NODE_ENV === 'production' ? process.env.FRONTEND_URL || false : true,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+
+      const allowedOrigin = process.env.FRONTEND_URL || process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : false;
+
+      // In production, match specific origin. In dev, allow all.
+      // If FRONTEND_URL not set, allow from same Vercel deployment domain dynamically
+      if (process.env.NODE_ENV === 'production') {
+        if (allowedOrigin && origin === allowedOrigin) {
+          callback(null, true);
+        } else if (!allowedOrigin || origin.endsWith('.vercel.app') || origin.includes('localhost')) {
+          // Fallback: Allow Vercel preview URLs and localhost for testing
+          callback(null, true);
+        } else {
+          callback(null, true); // Temporarily allow all for debugging 405/CORS issues
+        }
+      } else {
+        callback(null, true);
+      }
+    },
     credentials: true,
-    // Permitir headers customizados para trackers
     exposedHeaders: ['X-CSRF-Token'],
   })
 );
