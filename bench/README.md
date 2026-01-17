@@ -2,6 +2,8 @@
 
 Este diretório contém ferramentas para benchmark comparativo entre as implementações Neo (MCP) e Legacy do sistema de processamento de leads.
 
+**📚 Ver também:** [Guia de Setup Técnico](../SETUPME.md) para informações gerais sobre instalação e configuração do projeto.
+
 ## Estrutura
 
 "```
