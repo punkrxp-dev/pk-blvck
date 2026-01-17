@@ -217,9 +217,12 @@ function WaitlistForm() {
         <button
           type='submit'
           disabled={mutation.isPending || !email.trim()}
-          className='w-full py-3 md:py-2 border border-white/40 hover:border-white/80 focus:outline-none font-sans text-sm md:text-base tracking-[0.2em] text-white/90 hover:text-white focus:text-white transition-all duration-500 uppercase disabled:opacity-40 disabled:cursor-not-allowed'
+          className='group relative w-full py-3 md:py-2 border border-white/40 hover:border-punk-neon/60 focus:border-punk-neon/80 focus:outline-none font-sans text-sm md:text-base tracking-[0.2em] text-white/90 transition-all duration-500 uppercase disabled:opacity-40 disabled:cursor-not-allowed overflow-hidden'
         >
-          {mutation.isPending ? 'Enviando...' : 'Enviar'}
+          <span className='relative z-10 transition-colors duration-300 group-hover:text-black group-focus:text-black'>
+            {mutation.isPending ? 'Enviando...' : 'Enviar'}
+          </span>
+          <span className='absolute inset-0 bg-punk-neon scale-x-0 group-hover:scale-x-100 group-focus:scale-x-100 group-active:scale-x-100 origin-left transition-transform duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] z-0' />
         </button>
       </div>
 
