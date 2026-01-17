@@ -1,6 +1,6 @@
 # 🏗️ ARQUITETURA COMPLETA - SISTEMA PUNK BLVCK
 
-**NEØ Protected Architecture - Cognitive Pipeline Infrastructure**
+## NEØ Protected Architecture - Cognitive Pipeline Infrastructure
 
 ---
 
@@ -10,10 +10,10 @@ O **PUNK BLVCK** é uma plataforma full-stack enterprise-grade desenvolvida para
 
 ### 🎯 Proposta de Valor
 
-- **Técnica Superior**: Soluções robustas e escaláveis com IA enterprise
-- **Performance Otimizada**: Respostas rápidas com circuit breaker inteligente
-- **Segurança Enterprise**: Proteções avançadas contra ameaças modernas
-- **Minimalismo Operacional**: Foco no que realmente importa
+-  **Técnica Superior**: Soluções robustas e escaláveis com IA enterprise
+-  **Performance Otimizada**: Respostas rápidas com circuit breaker inteligente
+-  **Segurança Enterprise**: Proteções avançadas contra ameaças modernas
+-  **Minimalismo Operacional**: Foco no que realmente importa
 
 ---
 
@@ -21,17 +21,19 @@ O **PUNK BLVCK** é uma plataforma full-stack enterprise-grade desenvolvida para
 
 ### 🌐 Jornada do Usuário
 
-```
+```text
 🌐 Usuário → Landing Page → Formulário → API → IA Pipeline → Resposta
 ```
 
 #### **1. Interação Inicial (Frontend)**
-- **URL:** `https://punkblvck.com.br/`
-- **Interface:** Landing page React com formulário premium
-- **Dados:** Email + Mensagem opcional + Source
-- **Ação:** Submit → `POST /api/mcp/ingest`
+
+-  **URL:** `https://punkblvck.com.br/`
+-  **Interface:** Landing page React com formulário premium
+-  **Dados:** Email + Mensagem opcional + Source
+-  **Ação:** Submit → `POST /api/mcp/ingest`
 
 #### **2. Validação e Segurança (Backend)**
+
 ```typescript
 // server/routes.ts - POST /api/mcp/ingest
 const validationResult = mcpIngestSchema.safeParse(req.body);
@@ -41,6 +43,7 @@ const validationResult = mcpIngestSchema.safeParse(req.body);
 ```
 
 #### **3. Pipeline MCP (IA Completa)**
+
 ```typescript
 // server/ai/mcp/pipeline.ts
 export async function processLeadPipeline(input: LeadInput) {
@@ -58,6 +61,7 @@ export async function processLeadPipeline(input: LeadInput) {
 ### 🎭 Sistema de Agentes Especializados
 
 #### **ENTRY LAYER - SentinelAgent (Porta de Entrada)**
+
 ```typescript
 // Responsabilidades:
 ✅ Validação rigorosa de emails (disposable domains)
@@ -78,6 +82,7 @@ export async function processLeadPipeline(input: LeadInput) {
 ```
 
 #### **PRESENCE LAYER - ObserverAgent (Observação e Enriquecimento)**
+
 ```typescript
 // Responsabilidades:
 ✅ Integração Hunter.io API
@@ -100,6 +105,7 @@ export async function processLeadPipeline(input: LeadInput) {
 ```
 
 #### **INTENT LAYER - IntentAgent (Classificação Cognitiva)**
+
 ```typescript
 // Responsabilidades:
 ✅ Análise contextual com memória vetorial
@@ -123,6 +129,7 @@ export async function processLeadPipeline(input: LeadInput) {
 ## 🛡️ CIRCUIT BREAKER - PROTEÇÃO DE RESILIÊNCIA
 
 ### Configuração Enterprise
+
 ```typescript
 export const openaiCircuitBreaker = new CircuitBreaker('OpenAI', {
   failureThreshold: 5,      // Abre após 5 falhas
@@ -135,6 +142,7 @@ export const openaiCircuitBreaker = new CircuitBreaker('OpenAI', {
 ```
 
 ### Métricas de Monitoramento
+
 ```typescript
 getStats() // Retorna:
 {
@@ -153,6 +161,7 @@ getStats() // Retorna:
 ## 📊 RESPOSTA COMPLETA DA API
 
 ### Formato de Resposta
+
 ```json
 {
   "success": true,
@@ -184,6 +193,7 @@ getStats() // Retorna:
 ## 🔄 MODOS DE PROCESSAMENTO
 
 ### Modo NEO (Padrão - Recomendado)
+
 ```bash
 POST /api/mcp/ingest
 Content-Type: application/json
@@ -194,25 +204,29 @@ Content-Type: application/json
   "source": "landing-page"
 }
 ```
-- **Pipeline:** Sentinel → Observer → Intent → Actions
-- **IA:** GPT-4o primary + Gemini fallback
-- **Tempo Médio:** ~1.2s
-- **Qualidade:** Máxima
+
+-  **Pipeline:** Sentinel → Observer → Intent → Actions
+-  **IA:** GPT-4o primary + Gemini fallback
+-  **Tempo Médio:** ~1.2s
+-  **Qualidade:** Máxima
 
 ### Modo Legacy (Compatibilidade)
+
 ```bash
 POST /api/mcp/ingest?mode=legacy
 ```
-- **Pipeline:** Processamento simplificado
-- **IA:** Gemini como principal
-- **Tempo Médio:** ~800ms
-- **Qualidade:** Boa (para compatibilidade)
+
+-  **Pipeline:** Processamento simplificado
+-  **IA:** Gemini como principal
+-  **Tempo Médio:** ~800ms
+-  **Qualidade:** Boa (para compatibilidade)
 
 ---
 
 ## 💾 PERSISTÊNCIA E AÇÕES AUTOMATIZADAS
 
 ### Salvamento Inteligente
+
 ```typescript
 // server/ai/tools/persistence.tool.ts
 await saveLead({
@@ -231,29 +245,241 @@ await saveLead({
 });
 ```
 
-### Notificação Context-aware
-```typescript
-// server/ai/tools/notification.tool.ts
-if (intent === 'high') {
-  await notifyHighIntentLead(email, enrichedData);
-  // → Email personalizado + follow-up automático
-} else if (intent === 'medium') {
-  await notifyMediumIntentLead(email);
-  // → Nurturing sequence
+**Estrutura no Banco (PostgreSQL):**
+
+```sql
+leads {
+  id: uuid (primary key)
+  email: string (unique)
+  rawMessage: string
+  source: string
+  
+  enrichedData: jsonb {
+    firstName, lastName, company, position, 
+    linkedin, phone, verified
+  }
+  
+  aiClassification: jsonb {
+    intent, confidence, reasoning, userReply, 
+    model, processedAt
+  }
+  
+  processingMetadata: jsonb {
+    processingMode, modelProvider, actualModel,
+    fallbackUsed, requiresHumanReview, 
+    processingTimeMs, timestamp, layers
+  }
+  
+  status: string (pending|processed|notified|failed)
+  notifiedAt: timestamp
+  createdAt: timestamp
+  updatedAt: timestamp
 }
-// Integração Resend API
 ```
+
+---
+
+## 📧 SISTEMA DE NOTIFICAÇÕES (RESEND API)
+
+### **Configuração Resend**
+
+```bash
+# .env - Variáveis obrigatórias
+RESEND_API_KEY=re_xxxxxxxxxxxxxxxx          # API key do Resend
+RESEND_FROM_EMAIL=leads@punkblvck.com.br    # Email remetente (domínio verificado)
+NOTIFICATION_EMAIL=gestor@punkblvck.com.br  # Email do gestor (recebe alertas)
+```
+
+### **Status Atual**
+
+| Componente       | Status              | Ação Necessária             |
+|------------------|---------------------|-----------------------------|
+| **Código**       | ✅ Implementado     | Nenhuma                     |
+| **API Key**      | ⚠️ Não configurada  | Criar conta Resend          |
+| **Domínio**      | ⚠️ Não verificado   | Adicionar registros DNS     |
+| **Email Gestor** | ⚠️ Fallback ativo   | Configurar email produção   |
+
+### **Fluxo de Notificação**
+
+```text
+1. Pipeline processa lead
+   ├─ Se status === 'failed': NÃO notifica
+   └─ Se status === 'processed': Prossegue
+
+2. Seleciona template baseado em intent:
+   ├─ high: "High-Priority Lead Alert"
+   ├─ medium: "Medium-Priority Lead"
+   ├─ low: "New Lead Captured"
+   └─ spam: Apenas log (não notifica)
+
+3. Envia email via Resend API:
+   POST https://api.resend.com/emails
+   Headers:
+     Authorization: Bearer {RESEND_API_KEY}
+   Body:
+     from: RESEND_FROM_EMAIL
+     to: NOTIFICATION_EMAIL
+     subject: template.subject
+     html: <p>template.body</p>
+
+4. Atualiza lead:
+   ├─ Sucesso: notified = true
+   └─ Erro: notified = false (log)
+```
+
+### **Templates de Email por Prioridade**
+
+#### **🔴 High Priority (Urgente)**
+
+```text
+Subject: 🚨 High-Priority Lead Alert
+
+Body:
+A high-priority lead has been identified: joao.silva@empresa.com
+Immediate follow-up recommended.
+
+Lead Details:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📧 Email: joao.silva@empresa.com
+👤 Name: João Silva
+🏢 Company: Empresa Tech Ltda
+💼 Position: CEO
+📱 Phone: +55 11 98765-4321
+🔗 LinkedIn: linkedin.com/in/joaosilva
+✅ Verified: Yes
+
+Original Message:
+"Gostaria de conhecer a academia premium"
+
+AI Classification:
+Intent: HIGH (95% confidence)
+Reasoning: CEO de empresa tech demonstrando interesse em plano premium
+
+Suggested Reply:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+"Olá João! Que ótimo receber seu contato. Nossa academia oferece
+planos corporativos personalizados para empresas tech. Posso agendar 
+uma visita para você conhecer nossa estrutura premium?"
+
+[Ver Lead Completo no Dashboard →]
+```
+
+#### **🟡 Medium Priority (24h)**
+
+```text
+Subject: 📋 Medium-Priority Lead
+
+Body:
+A medium-priority lead has been captured: maria@startup.com
+Follow-up within 24 hours recommended.
+
+[Detalhes do lead...]
+```
+
+#### **🟢 Low Priority (Padrão)**
+
+```text
+Subject: 📬 New Lead Captured
+
+Body:
+A new lead has been added: contato@empresa.com
+Standard follow-up process.
+
+[Detalhes do lead...]
+```
+
+### **Quem Recebe a Notificação?**
+
+**IMPORTANTE:** O **GESTOR** recebe o email, **NÃO o lead!**
+
+-  **Destinatário:** Email configurado em `NOTIFICATION_EMAIL`
+-  **Propósito:** Alertar o gestor sobre novo lead qualificado
+-  **Conteúdo:** Dados completos + sugestão de resposta da IA
+-  **Ação:** Gestor faz follow-up manual via email/WhatsApp
+
+**O lead NÃO recebe resposta automática** (prospectação fica com o gestor).
+
+### **Workflow Comercial**
+
+```text
+1. 📧 Sistema envia email para GESTOR
+   ↓
+2. 🖥️ Gestor acessa dashboard (/dashboard)
+   ↓
+3. 👁️ Vê lead completo com:
+   • Dados enriquecidos (nome, empresa, cargo)
+   • Classificação de prioridade
+   • Sugestão de resposta da IA
+   ↓
+4. 📝 Gestor copia/adapta resposta sugerida
+   ↓
+5. 📱 Envia manualmente via email/WhatsApp
+   ↓
+6. ✅ Marca como "contacted" no dashboard
+```
+
+---
+
+## 🔍 ENRIQUECIMENTO AUTOMÁTICO (HUNTER.IO)
+
+### **Configuração Hunter.io**
+
+```bash
+# .env
+HUNTER_API_KEY=your_hunter_api_key_here
+```
+
+**Status:** ⚠️ Não configurada (usando mock data em desenvolvimento)
+
+### **Como Funciona**
+
+1.  **Observer Agent** recebe email validado
+2.  Chama `enrichLead(email)` → Hunter.io API
+3.  Hunter.io consulta **bancos de dados públicos**:
+    -  LinkedIn (perfis públicos)
+    -  Registros WHOIS de domínios
+    -  Bases de dados corporativas
+    -  Redes sociais profissionais
+
+### **Dados Coletados**
+
+| Campo         | Fonte                          | Obrigatório |
+|---------------|--------------------------------|-------------|
+| `firstName`   | LinkedIn, registros públicos   | ❌ Opcional |
+| `lastName`    | LinkedIn, registros públicos   | ❌ Opcional |
+| `company`     | Domínio do email + WHOIS       | ❌ Opcional |
+| `position`    | LinkedIn scraping público      | ❌ Opcional |
+| `linkedin`    | Busca por email                | ❌ Opcional |
+| `phone`       | Registros públicos             | ❌ Opcional |
+| `verified`    | Verificação SMTP               | ✅ Sempre   |
+
+**⚠️ Todos os campos podem retornar `null`** se Hunter.io não encontrar informações.
+
+### **Planos Hunter.io**
+
+-  **Gratuito:** 50 buscas/mês
+-  **Starter:** 500 buscas/mês ($49)
+-  **Growth:** 5.000 buscas/mês ($149)
+
+### **Privacidade (LGPD/GDPR)**
+
+-  ✅ Apenas dados **públicos profissionais** coletados
+-  ✅ Sem dados sensíveis (CPF, RG, saúde)
+-  ✅ Consentimento implícito ao submeter formulário
+-  ✅ Possibilidade de exclusão (DELETE /api/mcp/leads/:id)
 
 ---
 
 ## 📈 DASHBOARD E MONITORAMENTO
 
 ### Visualização de Leads
+
 ```bash
 GET /api/mcp/leads?page=1&pageSize=20&intent=high
 ```
 
 **Resposta:**
+
 ```json
 {
   "success": true,
@@ -273,11 +499,13 @@ GET /api/mcp/leads?page=1&pageSize=20&intent=high
 ```
 
 ### Health Check do Sistema
+
 ```bash
 GET /api/mcp/health
 ```
 
 **Resposta:**
+
 ```json
 {
   "status": "healthy",
@@ -298,24 +526,27 @@ GET /api/mcp/health
 ## 🔒 SEGURANÇA IMPLEMENTADA
 
 ### Rate Limiting Granular
-- **Global:** 1.000 req/15min
-- **API:** 2.000 req/15min
-- **Auth:** 5 tentativas/15min
-- **Registro:** 3/hora
+
+-  **Global:** 1.000 req/15min
+-  **API:** 2.000 req/15min
+-  **Auth:** 5 tentativas/15min
+-  **Registro:** 3/hora
 
 ### Proteções Ativas
-- ✅ **CSRF:** Tokens obrigatórios em POST/PUT/DELETE
-- ✅ **CORS:** Configurado para produção
-- ✅ **Helmet:** Headers de segurança enterprise
-- ✅ **XSS Protection:** Sanitização automática
-- ✅ **SQL Injection:** Protegido por Drizzle ORM
-- ✅ **Input Validation:** Zod schemas em todas as camadas
+
+-  ✅ **CSRF:** Tokens obrigatórios em POST/PUT/DELETE
+-  ✅ **CORS:** Configurado para produção
+-  ✅ **Helmet:** Headers de segurança enterprise
+-  ✅ **XSS Protection:** Sanitização automática
+-  ✅ **SQL Injection:** Protegido por Drizzle ORM
+-  ✅ **Input Validation:** Zod schemas em todas as camadas
 
 ---
 
 ## ⚡ OTIMIZAÇÕES DE PERFORMANCE
 
 ### Lazy Loading de IA
+
 ```typescript
 // Modelos carregados sob demanda
 const model = await getPrimaryModel(); // GPT-4o
@@ -323,6 +554,7 @@ const model = await getPrimaryModel(); // GPT-4o
 ```
 
 ### Cache Inteligente
+
 ```typescript
 // Memória vetorial + Context caching
 const context = await getMemoryContext(input);
@@ -331,6 +563,7 @@ const embeddings = await generateEmbeddings(text);
 ```
 
 ### Circuit Breaker Prevention
+
 ```typescript
 // Evita cascading failures
 await circuitBreaker.execute(async () => {
@@ -344,6 +577,7 @@ await circuitBreaker.execute(async () => {
 ## 🧪 TESTES E QUALIDADE
 
 ### Cobertura de Testes
+
 ```bash
 ✅ Build Process
 ✅ Email Validation Logic
@@ -353,6 +587,7 @@ await circuitBreaker.execute(async () => {
 ```
 
 ### Testes de Segurança
+
 ```typescript
 ✅ Disposable Email Detection
 ✅ XSS Prevention
@@ -362,6 +597,7 @@ await circuitBreaker.execute(async () => {
 ```
 
 ### Testes de Performance
+
 ```typescript
 ✅ Circuit Breaker Pattern
 ✅ Rate Limit Handling
@@ -374,67 +610,298 @@ await circuitBreaker.execute(async () => {
 ## 🎯 BENEFÍCIOS PARA NEGÓCIO
 
 ### Para o Usuário
-- ✅ **Resposta Instantânea:** Classificação IA em segundos
-- ✅ **Personalização:** Respostas contextuais por perfil
-- ✅ **Qualificação Automática:** Detecção high/medium/low intent
+
+-  ✅ **Resposta Instantânea:** Classificação IA em segundos
+-  ✅ **Personalização:** Respostas contextuais por perfil
+-  ✅ **Qualificação Automática:** Detecção high/medium/low intent
 
 ### Para o Negócio
-- ✅ **Qualificação Inteligente:** Foco em leads relevantes (45% high intent)
-- ✅ **Enriquecimento Automático:** Dados completos sem esforço manual
-- ✅ **Escalabilidade:** Processa milhares de leads/dia
-- ✅ **Custo Otimizado:** Fallback automático reduz custos em 60%
+
+-  ✅ **Qualificação Inteligente:** Foco em leads relevantes (45% high intent)
+-  ✅ **Enriquecimento Automático:** Dados completos sem esforço manual
+-  ✅ **Escalabilidade:** Processa milhares de leads/dia
+-  ✅ **Custo Otimizado:** Fallback automático reduz custos em 60%
 
 ### Para o Sistema
-- ✅ **Resiliência:** Circuit breaker previne falhas em cascata
-- ✅ **Segurança:** Validação completa em todas as camadas
-- ✅ **Performance:** Lazy loading + cache inteligente
-- ✅ **Observabilidade:** Logs estruturados + métricas em tempo real
+
+-  ✅ **Resiliência:** Circuit breaker previne falhas em cascata
+-  ✅ **Segurança:** Validação completa em todas as camadas
+-  ✅ **Performance:** Lazy loading + cache inteligente
+-  ✅ **Observabilidade:** Logs estruturados + métricas em tempo real
 
 ---
 
 ## 🚀 RESULTADOS ALCANÇADOS
 
 ### Métricas de Qualidade
-- **Zero vulnerabilidades críticas** detectadas
-- **Zero memory leaks** em produção
-- **100% conformidade** com padrões NEØ
-- **Cobertura de testes**: 100% funcionalidades críticas
-- **Build time**: 1.85s (vs ~10s em soluções similares)
-- **Bundle size**: 880KB minificado (vs ~2MB alternativas)
+
+-  **Zero vulnerabilidades críticas** detectadas
+-  **Zero memory leaks** em produção
+-  **100% conformidade** com padrões NEØ
+-  **Cobertura de testes**: 100% funcionalidades críticas
+-  **Build time**: 1.85s (vs ~10s em soluções similares)
+-  **Bundle size**: 880KB minificado (vs ~2MB alternativas)
 
 ### Performance Técnica
-- **Latência P95**: <2.1s para operações complexas
-- **Throughput**: 200 req/15min por usuário autenticado
-- **Uptime**: 99.9% com health checks automatizados
-- **SEO Score**: 100/100 com automação completa
+
+-  **Latência P95**: <2.1s para operações complexas
+-  **Throughput**: 200 req/15min por usuário autenticado
+-  **Uptime**: 99.9% com health checks automatizados
+-  **SEO Score**: 100/100 com automação completa
 
 ### Escalabilidade e Manutenibilidade
-- **Arquitetura modular** fácil de expandir
-- **Type safety** em 100% do código
-- **Testabilidade** com benchmarks automatizados
-- **Documentação viva** sempre atualizada
+
+-  **Arquitetura modular** fácil de expandir
+-  **Type safety** em 100% do código
+-  **Testabilidade** com benchmarks automatizados
+-  **Documentação viva** sempre atualizada
+
+---
+
+## 🔄 FLUXO COMPLETO DETALHADO (PASSO A PASSO)
+
+### **Diagrama Visual do Pipeline**
+
+```text
+┌─────────────────────────────────────────────────────────────────┐
+│                     1. ENTRADA DO LEAD                          │
+│  Usuário preenche formulário: email + mensagem + source        │
+│  POST /api/mcp/ingest                                           │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│          2. VALIDAÇÃO & SEGURANÇA (server/routes.ts)            │
+│  ✅ Zod schema validation                                        │
+│  ✅ Rate limiting check                                          │
+│  ✅ CSRF token validation                                        │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│      3. MCP COORDINATOR INICIA (server/ai/mcp/index.ts)        │
+│  • Gera UUID para o lead                                        │
+│  • Inicializa metadata de processamento                         │
+│  • Executa pipeline de 3 agents                                 │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+        ┌──────────────────────────────────────────┐
+        │  AGENT 1: SENTINEL (Entry Layer)        │
+        │  • Valida formato de email               │
+        │  • Detecta domínios temporários          │
+        │  • Identifica padrões suspeitos          │
+        │  • Sanitiza inputs (XSS, SQL injection)  │
+        │                                          │
+        │  ❌ Se SPAM: Pipeline PARA aqui          │
+        │  ✅ Se OK: Continua para próximo agent   │
+        └──────────────────────────────────────────┘
+                              ↓
+        ┌──────────────────────────────────────────┐
+        │  AGENT 2: OBSERVER (Presence Layer)     │
+        │  • Chama Hunter.io API                   │
+        │  • Busca: nome, empresa, cargo           │
+        │  • Verifica LinkedIn, telefone           │
+        │  • Valida existência do email            │
+        │                                          │
+        │  Output: enrichedData completo           │
+        └──────────────────────────────────────────┘
+                              ↓
+        ┌──────────────────────────────────────────┐
+        │  AGENT 3: INTENT (Intent Layer)         │
+        │  • Consulta memória vetorial             │
+        │  • Monta contexto com leads similares    │
+        │  • Chama GPT-4o (ou Gemini fallback)     │
+        │  • Classifica: high/medium/low/spam      │
+        │  • Gera resposta personalizada           │
+        │                                          │
+        │  Output: intent + confidence + userReply │
+        └──────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│      4. PERSISTENCE LAYER (server/ai/tools/persistence.tool)   │
+│  • Salva lead completo no PostgreSQL                           │
+│  • Inclui: dados originais + enrichedData + aiClassification   │
+│  • Status: processed/failed                                    │
+│  • Retorna UUID do lead                                         │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│   5. NOTIFICATION LAYER (server/ai/tools/notification.tool)    │
+│  • Verifica: status !== 'failed'                               │
+│  • Seleciona template por intent (high/medium/low)             │
+│  • Envia email via Resend API para GESTOR                      │
+│  • Destinatário: NOTIFICATION_EMAIL                            │
+│  • Atualiza: notified = true/false                             │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│            6. MEMORY STORAGE (Assíncrono)                       │
+│  • Adiciona embedding ao vector store                          │
+│  • Armazena para contexto futuro                               │
+│  • Não bloqueia resposta ao usuário                             │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│              7. RESPOSTA API (200 OK)                           │
+│  {                                                              │
+│    "success": true,                                             │
+│    "data": {                                                    │
+│      "id": "uuid",                                              │
+│      "intent": "high",                                          │
+│      "enrichedData": {...},                                     │
+│      "notified": true                                           │
+│    }                                                            │
+│  }                                                              │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│         8. AÇÃO DO GESTOR (Workflow Comercial)                 │
+│  • Gestor recebe email de notificação                          │
+│  • Acessa dashboard /dashboard                                  │
+│  • Vê lead completo + sugestão de resposta da IA              │
+│  • Copia/adapta resposta                                        │
+│  • Envia follow-up manual (email/WhatsApp)                     │
+│  • Marca como "contacted" no sistema                           │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### **Tempo de Processamento por Etapa**
+
+| Etapa                 | Tempo Médio | Otimização                        |
+|-----------------------|-------------|-----------------------------------|
+| Validação entrada     | ~20ms       | Zod schema (local)                |
+| Sentinel Agent        | ~50ms       | Validação local (sem API)         |
+| Observer Agent        | ~300ms      | Hunter.io API call                |
+| Intent Agent          | ~800ms      | GPT-4o/Gemini API call            |
+| Persistence Layer     | ~50ms       | PostgreSQL insert                 |
+| Notification Layer    | ~200ms      | Resend API call                   |
+| Memory Storage        | Assíncrono  | Fire-and-forget                   |
+| **TOTAL**             | **~1.4s**   | Tempo real varia por carga        |
 
 ---
 
 ## 📞 STATUS ATUAL DO SISTEMA
 
 ### ✅ **PRODUÇÃO READY**
-- **Railway Deploy**: ✅ Funcionando (nginx + 47 workers)
-- **Build Automatizado**: ✅ CI/CD ativo
-- **Health Checks**: ✅ Monitoramento contínuo
-- **Security Hardened**: ✅ Proteções enterprise
+
+-  **Railway Deploy**: ✅ Funcionando (nginx + 47 workers)
+-  **Build Automatizado**: ✅ CI/CD ativo
+-  **Health Checks**: ✅ Monitoramento contínuo
+-  **Security Hardened**: ✅ Proteções enterprise
 
 ### 🏷️ **Versionamento**
-- **Current Tag**: v1.2.0 - Enterprise Security & Testing
-- **Conventional Commits**: ✅ Seguido rigorosamente
-- **NEØ Protocol**: ✅ Build-commit-push seguro
 
-### 🎯 **Próximos Passos Planejados**
-- 📋 **Dashboard administrativo** para gestão avançada
-- 📋 **API GraphQL** para queries flexíveis
-- 📋 **Integração com CRMs** (HubSpot, Pipedrive)
-- 📋 **Analytics avançado** de conversão
-- 📋 **Mobile app** nativa (React Native)
+-  **Current Tag**: v1.2.0 - Enterprise Security & Testing
+-  **Conventional Commits**: ✅ Seguido rigorosamente
+-  **NEØ Protocol**: ✅ Build-commit-push seguro
+
+### 📊 **Status das Integrações**
+
+| Integração       | Status             | Próxima Ação                    |
+|------------------|--------------------|---------------------------------|
+| **OpenAI API**   | ✅ Configurada     | Nenhuma                         |
+| **Google AI**    | ✅ Configurada     | Nenhuma                         |
+| **PostgreSQL**   | ✅ Funcionando     | Nenhuma                         |
+| **Hunter.io**    | ⚠️ Não configurada | Adicionar `HUNTER_API_KEY`      |
+| **Resend API**   | ⚠️ Não configurada | Adicionar `RESEND_API_KEY`      |
+| **Domínio DNS**  | ⚠️ Não verificado  | Verificar `punkblvck.com.br`    |
+
+---
+
+## 🚀 PRÓXIMOS PASSOS CRÍTICOS
+
+### **🔴 ALTA PRIORIDADE (45 minutos total)**
+
+#### **1. Configurar Resend API (20 min)**
+
+**Ações:**
+
+-  [ ] Criar conta: <https://resend.com>
+-  [ ] Verificar domínio `punkblvck.com.br` (adicionar registros DNS)
+-  [ ] Obter API Key no dashboard
+-  [ ] Configurar variáveis no Railway/Vercel:
+
+```bash
+RESEND_API_KEY=re_xxxxxxxxxxxxxxxx
+RESEND_FROM_EMAIL=leads@punkblvck.com.br
+NOTIFICATION_EMAIL=gestor@punkblvck.com.br
+```
+
+**Benefício:** Notificações em tempo real para o gestor
+
+#### **2. Configurar Hunter.io API (10 min)**
+
+**Ações:**
+
+-  [ ] Criar conta: <https://hunter.io>
+-  [ ] Obter API Key (50 buscas/mês grátis)
+-  [ ] Adicionar no Railway/Vercel:
+
+```bash
+HUNTER_API_KEY=your_hunter_api_key_here
+```
+
+**Benefício:** Enriquecimento automático de leads com dados reais
+
+#### **3. Testar Sistema Completo (15 min)**
+
+**Ações:**
+
+-  [ ] Enviar lead de teste via formulário web
+-  [ ] Verificar recebimento de email no gestor
+-  [ ] Confirmar dados enriquecidos no dashboard
+-  [ ] Validar sugestão de resposta da IA
+-  [ ] Testar follow-up manual
+
+**Benefício:** Validação end-to-end do sistema
+
+### **🟡 MÉDIA PRIORIDADE (Próximas semanas)**
+
+#### **4. Personalizar Templates de Email**
+
+-  [ ] Traduzir para PT-BR profissional
+-  [ ] Adicionar logo PUNK BLVCK
+-  [ ] Link direto para dashboard com lead pré-filtrado
+-  [ ] Botão de ação "Ver Lead Completo"
+
+#### **5. Automação de Resposta ao Lead**
+
+-  [ ] Implementar envio automático de `userReply` para o lead
+-  [ ] Adicionar opt-in no formulário
+-  [ ] Template HTML responsivo
+-  [ ] Tracking de abertura/cliques (Resend Analytics)
+
+#### **6. Dashboard de Gestão Avançada**
+
+-  [ ] Botão "Enviar Email" direto do dashboard
+-  [ ] Integração com Gmail/Outlook do gestor
+-  [ ] Sugestão de resposta em destaque (copiar com 1 clique)
+-  [ ] Histórico de interações por lead
+-  [ ] Status: "new" → "contacted" → "qualified" → "converted"
+
+### **🟢 BAIXA PRIORIDADE (Roadmap futuro)**
+
+#### **7. Integrações Avançadas**
+
+-  [ ] Webhook para envio automático para CRM (HubSpot, Pipedrive)
+-  [ ] Integração com WhatsApp Business API
+-  [ ] SMS para leads high priority
+-  [ ] Slack notifications para equipe de vendas
+
+#### **8. Analytics e BI**
+
+-  [ ] Dashboard de conversão (lead → customer)
+-  [ ] Tempo médio de resposta por gestor
+-  [ ] Taxa de conversão por intent
+-  [ ] ROI de campanhas por source
+
+---
+
+## 🎯 **Próximos Passos Planejados (Roadmap)**
+
+-  📋 **Dashboard administrativo** para gestão avançada
+-  📋 **API GraphQL** para queries flexíveis
+-  📋 **Integração com CRMs** (HubSpot, Pipedrive)
+-  📋 **Analytics avançado** de conversão
+-  📋 **Mobile app** nativa (React Native)
 
 ---
 
@@ -442,20 +909,20 @@ await circuitBreaker.execute(async () => {
 
 **O sistema PUNK BLVCK representa o estado da arte em plataformas de lead generation com IA, combinando:**
 
-- **Arquitetura Enterprise** com circuit breaker e fallbacks inteligentes
-- **Segurança Hardened** com validação em múltiplas camadas
-- **Performance Otimizada** com lazy loading e cache inteligente
-- **IA Cognitiva Avançada** com pipeline de agentes especializados
-- **Observabilidade Completa** com métricas e health checks
+-  **Arquitetura Enterprise** com circuit breaker e fallbacks inteligentes
+-  **Segurança Hardened** com validação em múltiplas camadas
+-  **Performance Otimizada** com lazy loading e cache inteligente
+-  **IA Cognitiva Avançada** com pipeline de agentes especializados
+-  **Observabilidade Completa** com métricas e health checks
 
 **Sistema operacional 24/7 no Railway com uptime de 99.9% e capacidade de processamento de leads enterprise-grade.**
 
 ---
 
-**🎸 "Expand until silence becomes structure."**
+> 🎸 "Expand until silence becomes structure."
 
 *Sistema construído com excelência técnica para máxima performance e resiliência.*
 
 **Author:** MELLØ // NEØ DEV
 
-**This project follows NEØ development standards. Security is a priority, not an afterthought.**
+This project follows NEØ Protocol development standards. Security is a priority, not an afterthought.
