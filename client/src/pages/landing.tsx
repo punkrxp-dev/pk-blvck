@@ -42,60 +42,88 @@ export default function Landing() {
             <div className='flex items-center gap-4 mb-10 md:mb-16'>
               <span className='w-8 md:w-12 h-px bg-punk-neon' />
               <span className='font-mono text-[10px] md:text-xs tracking-[0.3em] text-white/70 italic'>
-                SYSTEMS
+                SCHEDULE
               </span>
             </div>
 
             <div className='grid grid-cols-1 md:grid-cols-3 gap-px bg-white/10'>
-              <div className='bg-black p-8 md:p-12'>
+              <div className='bg-black p-8 md:p-12 flex flex-col'>
                 <div className='flex items-start justify-between mb-8'>
                   <span className='font-mono text-xs text-white/50'>01</span>
                   <span className='w-1.5 h-1.5 rounded-full bg-white/40' />
                 </div>
-                <h3 className='font-industrial text-xl tracking-widest text-white mb-4 uppercase'>
-                  // training
+                <h3 className='font-industrial text-xl tracking-widest text-white mb-2 uppercase'>
+                  BLVCK .training
                 </h3>
-                <p className='font-sans text-xs tracking-wider text-white/60 leading-relaxed uppercase'>
-                  PERFORMANCE
-                  <br />
-                  OPTIMIZATION
-                  <br />
-                  PROTOCOL
+                <p className='font-mono text-[10px] tracking-wider text-punk-neon mb-6 uppercase'>
+                  Horários de funcionamento
                 </p>
+                <div className='space-y-4 font-sans text-xs tracking-wide text-white/80 flex-grow'>
+                  <div>
+                    <p className='text-white/50 mb-1 uppercase text-[10px]'>Segunda a sexta</p>
+                    <p>05:00 às 22:00</p>
+                  </div>
+                  <div>
+                    <p className='text-white/50 mb-1 uppercase text-[10px]'>Sábado e Feriados</p>
+                    <p>07:00 às 14:00</p>
+                  </div>
+                </div>
+                <div className='mt-auto pt-6 text-right'>
+                  <span className='font-mono text-[9px] text-white/30'>schedule ///</span>
+                </div>
               </div>
 
-              <div className='bg-black p-8 md:p-12'>
+              <div className='bg-black p-8 md:p-12 flex flex-col'>
                 <div className='flex items-start justify-between mb-8'>
                   <span className='font-mono text-xs text-white/50'>02</span>
                   <span className='w-1.5 h-1.5 rounded-full bg-white/40' />
                 </div>
-                <h3 className='font-industrial text-xl tracking-widest text-white mb-4 uppercase'>
-                  [zone]
+                <h3 className='font-industrial text-xl tracking-widest text-white mb-2 uppercase'>
+                  BLVCK [zone]
                 </h3>
-                <p className='font-sans text-xs tracking-wider text-white/60 leading-relaxed uppercase'>
-                  HIGH
-                  <br />
-                  INTENSITY
-                  <br />
-                  FRAMEWORK
+                <p className='font-mono text-[10px] tracking-wider text-punk-neon mb-6 uppercase'>
+                  Horários de funcionamento
                 </p>
+                <div className='space-y-4 font-sans text-xs tracking-wide text-white/80 flex-grow'>
+                  <div>
+                    <p className='text-white/50 mb-1 uppercase text-[10px]'>Segunda a sexta</p>
+                    <ul className='space-y-1'>
+                      <li>06:00 (manhã)</li>
+                      <li>07:00 (manhã)</li>
+                      <li>17:30 (tarde)</li>
+                      <li>18:30 (noite)</li>
+                    </ul>
+                  </div>
+                </div>
+                <div className='mt-auto pt-6 text-right'>
+                  <span className='font-mono text-[9px] text-white/30'>schedule ///</span>
+                </div>
               </div>
 
-              <div className='bg-black p-8 md:p-12'>
+              <div className='bg-black p-8 md:p-12 flex flex-col'>
                 <div className='flex items-start justify-between mb-8'>
                   <span className='font-mono text-xs text-white/50'>03</span>
                   <span className='w-1.5 h-1.5 rounded-full bg-white/40' />
                 </div>
-                <h3 className='font-industrial text-xl tracking-widest text-white mb-4 uppercase'>
-                  .yoga
+                <h3 className='font-industrial text-xl tracking-widest text-white mb-2 uppercase'>
+                  BLVCK .yoga
                 </h3>
-                <p className='font-sans text-xs tracking-wider text-white/60 leading-relaxed uppercase'>
-                  MOBILITY
-                  <br />
-                  RESTORATION
-                  <br />
-                  SEQUENCE
+                <p className='font-mono text-[10px] tracking-wider text-punk-neon mb-6 uppercase'>
+                  Horários de funcionamento
                 </p>
+                <div className='space-y-4 font-sans text-xs tracking-wide text-white/80 flex-grow'>
+                  <div>
+                    <p className='text-white/50 mb-1 uppercase text-[10px]'>Segunda e quarta</p>
+                    <p>16:00 (tarde)</p>
+                  </div>
+                  <div>
+                    <p className='text-white/50 mb-1 uppercase text-[10px]'>Terça e quinta</p>
+                    <p>09:30 (manhã)</p>
+                  </div>
+                </div>
+                <div className='mt-auto pt-6 text-right'>
+                  <span className='font-mono text-[9px] text-white/30'>schedule ///</span>
+                </div>
               </div>
             </div>
           </div>
